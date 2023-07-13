@@ -5,7 +5,7 @@ import re
 from fastapi import File
 
 
-async def save_image_file(file: File, prefix: str, suffix: str):
+async def save_image_file(file: File, prefix: str, suffix: str, dir: str='images'):
     print("save_image_file()")
 
     if (file == None):
@@ -18,21 +18,21 @@ async def save_image_file(file: File, prefix: str, suffix: str):
     file_name = prefix + "_" + suffix + file_extension
     print("save_image_file() - new file_name ="+file_name+"=")
 
-    out_file_path = os.path.join('images', file_name)
+    out_file_path = os.path.join(dir, file_name)
     async with aiofiles.open(out_file_path, 'wb') as out_file:
         while content := await file.read(1024): #async read chunk
             await out_file.write(content) # async write chunk
     
     return file_name
 
-async def delete_image_file(filename: str):
+async def delete_image_file(filename: str, dir: str='images'):
     print("delete_image_file() - filename is:")
     print(filename)
 
     if (filename == None or len(filename) == 0):
         return None
     
-    file_path = os.path.join('images', filename)
+    file_path = os.path.join(dir, filename)
     print("delete_image_file() - about to check if file_path exists - file_path is:")
     print(file_path)
 
@@ -45,14 +45,14 @@ async def delete_image_file(filename: str):
 
     return ret_message
 
-def image_file_exists(filename: str):
+def image_file_exists(filename: str, dir: str='images'):
     print("image_file_exists() - filename is:")
     print(filename)
 
     if (filename == None or len(filename) == 0):
             return False
     
-    file_path = os.path.join('images', filename)
+    file_path = os.path.join(dir, filename)
     if (os.path.exists(file_path)):
         return True
     else: 
