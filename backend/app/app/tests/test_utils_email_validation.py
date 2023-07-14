@@ -1,4 +1,4 @@
-from utils import validate_email
+from app.utils import validate_email
 
 class TestUtilsEmailValidation:
 

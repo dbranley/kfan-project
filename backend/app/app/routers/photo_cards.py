@@ -3,10 +3,10 @@ from fastapi import APIRouter, File, UploadFile, Form, Request, HTTPException, s
 from fastapi.responses import FileResponse
 import uuid
 
-from sql_app import crud, schemas
-from sql_app.database import database
+from app.sql_app import crud, schemas
+from app.sql_app.database import database
 from . import users
-from utils import save_image_file, delete_image_file, image_file_exists
+from app.utils import save_image_file, delete_image_file, image_file_exists
 
 
 

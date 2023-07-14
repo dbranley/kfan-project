@@ -2,10 +2,10 @@ from fastapi import FastAPI
 from fastapi.responses import HTMLResponse
 from starlette.staticfiles import StaticFiles
 
-from sql_app import models
-from sql_app.database import engine, database
+from app.sql_app import models
+from app.sql_app.database import engine, database
 
-from routers import users, photo_cards
+from app.routers import users, photo_cards
 
 models.metadata.create_all(bind=engine)
 
@@ -32,3 +32,6 @@ async def startup():
 @app.on_event("shutdown")
 async def shutdown():
     await database.disconnect()
+
+def test_function():
+    pass

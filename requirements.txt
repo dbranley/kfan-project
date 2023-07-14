@@ -2,10 +2,12 @@ fastapi
 uvicorn[standard]
 python-multipart
 aiofiles
-sqlalchemy
+sqlalchemy<2.0
 databases
 databases[aiosqlite]
 
 python-jose[cryptography]
 passlib[bcrypt]
 pytest
+pytest-asyncio
+httpx

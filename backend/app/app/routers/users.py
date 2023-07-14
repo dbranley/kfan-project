@@ -6,9 +6,9 @@ from datetime import datetime, timedelta
 from jose import JWTError, jwt
 from pydantic import BaseModel
 
-from sql_app import crud, schemas
-from sql_app.database import database
-from utils import validate_email
+from app.sql_app import crud, schemas
+from app.sql_app.database import database
+from app.utils import validate_email
 
 # use something like this to get the key:
 # >openssl rand -hex 32
@@ -243,4 +243,6 @@ async def read_current_session(request: Request) -> schemas.User:
         print("read_current_session() - got JWTError, so just pass to return unknown user")
         pass
 
+    print("read_current_session() - at end - returning user:")
+    print(user)
     return user
