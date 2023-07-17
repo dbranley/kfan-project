@@ -226,7 +226,7 @@ async def get_photo_card_public(file_name: str):
     if (not is_shared):
         raise HTTPException(status_code=401, detail="Not authorized to retrieve file")
 
-    file_path = 'images/'+file_name
+    file_path = 'app/images/'+file_name
     return FileResponse(file_path)
 
 @database.transaction()
@@ -249,5 +249,5 @@ async def get_photo_card_private(file_name: str, request: Request):
     if (not image_file_exists(file_name)):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Photo card file does not exist")
     
-    file_path = 'images/'+file_name
+    file_path = 'app/images/'+file_name
     return FileResponse(file_path)

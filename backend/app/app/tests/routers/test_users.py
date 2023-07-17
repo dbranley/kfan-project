@@ -4,6 +4,8 @@ from fastapi.testclient import TestClient
 import asyncio
 import pytest
 
+from app.tests import utils
+
 # from ...main import test_function
 from app.main import app
 
@@ -27,3 +29,18 @@ def test_whoami_when_not_logged_in():
     print("test_users.test_whoami_when_not_logged_in() - back from call to '/api/session'")
     print(response)
     assert response.status_code == status.HTTP_401_UNAUTHORIZED
+
+def test_create_user_valid_test1():
+    print("test_create_user_valid_test1()")
+    response = client.post(
+        "/api/register",
+        json={
+            "username": "testuser1",
+            "email":"testuser1@email.com",
+            "password":"testuser1password"
+        })
+    assert response.status_code == 200, response.text
+    data = response.json()
+    assert data["username"] == "testuser1"
+    assert data["email"] == "testuser1@email.com"
+    assert "id" in data

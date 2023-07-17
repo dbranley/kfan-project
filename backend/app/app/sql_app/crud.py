@@ -3,6 +3,8 @@ from . import models, schemas
 from databases import Database 
 from sqlalchemy.sql import select, and_, or_
 
+from app.sql_app.database import engine, database
+
 #Users cruds
 async def create_user(database: Database,
                       user: schemas.UserCreate):
@@ -12,6 +14,15 @@ async def create_user(database: Database,
     print("create_user() - about to print query")
     print(query)
     
+    print("crud.create_user() - about to print table names from engine:")
+    print(engine.table_names())
+
+    temp_query = "select name from sqlite_schema"
+    # temp_query = "select name from sqlite_schema where type = 'table' and name NOT LIKE 'sqlite_%'"
+    temp_result = await database.fetch_all(temp_query)
+    print("crud.create_user - after query to get DB tables - result is:")
+    print(temp_result)
+
     last_record_id = await database.execute(query)
 
     return {"id": last_record_id, "username": user.username, "email": user.email}

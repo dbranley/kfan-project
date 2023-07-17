@@ -5,7 +5,7 @@ import re
 from fastapi import File
 
 
-async def save_image_file(file: File, prefix: str, suffix: str, dir: str='images'):
+async def save_image_file(file: File, prefix: str, suffix: str, dir: str='app/images'):
     print("save_image_file()")
 
     if (file == None):
@@ -25,7 +25,7 @@ async def save_image_file(file: File, prefix: str, suffix: str, dir: str='images
     
     return file_name
 
-async def delete_image_file(filename: str, dir: str='images'):
+async def delete_image_file(filename: str, dir: str='app/images'):
     print("delete_image_file() - filename is:")
     print(filename)
 
@@ -45,7 +45,7 @@ async def delete_image_file(filename: str, dir: str='images'):
 
     return ret_message
 
-def image_file_exists(filename: str, dir: str='images'):
+def image_file_exists(filename: str, dir: str='app/images'):
     print("image_file_exists() - filename is:")
     print(filename)
 

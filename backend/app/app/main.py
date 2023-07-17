@@ -8,6 +8,8 @@ from app.sql_app.database import engine, database
 from app.routers import users, photo_cards
 
 models.metadata.create_all(bind=engine)
+print("main.py - after create_all - about to print table names:")
+print(engine.table_names())
 
 app = FastAPI()
 
@@ -16,13 +18,13 @@ app.include_router(photo_cards.router)
 
 # Uncomment this when I want to deploy React app from the Python app - build server will go at /dist...
 #
-app.mount('/assets', StaticFiles(directory="dist/assets"), 'assets')
+app.mount('/assets', StaticFiles(directory="app/dist/assets"), 'assets')
 
 # Uncomment this when I want to deploy React app from the Python app - build server will go at /dist...
 #
 @app.get("/", response_class=HTMLResponse)
 async def react_app():
-    return open("dist/index.html","r").read()
+    return open("app/dist/index.html","r").read()
 
 #startup/shutdown events
 @app.on_event("startup")
