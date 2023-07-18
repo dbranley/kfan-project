@@ -12,18 +12,22 @@ SQLACHEMY_DATABASE_URL = os.getenv("DATABASE_URL")
 #SQLACHEMY_DATABASE_URL = "sqlite:///./app/sql_app.db"
 
 TESTING = os.getenv("TESTING", "False")
+print("database - at top - SQLACHEMY_DATABASE_URL is:")
+print(SQLACHEMY_DATABASE_URL)
+print("database - at top - TESTING is:")
+print(TESTING)
 
-database = databases.Database(SQLACHEMY_DATABASE_URL)
 
 if (TESTING == "False"):
+    database = databases.Database(SQLACHEMY_DATABASE_URL)
     engine = create_engine(
         SQLACHEMY_DATABASE_URL, connect_args={"check_same_thread":False}
     )
 else:
+    database = databases.Database(SQLACHEMY_DATABASE_URL, force_rollback=True)
     engine = create_engine(
         SQLACHEMY_DATABASE_URL, connect_args={"check_same_thread":False}, poolclass=StaticPool
     )
     
-# database = databases.Database(SQLACHEMY_DATABASE_URL)
 
 Base = declarative_base()

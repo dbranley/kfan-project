@@ -8,8 +8,6 @@ from app.sql_app.database import engine, database
 from app.routers import users, photo_cards
 
 models.metadata.create_all(bind=engine)
-print("main.py - after create_all - about to print table names:")
-print(engine.table_names())
 
 app = FastAPI()
 
