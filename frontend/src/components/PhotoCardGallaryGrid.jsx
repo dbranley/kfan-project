@@ -105,7 +105,7 @@ export default function PhotoCardGallaryGrid(props) {
     return (
 
             // <Router>
-            <Grid justify="left" align="start">
+            <Grid data-testid={`${props.myCards ? "photo-card-grid-mine-id" : "photo-card-grid-public-id"}`} justify="left" align="start">
                 {photoCardsQuery.data.map((photoCard, index) => (
                     // cardRenderer(photoCard, index)
                     <Grid.Col key={index} span="content" style={{width: 200}} align="left">

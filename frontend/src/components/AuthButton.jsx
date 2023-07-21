@@ -51,18 +51,17 @@ export default function AuthButton() {
   //   return <div>Loading...</div>;
   // }
 
-  console.log("AuthButton.after useQuery() definition - currentUserQuery is:")
-  console.log(currentUserQuery);  
-  console.log("AuthButton.after useQuery() definition - currentUserQuery.status is:")
-  console.log(currentUserQuery.status);
-  if (currentUserQuery.status === "success"){
-    console.log("AuthButton.after useQuery() definition - currentUserQuery.data is:")
-    console.log(currentUserQuery.data);
-    console.log("AuthButton.after useQuery() definition - currentUserQuery.data.id is:")
-    console.log(currentUserQuery.data.id);
-  }
-  // console.log("AuthButton.after useQuery() definition - currentUserQuery.data.username is:")
-  // console.log(currentUserQuery.data.username);
+  // console.log("AuthButton.after useQuery() definition - currentUserQuery is:")
+  // console.log(currentUserQuery);  
+  // console.log("AuthButton.after useQuery() definition - currentUserQuery.status is:")
+  // console.log(currentUserQuery.status);
+  // if (currentUserQuery.status === "success"){
+  //   console.log("AuthButton.after useQuery() definition - currentUserQuery.data is:")
+  //   console.log(currentUserQuery.data);
+  //   console.log("AuthButton.after useQuery() definition - currentUserQuery.data.id is:")
+  //   console.log(currentUserQuery.data.id);
+  // }
+
 
 
   let content = "";
@@ -121,9 +120,9 @@ export default function AuthButton() {
       </div>
     );
   }
-  console.log("AuthButton() - before return - 'content' is:");
-  console.log(content);
-  console.log("AuthButton() - before return - after printing 'content'");
+  // console.log("AuthButton() - before return - 'content' is:");
+  // console.log(content);
+  // console.log("AuthButton() - before return - after printing 'content'");
 
   return <>{content}</>;
 }

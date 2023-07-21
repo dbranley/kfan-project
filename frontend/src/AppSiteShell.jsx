@@ -89,7 +89,7 @@ export default function AppSiteShell() {
         </Navbar>
       }
       header={
-        <Header height={{ base: 50 }} p="md"
+        <Header data-testid="default-header-id"  height={{ base: 50 }} p="md"
         sx={(theme) => ({
           // backgroundColor: theme.colorScheme === 'dark' ? theme.colors.dark[6] : theme.colors.orange[0],
           color: theme.colorScheme === 'dark' ? theme.colors.gray[4] : theme.colors.gray[9],
