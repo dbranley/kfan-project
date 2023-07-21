@@ -6,7 +6,7 @@ import axios from "axios";
 // import AuthContext from "../store/auth-context";
 import AuthForm from "./AuthForm";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 import { getCurrentUser, logout, SESSION_EXPIRATION_TIME } from "../services/auth";
 
@@ -17,6 +17,11 @@ export default function AuthButton() {
     useDisclosure(false);
 
   const navigate = useNavigate();
+  const location = useLocation();
+  console.log("AuthButton() - about to print location.pathname: ")
+  console.log(location.pathname);
+
+
 
   // const authCtx = useContext(AuthContext);
 
@@ -46,20 +51,26 @@ export default function AuthButton() {
   //   return <div>Loading...</div>;
   // }
 
+  console.log("AuthButton.after useQuery() definition - currentUserQuery is:")
+  console.log(currentUserQuery);  
   console.log("AuthButton.after useQuery() definition - currentUserQuery.status is:")
   console.log(currentUserQuery.status);
-  console.log("AuthButton.after useQuery() definition - currentUserQuery.data is:")
-  console.log(currentUserQuery.data);
+  if (currentUserQuery.status === "success"){
+    console.log("AuthButton.after useQuery() definition - currentUserQuery.data is:")
+    console.log(currentUserQuery.data);
+    console.log("AuthButton.after useQuery() definition - currentUserQuery.data.id is:")
+    console.log(currentUserQuery.data.id);
+  }
   // console.log("AuthButton.after useQuery() definition - currentUserQuery.data.username is:")
   // console.log(currentUserQuery.data.username);
 
 
   let content = "";
-  // if (authCtx.isLoggedIn) {
   if (currentUserQuery.status === "success" && currentUserQuery.data !== null && currentUserQuery.data.id !== 0) {
+    console.log("AuthButton - in if-block where about to create logout button");
     content = (
       // <Button size="xs" onClick={authCtx.onLogout}>
-      <Button size="xs" onClick={()=>{
+      <Button data-testid="logout-button-id" size="xs" onClick={()=>{
           logoutMutation.mutate();
           navigate("/");
         }}>
@@ -67,6 +78,7 @@ export default function AuthButton() {
       </Button>
     );
   } else if (successOpened && opened) {
+    console.log("AuthButton - in else-if-block where about to create login modal");
     content = (
       <div>
         <Modal opened={opened} onClose={close} title="Authentication">
@@ -96,19 +108,22 @@ export default function AuthButton() {
       </div>
     );
   } else {
+    //Note: we will get to this else block if status is 'loading' - that's ok because we assume this state
+    console.log("AuthButton - in else-block where about to create login button");
     content = (
       <div>
         <Modal opened={opened} onClose={close} title="Authentication">
           <AuthForm onLogin={close} onRegister={successOpen} />
         </Modal>
-        <Button size="xs" onClick={open}>
+        <Button data-testid="login-button-id" size="xs" onClick={open}>
           Login
         </Button>
       </div>
     );
   }
-  console.log("AuthButton() - before return - content is:");
+  console.log("AuthButton() - before return - 'content' is:");
   console.log(content);
+  console.log("AuthButton() - before return - after printing 'content'");
 
   return <>{content}</>;
 }

@@ -153,7 +153,7 @@ const AuthForm = (props) => {
 
   if (showLogin) {
     content = (
-      <form onSubmit={loginSubmitHandler}>
+      <form data-testid="auth-form-id" onSubmit={loginSubmitHandler}>
         <TextInput
           withAsterisk
           label="Username"
