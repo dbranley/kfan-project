@@ -4,8 +4,10 @@ python-multipart
 python-dotenv
 aiofiles
 sqlalchemy<2.0
+psycopg2-binary
 databases
 databases[aiosqlite]
+databases[asyncpg]
 
 python-jose[cryptography]
 passlib[bcrypt]

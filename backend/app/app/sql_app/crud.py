@@ -74,12 +74,6 @@ async def get_photo_cards(database: Database, user_id: int, my_cards: bool, skip
      print("crud.get_photo_cards() - at top")
      
 
-     temp_query = "select name from sqlite_schema"
-     # temp_query = "select name from sqlite_schema where type = 'table' and name NOT LIKE 'sqlite_%'"
-     temp_result = await database.fetch_all(temp_query)
-     print("crud.get_photo_cards - after query to get DB tables - result is:")
-     print(temp_result)
-
      if my_cards:
         query = select([models.photo_cards, models.users.c.username.label("owner_name")]).\
                  where(and_(models.photo_cards.c.user_id == models.users.c.id,\

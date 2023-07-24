@@ -19,9 +19,9 @@ print(TESTING)
 
 
 if (TESTING == "False"):
-    database = databases.Database(SQLACHEMY_DATABASE_URL)
+    database = databases.Database(SQLACHEMY_DATABASE_URL, min_size=2, max_size=3)
     engine = create_engine(
-        SQLACHEMY_DATABASE_URL, connect_args={"check_same_thread":False}
+        SQLACHEMY_DATABASE_URL #, connect_args={"check_same_thread":False} -->not valid for postgresql
     )
 else:
     database = databases.Database(SQLACHEMY_DATABASE_URL, force_rollback=True)
