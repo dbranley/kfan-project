@@ -13,96 +13,96 @@ from app.utils import save_image_file, delete_image_file, image_file_exists
 router = APIRouter()
 
 
-@router.post("/api/photo-cards", tags=["photo_cards"], response_model=schemas.PhotoCard)
-async def create_photo_card(
-                       front_file: Annotated[UploadFile, File()],
-                       back_file: Annotated[UploadFile, File()],
-                       group_name: Annotated[str, Form()],
-                       card_name: Annotated[str, Form()],
-                       share: Annotated[bool, Form()],
-                       request: Request):
-    print("photo_cards.create_photo_card() - at top")
+# @router.post("/api/photo-cards", tags=["photo_cards"], response_model=schemas.PhotoCard)
+# async def create_photo_card(
+#                        front_file: Annotated[UploadFile, File()],
+#                        back_file: Annotated[UploadFile, File()],
+#                        group_name: Annotated[str, Form()],
+#                        card_name: Annotated[str, Form()],
+#                        share: Annotated[bool, Form()],
+#                        request: Request):
+#     print("photo_cards.create_photo_card() - at top")
 
 
-    front_file_name = ''
-    back_file_name = ''
+#     front_file_name = ''
+#     back_file_name = ''
 
-    transaction = await database.transaction()
-    try:
-        #verify user is authenticated
-        token = request.cookies.get("token")
+#     transaction = await database.transaction()
+#     try:
+#         #verify user is authenticated
+#         token = request.cookies.get("token")
 
-        print("photo_cards.create_photo_card() - about to call users.get_current_user()")
-        user = await users.get_current_user(token, database)
-        print("photo_cards.create_photo_card() - after calling  users.get_current_user() - user is:")
-        print(user)
-        if user is None:
-            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)        
+#         print("photo_cards.create_photo_card() - about to call users.get_current_user()")
+#         user = await users.get_current_user(token, database)
+#         print("photo_cards.create_photo_card() - after calling  users.get_current_user() - user is:")
+#         print(user)
+#         if user is None:
+#             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)        
         
 
-        unique_file_prefix = uuid.uuid4().hex
-        front_file_name = await save_image_file(front_file, unique_file_prefix, "front")
-        print("photo_cards.create_photo_card() - after saving front file - front_file_name="+front_file_name+"=")
-        back_file_name = await save_image_file(back_file, unique_file_prefix, "back")
-        print("photo_cards.create_photo_card() - after saving back file - back_file_name="+back_file_name+"=")
+#         unique_file_prefix = uuid.uuid4().hex
+#         front_file_name = await save_image_file(front_file, unique_file_prefix, "front")
+#         print("photo_cards.create_photo_card() - after saving front file - front_file_name="+front_file_name+"=")
+#         back_file_name = await save_image_file(back_file, unique_file_prefix, "back")
+#         print("photo_cards.create_photo_card() - after saving back file - back_file_name="+back_file_name+"=")
 
-        #create schema object
-        photo_card_create = schemas.PhotoCardCreate(group_name=group_name,
-                                                    card_name=card_name,
-                                                    share=share,
-                                                    front_file_name=front_file_name,
-                                                    back_file_name=back_file_name,
-                                                    user_id=user.id)
+#         #create schema object
+#         photo_card_create = schemas.PhotoCardCreate(group_name=group_name,
+#                                                     card_name=card_name,
+#                                                     share=share,
+#                                                     front_file_name=front_file_name,
+#                                                     back_file_name=back_file_name,
+#                                                     user_id=user.id)
 
-        resp = await crud.create_photo_card(database=database,
-                                            photo_card=photo_card_create)
+#         resp = await crud.create_photo_card(database=database,
+#                                             photo_card=photo_card_create)
         
-        print("photo_cards.create_photo_card() - after returning from crud.create_photo_card() - resp is:")
-        print(resp)
+#         print("photo_cards.create_photo_card() - after returning from crud.create_photo_card() - resp is:")
+#         print(resp)
         
-        resp.owner_name = user.username
+#         resp.owner_name = user.username
         
 
-    except HTTPException as httpex:
-        print("photo_cards.create_photo_card() - in the except 'HTTPException' block - printing exception here: ")
-        print(httpex)
+#     except HTTPException as httpex:
+#         print("photo_cards.create_photo_card() - in the except 'HTTPException' block - printing exception here: ")
+#         print(httpex)
 
-        #remove the files, if created and then rollback the DB if updated
-        if (len(front_file_name) > 0):
-            del_front_resp = delete_image_file(front_file_name)
-            print("photo_cards.create_photo_card() - response after deleting front file is:")
-            print(del_front_resp)
+#         #remove the files, if created and then rollback the DB if updated
+#         if (len(front_file_name) > 0):
+#             del_front_resp = delete_image_file(front_file_name)
+#             print("photo_cards.create_photo_card() - response after deleting front file is:")
+#             print(del_front_resp)
 
-        if (len(back_file_name) > 0):
-            del_back_resp = delete_image_file(back_file_name)
-            print("photo_cards.create_photo_card() - response after deleting back file is:")
-            print(del_back_resp)
+#         if (len(back_file_name) > 0):
+#             del_back_resp = delete_image_file(back_file_name)
+#             print("photo_cards.create_photo_card() - response after deleting back file is:")
+#             print(del_back_resp)
 
-        await transaction.rollback()
+#         await transaction.rollback()
 
-        #now rethrow this
-        raise httpex
+#         #now rethrow this
+#         raise httpex
     
-    except Exception as ex:
-        print("photo_cards.create_photo_card() - in the except 'Exception' block - printing exception here: ")
-        print(ex)
+#     except Exception as ex:
+#         print("photo_cards.create_photo_card() - in the except 'Exception' block - printing exception here: ")
+#         print(ex)
 
-        #this duplicates same code above so should do something about that
-        if (len(front_file_name) > 0):
-            del_front_resp = delete_image_file(front_file_name)
+#         #this duplicates same code above so should do something about that
+#         if (len(front_file_name) > 0):
+#             del_front_resp = delete_image_file(front_file_name)
 
-        if (len(back_file_name) > 0):
-            del_back_resp = delete_image_file(back_file_name)
+#         if (len(back_file_name) > 0):
+#             del_back_resp = delete_image_file(back_file_name)
 
-        await transaction.rollback()
+#         await transaction.rollback()
 
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                    detail="Exception thrown while saving photo card - error is - " + str(ex))
-    else:
-        print("create_photo_card() - in 'else' so about to commit")
-        await transaction.commit()
+#         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+#                     detail="Exception thrown while saving photo card - error is - " + str(ex))
+#     else:
+#         print("create_photo_card() - in 'else' so about to commit")
+#         await transaction.commit()
 
-    return resp
+#     return resp
 
 @database.transaction()
 @router.get("/api/photo-cards", tags=["photo_cards"], response_model=list[schemas.PhotoCard])

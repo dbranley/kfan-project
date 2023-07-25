@@ -154,3 +154,45 @@ async def delete_photo_card(database: Database, photo_card_id: int, user_id: int
     print(result)
 
     return {"message":"PhotoCard deleted"}
+
+#Favorites cruds
+async def create_favorite(database: Database, 
+                       favorite: schemas.FavoriteBase):
+    print("crud.create_favorite()")
+
+    query = models.favorites.insert().values(user_id=favorite.user_id,
+                                             photo_card_id=favorite.photo_card_id)
+
+    print("crud.create_favorite() - about to print query")
+    print(query)
+    
+    last_record_id = await database.execute(query)
+
+    print("crud.create_favorite() - after db insert - last_record_id is:")
+    print(last_record_id)
+
+    # report object with 'owner_name' empty - caller will need to fill in since that requires join query
+    resp_favorite = schemas.Favorite(id=last_record_id,
+                                     user_id=favorite.user_id,
+                                     photo_card_id=favorite.photo_card_id)
+    return resp_favorite
+
+async def get_favorites(database: Database, user_id: int, skip: int=0, limit: int=100):
+     print("crud.get_favorites() - at top")
+     
+
+     if user_id is None :
+        query = models.favorites.select().\
+                 offset(skip).limit(limit)
+     else:
+        query = models.users.select().where(models.users.c.id == user_id).\
+                 offset(skip).limit(limit)
+        
+     print("crud.get_favorites() - about to print query")
+     print(query)
+
+     result = await database.fetch_all(query)
+     print("crud.get_favorites() - after query - result is:")
+     print(result)     
+     return result
+

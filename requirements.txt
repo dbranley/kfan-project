@@ -4,6 +4,7 @@ python-multipart
 python-dotenv
 aiofiles
 sqlalchemy<2.0
+alembic
 psycopg2-binary
 databases
 databases[aiosqlite]

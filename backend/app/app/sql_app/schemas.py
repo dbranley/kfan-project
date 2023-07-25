@@ -34,6 +34,13 @@ class UserLogin(UserBase):
 class User(UserBase):
     id: int
     email: str
-    
+
     # class Config:
     #     orm_mode = True
+
+class FavoriteBase(BaseModel):
+    user_id: int
+    photo_card_id: int
+
+class Favorite(FavoriteBase):
+    id: int

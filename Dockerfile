@@ -20,10 +20,14 @@ COPY ./requirements.txt ./
 RUN pip install -r ./requirements.txt
 
 COPY ./backend/app/.env ./
+COPY ./backend/app/alembic ./alembic
+COPY ./backend/app/alembic.ini ./
 COPY ./backend/app/app/routers ./app/routers
 COPY ./backend/app/app/sql_app ./app/sql_app
 COPY ./backend/app/app/__init__.py ./app
 COPY ./backend/app/app/main.py ./app
 COPY ./backend/app/app/utils.py ./app
+#COPY ./backend/app/scripts/docker-entrypoint.sh ./
 
 CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "80"]
+#CMD ["/bin/bash", "docker-entrypoint.sh"]

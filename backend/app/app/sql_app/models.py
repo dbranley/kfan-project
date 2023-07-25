@@ -28,6 +28,15 @@ photo_cards = sqlalchemy.Table(
     sqlalchemy.Column("user_id", sqlalchemy.Integer, ForeignKey("users.id"), nullable=False)
 )
     
+favorites = sqlalchemy.Table(
+    "favorites",
+    metadata,
+    sqlalchemy.Column("id", sqlalchemy.Integer, primary_key=True, index=True),
+    sqlalchemy.Column("user_id", sqlalchemy.Integer, ForeignKey("users.id"), nullable=False),
+    sqlalchemy.Column("photo_card_id", sqlalchemy.Integer, ForeignKey("photo_cards.id"), nullable=False)
+
+)
+
 # class PhotoCard(Base):
 #     __tablename__ = "photo_cards"
 
