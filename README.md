@@ -22,6 +22,9 @@ DOCKER:
 To build docker image, use following command from the root project directory - before /frontend and /backend:
     docker build -t kfan-proj1 . 
 
+To build docker image without using any cached content, used this from the root project directory:
+    docker build --no-cache -t kfan-proj1 .
+
 To create and start a container from the new docker image, use the following command from the root project directory:
     docker run -d --name kfan1 -p 80:80 kfan-proj1
 

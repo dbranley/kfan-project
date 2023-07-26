@@ -24,7 +24,7 @@ app = FastAPI()
 
 app.include_router(users.router)
 app.include_router(photo_cards.router)
-# app.include_router(favorites.router)
+app.include_router(favorites.router)
 
 # Uncomment this when I want to deploy React app from the Python app - build server will go at /dist...
 #
