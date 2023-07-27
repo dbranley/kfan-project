@@ -41,6 +41,10 @@ To create and start a container with an environment varialb file, use the follow
 
     docker run --env-file docker-variables.env -d --name kfan1 -p 80:80 kfan-proj1
 
+To create and start a container pulled from Docker Hub with an environment varialb file, use the following command from the root project directory:
+
+    docker run --env-file docker-variables.env -d --name kfanrepo1 -p 80:80 dgbranley/kfanrepo:main
+
 Alembic:
 Had problems getting alembic properly installed with pip. When I ran 'pip install -r requirements.txt' from command
 line after activating venv, it did not work right. Install seemed to go fine, but when I ran 'alembic --version' from
