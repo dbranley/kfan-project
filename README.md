@@ -63,4 +63,4 @@ To run the alembic ugprade, use the following command from the backend/app direc
 
     alembic upgrade head
 
-[![GitHub Super-Linter](https://github.com/dbranley/kfan-project/actions/workflows/super-linter.yml/badge.svg)](https://github.com/marketplace/actions/super-linter)
+[![GitHub Super-Linter](https://github.com/dbranley/kfan-project/actions/workflows/super-linter.yml/badge.svg)](https://github.com/dbranley/kfan-project/actions/workflows/super-linter.yml)
