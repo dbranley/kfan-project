@@ -226,6 +226,10 @@ async def get_photo_card_public(file_name: str):
     if (not is_shared):
         raise HTTPException(status_code=401, detail="Not authorized to retrieve file")
 
+    #Now make sure image exists locally and if not let it get fetched from Cloud
+    if (not image_file_exists(file_name)):
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Photo card file does not exist")
+
     file_path = 'app/images/'+file_name
     return FileResponse(file_path)
 

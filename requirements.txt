@@ -9,6 +9,7 @@ psycopg2-binary
 databases
 databases[aiosqlite]
 databases[asyncpg]
+boto3[crt]
 
 python-jose[cryptography]
 passlib[bcrypt]
