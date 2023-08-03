@@ -118,6 +118,16 @@ async def get_current_user(token: str, database: Database):
     print(user)
     return user
 
+#temporary hack to limit who can upload photos
+def user_authorized_to_upload(user_id: int):
+    print("users.user_authorized_to_upload() - user_id given is:")
+    print(user_id)
+    if (user_id == 1 or user_id == 2):
+        return True
+    else:
+        return False
+
+
 #endpoints for user management
 # @database.transaction() - need commit/rollback control in the endpoint itself
 @router.post("/api/register", tags=["users"], response_model=schemas.User)

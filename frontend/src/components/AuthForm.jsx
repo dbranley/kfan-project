@@ -258,7 +258,7 @@ const AuthForm = (props) => {
   return (
     // <form className={classes.form} onSubmit={submitHandler}>
     <>
-      <Box maw={400} mx="auto">
+      <Box maw={300} mx="auto">
         {content}
         {/* <form onSubmit={submitHandler}>
           <TextInput

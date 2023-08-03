@@ -37,7 +37,11 @@ async def create_photo_card(
         print("photo_cards.create_photo_card() - after calling  users.get_current_user() - user is:")
         print(user)
         if user is None:
-            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)        
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)       
+
+        if (users.user_authorized_to_upload(user.id) == False): 
+            print("photo_cards.create_photo_card() - user is not authorized to upload photos")
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)       
         
 
         unique_file_prefix = uuid.uuid4().hex

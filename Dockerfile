@@ -7,6 +7,8 @@ RUN npm install
 COPY ./frontend/vite.config.js ./
 COPY ./frontend/index.html ./
 COPY ./frontend/src ./src
+COPY ./frontend/public ./public
+#HEALTHCHECK NONE
 RUN npm run build
 
 # Step 2: Build the Python backend
@@ -15,6 +17,8 @@ WORKDIR /app
 RUN mkdir ./app
 RUN mkdir ./app/images
 COPY --from=build-step /app/dist ./app/dist
+RUN mkdir ./app/dist/public
+COPY ./frontend/public/logo-darkorange.svg ./app/dist/public
 
 COPY ./requirements.txt ./
 RUN pip install -r ./requirements.txt

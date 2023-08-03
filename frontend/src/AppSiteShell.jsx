@@ -10,6 +10,7 @@ import {
   Burger,
   Button,
   Group,
+  Image,
 } from "@mantine/core";
 
 import { BrowserRouter as Router, Link, Routes, Route } from "react-router-dom";
@@ -89,7 +90,7 @@ export default function AppSiteShell() {
         </Navbar>
       }
       header={
-        <Header data-testid="default-header-id"  height={{ base: 50 }} p="md"
+        <Header data-testid="default-header-id"  height={{ base: 55 }} p="md"
         sx={(theme) => ({
           // backgroundColor: theme.colorScheme === 'dark' ? theme.colors.dark[6] : theme.colors.orange[0],
           color: theme.colorScheme === 'dark' ? theme.colors.gray[4] : theme.colors.gray[9],
@@ -106,7 +107,19 @@ export default function AppSiteShell() {
                   mr="xl"
                 />
               </MediaQuery>
-              <Text align="left" size="xl">Photo Card Testing Site</Text>
+              <Image width={122} height={31} src="./public/logo-darkorange.svg" />
+              {/* <MediaQuery largerThan="sm" styles={{ display: "none" }}>
+                  <Text align="left" size="xl">K-Pop Collection</Text>
+              </MediaQuery>   */}
+              <MediaQuery smallerThan="xs" styles={{ display: "none" }}>
+                  <Text align="left" size="xl">Your K-Pop Collection</Text>
+              </MediaQuery>  
+              {/* <MediaQuery largerThan="md">
+                <Image width={122} height={31} src="./public/logo-darkorange.svg" />
+                <Text align="left" size="xl">Your K-Pop Collection</Text>
+              </MediaQuery>                             */}
+              {/* <Image width={122} height={31} src="./public/logo-darkorange.svg" />
+              <Text align="left" size="xl">Your K-Pop Collection</Text> */}
             </Group>
             
             <Group>

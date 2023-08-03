@@ -80,8 +80,8 @@ export default function AuthButton() {
     console.log("AuthButton - in else-if-block where about to create login modal");
     content = (
       <div>
-        <Modal opened={opened} onClose={close} title="Authentication">
-          <Container>
+        <Modal size="auto" xOffset={-100} opened={opened} onClose={close} title="Authentication" >
+          <Container >
             <Text align="center">New user successfully created</Text>
             <Group position="apart" mt="md">
               <Button onClick={() => {
@@ -111,7 +111,7 @@ export default function AuthButton() {
     console.log("AuthButton - in else-block where about to create login button");
     content = (
       <div>
-        <Modal opened={opened} onClose={close} title="Authentication">
+        <Modal size="auto" xOffset={-100} opened={opened} onClose={close} title="Authentication">
           <AuthForm onLogin={close} onRegister={successOpen} />
         </Modal>
         <Button data-testid="login-button-id" size="xs" onClick={open}>

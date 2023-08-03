@@ -31,6 +31,9 @@ app.include_router(favorites.router)
 if (os.path.exists("app/dist/assets")):
     print("main - the 'app/dist/assets' dir exists, so go ahead and mount it for UI assets")
     app.mount('/assets', StaticFiles(directory="app/dist/assets"), 'assets')
+    app.mount('/public', StaticFiles(directory="app/dist/public"), 'public')
+    # app.mount('/', StaticFiles(directory="app/dist"), '')
+    # app.mount('/dist', StaticFiles(directory="app/dist"), 'dist')
 
 # Uncomment this when I want to deploy React app from the Python app - build server will go at /dist...
 #
