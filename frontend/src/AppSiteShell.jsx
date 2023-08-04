@@ -112,7 +112,7 @@ export default function AppSiteShell() {
                   <Text align="left" size="xl">K-Pop Collection</Text>
               </MediaQuery>   */}
               <MediaQuery smallerThan="xs" styles={{ display: "none" }}>
-                  <Text align="left" size="xl">Your K-Pop Collection</Text>
+                  <Text align="left" size="xl">Your K-POP Collection</Text>
               </MediaQuery>  
               {/* <MediaQuery largerThan="md">
                 <Image width={122} height={31} src="./public/logo-darkorange.svg" />
