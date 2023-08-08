@@ -34,6 +34,7 @@ class UserLogin(UserBase):
 class User(UserBase):
     id: int
     email: str
+    upload: bool
 
     # class Config:
     #     orm_mode = True

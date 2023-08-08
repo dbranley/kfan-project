@@ -1,4 +1,4 @@
-from fastapi import UploadFile, File
+from fastapi import UploadFile, File, status, HTTPException
 import os
 import asyncio
 import pytest
@@ -75,7 +75,7 @@ class TestUtilsImageFiles:
         # delete a file that does not exist
         message = await delete_image_file("foo.txt", tmpdir)
         print(message)
-        assert message == "File 'foo.txt' does not exist to be removed"
+        assert message == "File 'foo.txt' does not exist locally to be removed"
 
         # try passing None object as File
         file_name = None
@@ -85,3 +85,16 @@ class TestUtilsImageFiles:
         # try passing empty string as File name
         message3 = await delete_image_file('', tmpdir)
         assert message3 == None
+
+    @pytest.mark.asyncio
+    async def test_saving_too_large_file(self, tmpdir):
+        # first save a file
+        f = UploadFile(open(test_file_dir+'/test_large_file1.png', 'rb'), filename=test_file_dir+'/test_large_file1.png')
+        try:
+            file_name = await save_image_file(f, "largetest1", "suffix", tmpdir)
+            assert False, "Should have received an HTTP 413 for file too large"
+        except HTTPException as httpex:
+            assert httpex.status_code == status.HTTP_413_REQUEST_ENTITY_TOO_LARGE
+        
+        # now call function to verify it exists
+        assert image_file_exists("largetest1_suffix.png", tmpdir) == False

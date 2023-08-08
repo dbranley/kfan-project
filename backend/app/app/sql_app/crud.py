@@ -10,13 +10,13 @@ async def create_user(database: Database,
                       user: schemas.UserCreate):
     print("crud.create_user()")
     
-    query = models.users.insert().values(username=user.username, password=user.password, email=user.email)
+    query = models.users.insert().values(username=user.username, password=user.password, email=user.email, upload=False)
     print("create_user() - about to print query")
     print(query)
     
     last_record_id = await database.execute(query)
 
-    return {"id": last_record_id, "username": user.username, "email": user.email}
+    return {"id": last_record_id, "username": user.username, "email": user.email, "upload": False}
 
 
 async def get_user(database: Database,
@@ -118,9 +118,15 @@ async def get_photo_card_bkup(database: Database,
     return result
 
 async def is_photo_card_shared(database: Database,
-                               front_file_name: str):
+                               front_file_name: str,
+                               back_file_name: str):
     print("crud.is_photo_card_shared()")
-    query = models.photo_cards.select().where(models.photo_cards.c.front_file_name == front_file_name) 
+    
+    if front_file_name is not None:
+        query = models.photo_cards.select().where(models.photo_cards.c.front_file_name == front_file_name) 
+    else:
+        query = models.photo_cards.select().where(models.photo_cards.c.back_file_name == back_file_name) 
+        
     print("crud.is_photo_card_shared() - about to print query")
     print(query)
     result = await database.fetch_one(query)

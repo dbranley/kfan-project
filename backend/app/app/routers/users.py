@@ -119,10 +119,10 @@ async def get_current_user(token: str, database: Database):
     return user
 
 #temporary hack to limit who can upload photos
-def user_authorized_to_upload(user_id: int):
-    print("users.user_authorized_to_upload() - user_id given is:")
-    print(user_id)
-    if (user_id == 1 or user_id == 2):
+def user_authorized_to_upload(user: schemas.User):
+    print("users.user_authorized_to_upload() - user.upload given is:")
+    print(user.upload)
+    if (user.upload == True):
         return True
     else:
         return False
@@ -236,7 +236,8 @@ async def read_current_session(request: Request) -> schemas.User:
     user = {
         'id': 0, 
         'username': 'unknown',
-        'email': 'unknown'
+        'email': 'unknown',
+        'upload': False,
     }
     try:
         user = await get_current_user(token, database)

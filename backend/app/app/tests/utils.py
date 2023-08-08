@@ -9,6 +9,7 @@ out_file_path = os.path.join(tempdir.name, "test_app.db")
 os.environ["DATABASE_URL"] = "sqlite:///"+out_file_path
 os.environ["TESTING"] = "True"
 os.environ["FILE_STORAGE"]="Local"
+os.environ["IMAGE_MAX_SIZE_MB"] = "0.2"
 os.environ["AWS_ACCESS_KEY_ID"]="foo"
 os.environ["AWS_SECRET_ACCESS_KEY"]="foo"
 os.environ["AWS_DEFAULT_REGION"]="us-east-1"

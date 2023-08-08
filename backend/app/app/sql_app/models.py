@@ -14,6 +14,8 @@ users = sqlalchemy.Table(
     sqlalchemy.Column("username", sqlalchemy.String, unique=True, nullable=False),
     sqlalchemy.Column("email", sqlalchemy.String, unique=True, nullable=False),
     sqlalchemy.Column("password", sqlalchemy.String, nullable=False),
+    sqlalchemy.Column("upload", sqlalchemy.Boolean, nullable=False, default=False),
+
 )
 
 photo_cards = sqlalchemy.Table(

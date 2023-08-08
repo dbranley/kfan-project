@@ -39,7 +39,7 @@ async def create_photo_card(
         if user is None:
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)       
 
-        if (users.user_authorized_to_upload(user.id) == False): 
+        if (users.user_authorized_to_upload(user) == False): 
             print("photo_cards.create_photo_card() - user is not authorized to upload photos")
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)       
         
@@ -73,12 +73,14 @@ async def create_photo_card(
 
         #remove the files, if created and then rollback the DB if updated
         if (len(front_file_name) > 0):
-            del_front_resp = delete_image_file(front_file_name)
+            print("photo_cards.create_photo_card() - about to delete front_file_name of:")
+            print(front_file_name)
+            del_front_resp = await delete_image_file(front_file_name)
             print("photo_cards.create_photo_card() - response after deleting front file is:")
             print(del_front_resp)
 
         if (len(back_file_name) > 0):
-            del_back_resp = delete_image_file(back_file_name)
+            del_back_resp = await delete_image_file(back_file_name)
             print("photo_cards.create_photo_card() - response after deleting back file is:")
             print(del_back_resp)
 
@@ -217,12 +219,15 @@ async def get_photo_card_public(file_name: str):
     print("photo_cards.get_photo_card_public() - at top")
     print("photo_cards.get_photo_card_public() - file_name ="+file_name+"=")
 
-    file_name_for_query = file_name
-    index_of_identifier = file_name_for_query.find("_front")
-    if (index_of_identifier == -1):
-        file_name_for_query = file_name_for_query.replace("_back", "_front")
-    print("get_photo_card_public() - file_name_for_query="+file_name_for_query+"=")
-    is_shared = await crud.is_photo_card_shared(database, front_file_name=file_name_for_query)
+    # file_name_for_query = file_name
+    index_of_identifier = file_name.find("_front")
+    if (index_of_identifier != -1):
+        is_shared = await crud.is_photo_card_shared(database, front_file_name=file_name, back_file_name=None)
+    else:
+        is_shared = await crud.is_photo_card_shared(database, front_file_name=None, back_file_name=file_name)
+    #     file_name_for_query = file_name_for_query.replace("_back", "_front")
+    # print("get_photo_card_public() - file_name_for_query="+file_name_for_query+"=")
+    # is_shared = await crud.is_photo_card_shared(database, front_file_name=file_name_for_query)
 
     if (is_shared is None):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Photo card file does not exist")
