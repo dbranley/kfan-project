@@ -50,7 +50,7 @@ describe("App.jsx", () => {
         // render(<QueryClientProvider client={queryClient}><App/></QueryClientProvider>);
         const headerByTestId = await screen.findAllByTestId("default-header-id");
         expect(headerByTestId).toHaveLength(1);
-        const photoCardGridByTestId = await screen.findAllByTestId("photo-card-grid-public-id");
+        const photoCardGridByTestId = await screen.findAllByTestId("photo-card-grid-left-public-id");
         expect(photoCardGridByTestId).toHaveLength(1);
         screen.debug();
     });

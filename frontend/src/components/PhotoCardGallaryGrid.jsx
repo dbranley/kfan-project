@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { Card, Grid, Group, Image, Text } from "@mantine/core";
+import { Card, Grid, Group, Image, MediaQuery, Text } from "@mantine/core";
 
 import PropTypes from "prop-types";
 
@@ -103,50 +103,60 @@ export default function PhotoCardGallaryGrid(props) {
     };
 
     return (
+        <div>
+            <MediaQuery smallerThan={430} styles={{ display: "none"}}>
+                <Grid data-testid={`${props.myCards ? "photo-card-grid-left-mine-id" : "photo-card-grid-left-public-id"}`} justify="left" align="start">
+                    {photoCardsQuery.data.map((photoCard, index) => (
+                        <Grid.Col key={index} span="content" style={{width: 200}} align="left">
+                        <Card radius="sm" 
+                            shadow="md"
+                            padding="sm"
+                            key={index} 
+                            component={Link} to={`/card/${photoCard.id}`}
+                        >
+                            <Card.Section>
+                                <Image 
+                                    src={`/api/photo-cards-${photoCard.share ? 'public' : 'private'}/${photoCard.front_file_name}`}
+                                    height={260}
+                                    // fit="contain"
+                                />
+                            </Card.Section>
+                            <Text size="sm" color="dimmed" mt="md">{photoCard.card_name.length > 20 ?
+                                    `${photoCard.card_name.substring(0,20)}...` : photoCard.card_name
+                                    }</Text>                       
+                        </Card>
+                        </Grid.Col>
 
-            // <Router>
-            <Grid data-testid={`${props.myCards ? "photo-card-grid-mine-id" : "photo-card-grid-public-id"}`} justify="left" align="start">
-                {photoCardsQuery.data.map((photoCard, index) => (
-                    // cardRenderer(photoCard, index)
-                    <Grid.Col key={index} span="content" style={{width: 200}} align="left">
-                    <Card radius="sm" 
-                          shadow="md"
-                        //   {`${hoveredList.includes(index) ? "xl" : ""}`} 
-                          padding="sm"
-                          key={index} 
-                          component={Link} to={`/card/${photoCard.id}`}
-                        //   onMouseOver={()=>{
-                        //     setHoveredList([...hoveredList, index])
-                        //   }} 
-                        //   onMouseLeave={()=>{
-                        //     console.log("in onMouseLeave()")
-                        //     setHoveredList(hoveredList.filter((item) => item != index))
-                        //   }}
-                          
-                    >
-                      
-                        <Card.Section>
-                            <Image 
-                                src={`/api/photo-cards-${photoCard.share ? 'public' : 'private'}/${photoCard.front_file_name}`}
-                                height={260}
-                                // fit="contain"
-                            />
-                        </Card.Section>
-                        {/* <Group position="apart" mt="md" mb="xs"> */}
-                        <Text size="sm" color="dimmed" mt="md">{photoCard.card_name.length > 20 ?
-                                 `${photoCard.card_name.substring(0,20)}...` : photoCard.card_name
-                                }</Text>
-                        {/* <Text weight={500}>{photoCard.card_name.length > 20 ?
-                                 `${photoCard.card_name.substring(0,20)}...` : photoCard.card_name
-                                }</Text> */}
-                        {/* </Group> */}
-                        
-                    </Card>
-                    </Grid.Col>
+                    ))}
+                </Grid>
+            </MediaQuery>
+            <MediaQuery largerThan={430} styles={{ display: "none"}}>
+                <Grid data-testid={`${props.myCards ? "photo-card-grid-center-mine-id" : "photo-card-grid-center-public-id"}`} justify="center" align="start">
+                    {photoCardsQuery.data.map((photoCard, index) => (
+                        <Grid.Col key={index} span="content" style={{width: 200}} align="left">
+                        <Card radius="sm" 
+                            shadow="md"
+                            padding="sm"
+                            key={index} 
+                            component={Link} to={`/card/${photoCard.id}`}
+                        >
+                            <Card.Section>
+                                <Image 
+                                    src={`/api/photo-cards-${photoCard.share ? 'public' : 'private'}/${photoCard.front_file_name}`}
+                                    height={260}
+                                    // fit="contain"
+                                />
+                            </Card.Section>
+                            <Text size="sm" color="dimmed" mt="md">{photoCard.card_name.length > 20 ?
+                                    `${photoCard.card_name.substring(0,20)}...` : photoCard.card_name
+                                    }</Text>                       
+                        </Card>
+                        </Grid.Col>
 
-                ))}
-            </Grid>
-
+                    ))}
+                </Grid>
+            </MediaQuery>            
+        </div>
     );
 
 }
