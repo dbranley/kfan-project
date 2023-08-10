@@ -16,12 +16,17 @@ print("database - at top - SQLACHEMY_DATABASE_URL is:")
 print(SQLACHEMY_DATABASE_URL)
 print("database - at top - TESTING is:")
 print(TESTING)
+SQLITE_FILE_BASED = os.getenv("SQLITE_FILE_BASED", "False")
 
-
-if (TESTING == "False"):
+if (TESTING == "False" and SQLITE_FILE_BASED == "False"):
     database = databases.Database(SQLACHEMY_DATABASE_URL, min_size=2, max_size=3)
     engine = create_engine(
         SQLACHEMY_DATABASE_URL #, connect_args={"check_same_thread":False} -->not valid for postgresql
+    )
+elif (TESTING == "False" and SQLITE_FILE_BASED == "True"):
+    database = databases.Database(SQLACHEMY_DATABASE_URL)
+    engine = create_engine(
+        SQLACHEMY_DATABASE_URL 
     )
 else:
     database = databases.Database(SQLACHEMY_DATABASE_URL, force_rollback=True)

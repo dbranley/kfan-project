@@ -14,8 +14,9 @@ load_dotenv()
 
 #Create the local DB if this is a testing run - otherwise, managed by Alembic
 TESTING = os.getenv("TESTING", "False")
-if (TESTING == "True"): 
-    print("main - TESTING is True, so create the DB")
+SQLITE_FILE_BASED = os.getenv("SQLITE_FILE_BASED", "False")
+if (TESTING == "True" or SQLITE_FILE_BASED == "True"): 
+    print("main - TESTING is True or SQLITE_FILE_BASED is True, so create the DB")
     models.metadata.create_all(bind=engine)
 else:
     print("main - TESTING is False, so do not create DB")

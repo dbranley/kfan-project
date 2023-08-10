@@ -31,4 +31,6 @@ docker-variables.env
 instance
 data.debug
 images
+images_remote_db
+images_local_db
 temp_images

@@ -61,13 +61,14 @@ export default function AppSiteShell() {
           p="sm"
           hiddenBreakpoint="md"
           hidden={!opened}
-          width={{ sm: 250 }}
+          width={{ base: 225 }}
         >
           <Navbar.Section grow mt="lg">
             <div>
                 <Button component={Link} to="/" variant="subtle" compact
                         leftIcon={<IconHome size="1.3rem"/>} 
-                        fullWidth display={"flex"} size="md" radius={0}
+                        fullWidth display={"flex"} size="md" radius={0} 
+                        onClick={()=>{setOpened(false)}}
                   >All Photo Cards</Button>
 
                 {currentUserQuery.status === "success" && 
@@ -76,6 +77,7 @@ export default function AppSiteShell() {
                  <Button component={Link} to="/my-cards" variant="subtle" compact 
                  leftIcon={<IconHomePlus size="1.3rem"/>} 
                  fullWidth display={"inline-flex"} size="md" radius={0}
+                 onClick={()=>{setOpened(false)}}
                  >My Photo Cards</Button>}                  
 
                 {currentUserQuery.status === "success" && 
@@ -84,6 +86,7 @@ export default function AppSiteShell() {
                  <Button component={Link} to="/upload" variant="subtle" compact 
                  leftIcon={<IconBookUpload size="1.3rem"/>} 
                  fullWidth display={"inline-flex"} size="md" radius={0}
+                 onClick={()=>{setOpened(false)}}
                  >Upload Photo Card</Button>}                                       
             </div>
           </Navbar.Section>

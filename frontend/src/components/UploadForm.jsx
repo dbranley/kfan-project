@@ -1,11 +1,11 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import PropTypes from 'prop-types';
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useForm } from "@mantine/form";
 import { IconUpload } from "@tabler/icons-react";
 
 import { addPhotoCard } from "../services/photo-cards";
-import { Box, Button, Checkbox, Container, FileInput, Group, Modal, Space, Text, TextInput } from "@mantine/core";
+import { Box, Button, Checkbox, Container, FileInput, Group, Modal, Text, TextInput, LoadingOverlay } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { Link, useNavigate } from "react-router-dom";
 
@@ -16,6 +16,7 @@ const UploadForm = () => {
     const [uploadSuccessful, setUploadSuccessful] = useState(false);
 
     const [successOpened, {open, close}] = useDisclosure(false);
+    const [visible, { toggle, open: openLoader, close: closeLoader }] = useDisclosure(false);
 
     const form = useForm({
         initialValues: {
@@ -87,19 +88,25 @@ const UploadForm = () => {
         });
     };
 
-    // let successContent = null;
-    // if (uploadSuccessful){
-    //     successContent = 
+    useEffect(() => {
+        console.log("UploadForm - useEffect() for loading")
+        if (createPhotoCardMutation.status === "loading"){
+            openLoader();
+        } else {
+            closeLoader();
+        }        
+    }, [createPhotoCardMutation.status]);
 
-    // }
     
     return (
         <>
         <Box maw={300} mx="auto">
+            <LoadingOverlay visible={visible} overlayBlur={0.5} />
             <Text size="lg" align="center">Upload Photo Card</Text>
             <form onSubmit={submitHandler}>
                 <FileInput
                     withAsterisk
+                    disabled={visible}
                     label="Front File"
                     placeholder="Pick front of photo card"
                     icon={<IconUpload size="60%" />}
@@ -107,6 +114,7 @@ const UploadForm = () => {
                 />
                 <FileInput
                     withAsterisk
+                    disabled={visible}
                     label="Back File"
                     placeholder="Pick back of photo card"
                     icon={<IconUpload size="60%"/>}
@@ -114,22 +122,25 @@ const UploadForm = () => {
                 />
                 <TextInput 
                     withAsterisk
+                    disabled={visible}
                     label="Group Name"
                     placeholder="Enter name of group"
                     {...form.getInputProps('groupname')}
                 />
                 <TextInput
                     withAsterisk
+                    disabled={visible}
                     label="Card Name"
                     placeholder="Enter a name for the card"
                     {...form.getInputProps('cardname')}
                 />
                 <Checkbox mt="sm"
+                    disabled={visible}
                     label="Share?"
                     {...form.getInputProps('share')}
                 />
                 <Group position="right" mt="md">
-                    <Button type="submit">Upload</Button>
+                    <Button type="submit" disabled={visible}>Upload</Button>
                 </Group>
             </form>
         </Box>
