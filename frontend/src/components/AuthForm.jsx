@@ -9,8 +9,10 @@ import {
   PasswordInput,
   Text,
   TextInput,
+  FocusTrap, 
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
+import { useFocusTrap } from "@mantine/hooks";
 import { IconAt, IconLock, IconUser } from "@tabler/icons-react";
 
 import { login, register } from "../services/auth";
@@ -24,6 +26,10 @@ const AuthForm = (props) => {
   const [error, setError] = useState(null);
   const [showLogin, setShowLogin] = useState(true);
   const [underlined, setUnderlined] = useState("");
+  const focusTrapRef = useFocusTrap();
+  const focusTrapLoginRef = useFocusTrap();
+  const focusTrapRegisterRef = useFocusTrap();
+
 
   const queryClient = useQueryClient();
 
@@ -153,8 +159,9 @@ const AuthForm = (props) => {
 
   if (showLogin) {
     content = (
-      <form data-testid="auth-form-id" onSubmit={loginSubmitHandler}>
+      <form data-testid="auth-form-id" onSubmit={loginSubmitHandler} ref={focusTrapLoginRef} >
         <TextInput
+          data-autofocus
           withAsterisk
           label="Username"
           placeholder="Your username"
@@ -197,7 +204,7 @@ const AuthForm = (props) => {
     );
   } else {
     content = (
-      <form onSubmit={registerSubmitHandler}>
+      <form onSubmit={registerSubmitHandler} ref={focusTrapRegisterRef}>
         <TextInput
           withAsterisk
           label="Username"

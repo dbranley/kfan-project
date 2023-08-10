@@ -5,7 +5,7 @@ import { useForm } from "@mantine/form";
 import { IconUpload } from "@tabler/icons-react";
 
 import { addPhotoCard } from "../services/photo-cards";
-import { Box, Button, Checkbox, Container, FileInput, Group, Modal, Text, TextInput, LoadingOverlay } from "@mantine/core";
+import { Box, Button, Checkbox, Container, FileInput, Group, Modal, Text, TextInput, LoadingOverlay, FocusTrap } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { Link, useNavigate } from "react-router-dom";
 
@@ -103,49 +103,52 @@ const UploadForm = () => {
         <Box maw={300} mx="auto">
             <LoadingOverlay visible={visible} overlayBlur={0.5} />
             <Text size="lg" align="center">Upload Photo Card</Text>
-            <form onSubmit={submitHandler}>
-                <FileInput
-                    withAsterisk
-                    disabled={visible}
-                    label="Front File"
-                    placeholder="Pick front of photo card"
-                    icon={<IconUpload size="60%" />}
-                    {...form.getInputProps('frontfile')}
-                />
-                <FileInput
-                    withAsterisk
-                    disabled={visible}
-                    label="Back File"
-                    placeholder="Pick back of photo card"
-                    icon={<IconUpload size="60%"/>}
-                    {...form.getInputProps('backfile')}
-                />
-                <TextInput 
-                    withAsterisk
-                    disabled={visible}
-                    label="Group Name"
-                    placeholder="Enter name of group"
-                    {...form.getInputProps('groupname')}
-                />
-                <TextInput
-                    withAsterisk
-                    disabled={visible}
-                    label="Card Name"
-                    placeholder="Enter a name for the card"
-                    {...form.getInputProps('cardname')}
-                />
-                <Checkbox mt="sm"
-                    disabled={visible}
-                    label="Share?"
-                    {...form.getInputProps('share')}
-                />
-                <Group position="right" mt="md">
-                    <Button type="submit" disabled={visible}>Upload</Button>
-                </Group>
-            </form>
+            <FocusTrap>
+                <form onSubmit={submitHandler}>
+                    <FileInput
+                        data-autofocus
+                        withAsterisk
+                        disabled={visible}
+                        label="Front File"
+                        placeholder="Pick front of photo card"
+                        icon={<IconUpload size="60%" />}
+                        {...form.getInputProps('frontfile')}
+                    />
+                    <FileInput
+                        withAsterisk
+                        disabled={visible}
+                        label="Back File"
+                        placeholder="Pick back of photo card"
+                        icon={<IconUpload size="60%"/>}
+                        {...form.getInputProps('backfile')}
+                    />
+                    <TextInput 
+                        withAsterisk
+                        disabled={visible}
+                        label="Group Name"
+                        placeholder="Enter name of group"
+                        {...form.getInputProps('groupname')}
+                    />
+                    <TextInput
+                        withAsterisk
+                        disabled={visible}
+                        label="Card Name"
+                        placeholder="Enter a name for the card"
+                        {...form.getInputProps('cardname')}
+                    />
+                    <Checkbox mt="sm"
+                        disabled={visible}
+                        label="Share?"
+                        {...form.getInputProps('share')}
+                    />
+                    <Group position="right" mt="md">
+                        <Button type="submit" disabled={visible}>Upload</Button>
+                    </Group>
+                </form>
+            </FocusTrap>
         </Box>
         {error != null && <div><Text size="md" c="red" align="center">{error}</Text></div>}
-        <Modal opened={successOpened} onClose={close} >
+        <Modal opened={successOpened} onClose={close} size="auto" withCloseButton={false} xOffset={-10}>
             <Container>
                 <Text align="center">Upload successful</Text>
                 <Group position="apart" mt="md">
