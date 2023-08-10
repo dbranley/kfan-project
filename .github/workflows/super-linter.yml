@@ -7,8 +7,9 @@
 name: Lint Code Base
 
 on:
-  schedule:
-    - cron: "0 5 * * *"
+  workflow_dispatch: 
+  #schedule:
+  #  - cron: "0 5 * * *"
 jobs:
   run-lint:
     runs-on: ubuntu-latest
