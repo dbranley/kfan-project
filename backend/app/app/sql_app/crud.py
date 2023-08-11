@@ -78,12 +78,14 @@ async def get_photo_cards(database: Database, user_id: int, my_cards: bool, skip
         query = select([models.photo_cards, models.users.c.username.label("owner_name")]).\
                  where(and_(models.photo_cards.c.user_id == models.users.c.id,\
                             models.photo_cards.c.user_id == user_id)).\
-                 offset(skip).limit(limit)
+                 offset(skip).limit(limit).\
+                 order_by(models.photo_cards.c.id.desc())
      else:
         query = select([models.photo_cards, models.users.c.username.label("owner_name")]).\
                  where(and_(models.photo_cards.c.user_id == models.users.c.id,\
                          or_(models.photo_cards.c.share == True, models.photo_cards.c.user_id == user_id))).\
-                 offset(skip).limit(limit)
+                 offset(skip).limit(limit).\
+                 order_by(models.photo_cards.c.id.desc())
      #  query = models.photo_cards.select().offset(skip).limit(limit)
      #  query = models.photo_cards.select().offset(skip).limit(limit)
      print("crud.get_photo_cards() - about to print query")

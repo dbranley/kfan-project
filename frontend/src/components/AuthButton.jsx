@@ -1,7 +1,7 @@
-import React, { useContext, useState } from "react";
+import React, { useEffect } from "react";
 import { Button, Container, Group, Modal, Text } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
-import axios from "axios";
+
 
 // import AuthContext from "../store/auth-context";
 import AuthForm from "./AuthForm";
@@ -18,10 +18,6 @@ export default function AuthButton() {
 
   const navigate = useNavigate();
   const location = useLocation();
-  console.log("AuthButton() - about to print location.pathname: ")
-  console.log(location.pathname);
-
-
 
   // const authCtx = useContext(AuthContext);
 
@@ -46,23 +42,14 @@ export default function AuthButton() {
     }
   });
 
-  // if (currentUserQuery.status === "loading"){
-  //   //this is just a placeholder for now... TODO 
-  //   return <div>Loading...</div>;
-  // }
-
-  // console.log("AuthButton.after useQuery() definition - currentUserQuery is:")
-  // console.log(currentUserQuery);  
-  // console.log("AuthButton.after useQuery() definition - currentUserQuery.status is:")
-  // console.log(currentUserQuery.status);
-  // if (currentUserQuery.status === "success"){
-  //   console.log("AuthButton.after useQuery() definition - currentUserQuery.data is:")
-  //   console.log(currentUserQuery.data);
-  //   console.log("AuthButton.after useQuery() definition - currentUserQuery.data.id is:")
-  //   console.log(currentUserQuery.data.id);
-  // }
-
-
+  useEffect(() => {
+    if (currentUserQuery.status === "success" && currentUserQuery.data !== null && currentUserQuery.data.id === 0){
+      if (location.pathname !== "/"){
+        console.log("AuthButton - useEffect() query status - not logged in and pathname not / so call navigate()");
+        navigate("/");
+      }
+    }
+  }, [currentUserQuery.data]);
 
   let content = "";
   if (currentUserQuery.status === "success" && currentUserQuery.data !== null && currentUserQuery.data.id !== 0) {
@@ -120,9 +107,6 @@ export default function AuthButton() {
       </div>
     );
   }
-  // console.log("AuthButton() - before return - 'content' is:");
-  // console.log(content);
-  // console.log("AuthButton() - before return - after printing 'content'");
 
   return <>{content}</>;
 }

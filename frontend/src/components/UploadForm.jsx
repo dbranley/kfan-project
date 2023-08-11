@@ -7,7 +7,7 @@ import { IconUpload } from "@tabler/icons-react";
 import { addPhotoCard } from "../services/photo-cards";
 import { Box, Button, Checkbox, Container, FileInput, Group, Modal, Text, TextInput, LoadingOverlay, FocusTrap } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 
 const UploadForm = () => {
@@ -89,7 +89,7 @@ const UploadForm = () => {
     };
 
     useEffect(() => {
-        console.log("UploadForm - useEffect() for loading")
+        // console.log("UploadForm - useEffect() for loading")
         if (createPhotoCardMutation.status === "loading"){
             openLoader();
         } else {
