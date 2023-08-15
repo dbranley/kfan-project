@@ -13,7 +13,7 @@ import {
   Image,
 } from "@mantine/core";
 
-import { BrowserRouter as Router, Link, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Link, Routes, Route, Outlet } from "react-router-dom";
 import { IconHome, IconHomePlus, IconBookUpload } from "@tabler/icons-react";
 
 import LightAndDarkModeButton from "./components/LightAndDarkModeButton";
@@ -35,7 +35,7 @@ export default function AppSiteShell() {
   });
 
   return (
-    <Router>
+    // <Router>
     <AppShell
       styles={{
         header: {
@@ -110,7 +110,7 @@ export default function AppSiteShell() {
                   mr="xl"
                 />
               </MediaQuery>
-              <Image width={122} height={31} src="./public/logo-darkorange.svg" />
+              <Image width={122} height={31} src="/public/logo-darkorange.svg" />
               {/* <MediaQuery largerThan="sm" styles={{ display: "none" }}>
                   <Text align="left" size="xl">K-Pop Collection</Text>
               </MediaQuery>   */}
@@ -133,15 +133,14 @@ export default function AppSiteShell() {
         </Header>
       }
     >
-
-        <Routes>
+      <div><Outlet/></div>
+        {/* <Routes>
             <Route path="/" element={<PhotoCardsGridPage myCards={false}/>}/>
             <Route path="/my-cards" element={<PhotoCardsGridPage myCards={true}/>}/>
             <Route path="/upload" element={<UploadPhotoCardPage/>}/>
             <Route path="/card/:photoCardId" element={<PhotoCardDetailPage/>}/>
-        </Routes>
+        </Routes> */}
 
     </AppShell>
-    </Router>
   );
 }

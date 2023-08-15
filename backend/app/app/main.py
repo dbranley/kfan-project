@@ -1,5 +1,5 @@
-from fastapi import FastAPI
-from fastapi.responses import HTMLResponse
+from fastapi import FastAPI, status
+from fastapi.responses import HTMLResponse, RedirectResponse
 from starlette.staticfiles import StaticFiles
 
 import os
@@ -29,6 +29,7 @@ app.include_router(favorites.router)
 
 # Uncomment this when I want to deploy React app from the Python app - build server will go at /dist...
 #
+# app.mount('/public', StaticFiles(directory="app/dist/public"), 'public')
 if (os.path.exists("app/dist/assets")):
     print("main - the 'app/dist/assets' dir exists, so go ahead and mount it for UI assets")
     app.mount('/assets', StaticFiles(directory="app/dist/assets"), 'assets')
@@ -51,5 +52,11 @@ async def startup():
 async def shutdown():
     await database.disconnect()
 
-def test_function():
-    pass
+# Redirect stuff here...
+
+# @app.get("/{wildcard}")
+# async def redirect_wildcard(wildcard: str):
+#     url = app.url_path_for("react_app")
+#     response = RedirectResponse(url=url) #, status_code=status.HTTP_200_OK)
+#     # response.status_code = status.HTTP_200_OK
+#     return response

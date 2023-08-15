@@ -12,8 +12,6 @@ SQLACHEMY_DATABASE_URL = os.getenv("DATABASE_URL")
 #SQLACHEMY_DATABASE_URL = "sqlite:///./app/sql_app.db"
 
 TESTING = os.getenv("TESTING", "False")
-print("database - at top - SQLACHEMY_DATABASE_URL is:")
-print(SQLACHEMY_DATABASE_URL)
 print("database - at top - TESTING is:")
 print(TESTING)
 SQLITE_FILE_BASED = os.getenv("SQLITE_FILE_BASED", "False")

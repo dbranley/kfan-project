@@ -10,12 +10,21 @@ from app.sql_app import crud, schemas
 from app.sql_app.database import database
 from app.utils import validate_email
 
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
 # use something like this to get the key:
 # >openssl rand -hex 32
 # SECRET_KEY = "a025898a78539f4f91208252c34b92a2754177bc3d23d6cd04b2e273bd535ad3"
-SECRET_KEY = "09d25e094faa6ca2556c818166b7a9563b93f7099f6f0f4caa6cf63b88e8d3e7"
-ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 15
+SECRET_KEY = os.getenv("JWT_SECRET_KEY")
+ALGORITHM = os.getenv("JWT_ALGORITHM")
+ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv("JWT_EXPIRE_MINUTES"))
+
+# SECRET_KEY = "09d25e094faa6ca2556c818166b7a9563b93f7099f6f0f4caa6cf63b88e8d3e7"
+# ALGORITHM = "HS256"
+# ACCESS_TOKEN_EXPIRE_MINUTES = 15
 
 #for logged out tokens -- need to put this into a DB or something...
 BLOCKLIST = set()
@@ -57,13 +66,11 @@ async def authenticate_user(username: str,
     print("authenticate_user()")
     db_user = await crud.get_user_by_username(database, username)
     if db_user is None:
-        print("authenticate_user() - db_user is NOT in DB")
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
                             detail="Incorrect username or password",
                             headers={"WWW-Authenticated":"Bearer"})
 
     if not verify_password(password, db_user.password):
-        print("authenticate_user() - passwords not equal")
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
                             detail="Incorrect username or password",
                             headers={"WWW-Authenticated":"Bearer"})
@@ -73,8 +80,7 @@ async def authenticate_user(username: str,
 
 
 async def get_current_user(token: str, database: Database):
-    print("users.get_current_user() - token is:")
-    print(token)
+    print("users.get_current_user() - at top")
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         # detail="Could not validate credentials",
@@ -114,8 +120,7 @@ async def get_current_user(token: str, database: Database):
     # if user.disabled:
     #     raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Inactive user")
     
-    print("get_current_user() - success - returning user: ")
-    print(user)
+    print("get_current_user() - success - returning user")
     return user
 
 #temporary hack to limit who can upload photos
@@ -254,6 +259,6 @@ async def read_current_session(request: Request) -> schemas.User:
         print("read_current_session() - got JWTError, so just pass to return unknown user")
         pass
 
-    print("read_current_session() - at end - returning user:")
+    print("read_current_session() - at end - returning user")
     print(user)
     return user

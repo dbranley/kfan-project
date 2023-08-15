@@ -7,11 +7,8 @@ export const SESSION_EXPIRATION_TIME = 900000;
 //   email
 //   password
 export async function register(registerUserData){
-    console.log("auth.register() - registerUserData:");
-    console.log(registerUserData);
 
     try{
-        console.log("auth.register() - about to use axios to post to 'register'");
         const response = await axios.post(
             '/api/register',
             {
@@ -24,8 +21,6 @@ export async function register(registerUserData){
             throw new Error('Request failed - status code='+response.status+'=, status text='+response.statusText+'=');
         }
         const data = await response.data;
-        console.log("auth.register() - after api call - response data is: ");
-        console.log(data);   
         return data;
 
     } catch(error){
@@ -38,12 +33,8 @@ export async function register(registerUserData){
 //   username
 //   password
 export async function login(loginUserData){
-    console.log("auth.login() - at top");
-    console.log("auth.login() - loginUserData is:");
-    console.log(loginUserData);
 
     try{
-        console.log("auth.login() - about to use axios to post to 'login'");
         const response = await axios.post(
             '/api/login',
             {
@@ -55,9 +46,7 @@ export async function login(loginUserData){
         if (response.status != 200){
             throw new Error('Request failed - status code='+response.status+'=, status text='+response.statusText+'=');
         }
-        const data = await response.data;
-        console.log("auth.login() - after api call - response data is: ");
-        console.log(data);   
+        const data = await response.data; 
         return data;
 
     } catch(error){
@@ -85,8 +74,6 @@ export async function logout(){
             throw new Error('Request failed - status code='+response.status+'=, status text='+response.statusText+'=');
         }
         const data = await response.data;
-        console.log("auth.logout() - after api call - response data is: ");
-        console.log(data);   
 
     } catch(error){
         console.log(error);

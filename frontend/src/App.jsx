@@ -1,8 +1,28 @@
 import React from "react";
 import { useHotkeys, useLocalStorage } from "@mantine/hooks";
 import { ColorSchemeProvider, MantineProvider, Paper } from "@mantine/core";
+import {
+  createHashRouter,
+  RouterProvider,
+} from "react-router-dom";
 
 import AppSiteShell from "./AppSiteShell";
+import PhotoCardsGridPage from "./pages/PhotoCardsGridPage";
+import UploadPhotoCardPage from "./pages/UploadPhotoCardPage";
+import PhotoCardDetailPage from "./pages/PhotoCardDetailPage";
+
+const router = createHashRouter([
+  {
+    path: "/",
+    element: <AppSiteShell />,
+    children: [
+      {index: true, element: <PhotoCardsGridPage myCards={false}/>},
+      {path: "my-cards", element: <PhotoCardsGridPage myCards={true}/>},
+      {path: "upload", element: <UploadPhotoCardPage/>},
+      {path: "card/:photoCardId", element: <PhotoCardDetailPage/>},
+    ],
+  },
+]);
 
 function App() {
 
@@ -33,7 +53,7 @@ function App() {
                           })
                         }}>
           <Paper>
-            <AppSiteShell/>
+            <RouterProvider router={router} />
           </Paper>
         </MantineProvider>
       </ColorSchemeProvider>

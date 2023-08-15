@@ -120,20 +120,14 @@ const AuthForm = (props) => {
   };
 
   const loginSubmitHandler = async (event) => {
-    console.log("AuthForm.loginSubmitHandler()");
 
     event.preventDefault();
     setError(null);
 
     const validation = loginForm.validate();
-    console.log("AuthForm.loginSubmitHandler() - isValid:");
-    console.log(validation);
     if (validation.hasErrors) {
       return;
     }
-
-    console.log("AuthForm.loginSubmitHandler() - form.values is:");
-    console.log(loginForm.values);
 
     const enteredUserNameValue = loginForm.values.username;
     const enteredPasswordValue = loginForm.values.password;

@@ -11,8 +11,6 @@ async def create_user(database: Database,
     print("crud.create_user()")
     
     query = models.users.insert().values(username=user.username, password=user.password, email=user.email, upload=False)
-    print("create_user() - about to print query")
-    print(query)
     
     last_record_id = await database.execute(query)
 
@@ -26,8 +24,6 @@ async def get_user(database: Database,
     print("get_user() - about to print query")
     print(query)
     result = await database.fetch_one(query)
-    print("get_user() - after query - result is:")
-    print(result)
     return result
 
 async def get_user_by_username(database: Database,
