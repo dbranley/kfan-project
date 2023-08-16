@@ -27,7 +27,6 @@ yarn-error.log*
 .env
 docker-variables.env
 
-.vscode
 instance
 data.debug
 images

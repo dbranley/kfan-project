@@ -189,7 +189,7 @@ async def delete_photo_card(id: int,
 
 
     except HTTPException as httpex:
-        print("photo_cards.create_photo_card() - in the except 'HTTPException' block - printing exception here: ")
+        print("photo_cards.delete_photo_card() - in the except 'HTTPException' block - printing exception here: ")
         print(httpex)
 
         await transaction.rollback()
@@ -199,16 +199,16 @@ async def delete_photo_card(id: int,
         raise httpex
     
     except Exception as ex:
-        print("photo_cards.create_photo_card() - in the except 'Exception' block - printing exception here: ")
+        print("photo_cards.delete_photo_card() - in the except 'Exception' block - printing exception here: ")
         print(ex)
 
         #this duplicates same code above so should do something about that
         await transaction.rollback()
 
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                    detail="Exception thrown while saving photo card - error is - " + str(ex))
+                    detail="Exception thrown while deleting photo card - error is - " + str(ex))
     else:
-        print("create_photo_card() - in 'else' so about to commit")
+        print("photo_cards.delete_photo_card() - in 'else' so about to commit")
         await transaction.commit()
     
     return resp

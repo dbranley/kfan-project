@@ -2,6 +2,8 @@
 from . import models, schemas
 from databases import Database 
 from sqlalchemy.sql import select, and_, or_
+from asyncpg.exceptions import UniqueViolationError
+from fastapi import HTTPException, status
 
 from app.sql_app.database import engine, database
 
@@ -170,7 +172,14 @@ async def create_favorite(database: Database,
     print("crud.create_favorite() - about to print query")
     print(query)
     
-    last_record_id = await database.execute(query)
+    try:
+        last_record_id = await database.execute(query)
+    except UniqueViolationError as uve:
+        print(uve)
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Favorite already exists for this user and photo card")
+    except Exception as ex:
+        print(ex)
+        raise ex
 
     print("crud.create_favorite() - after db insert - last_record_id is:")
     print(last_record_id)
@@ -189,7 +198,7 @@ async def get_favorites(database: Database, user_id: int, skip: int=0, limit: in
         query = models.favorites.select().\
                  offset(skip).limit(limit)
      else:
-        query = models.users.select().where(models.users.c.id == user_id).\
+        query = models.favorites.select().where(models.favorites.c.user_id == user_id).\
                  offset(skip).limit(limit)
         
      print("crud.get_favorites() - about to print query")
@@ -200,3 +209,28 @@ async def get_favorites(database: Database, user_id: int, skip: int=0, limit: in
      print(result)     
      return result
 
+async def get_favorite(database: Database,
+                       photo_card_id: int,
+                       user_id: int):
+    print("crud.get_favorite() - at top")
+    query = models.favorites.select().where(models.favorites.c.photo_card_id == photo_card_id, 
+                                            models.favorites.c.user_id == user_id)
+    print("crud.get_favorite() - about to print query")
+    print(query)
+    result = await database.fetch_one(query)
+    print("crud.get_photo_card() - after query - result is:")
+    print(result)
+    return result
+
+async def delete_favorite(database: Database, favorite_id: int):
+    print("crud.delete_favorite()")
+    query = models.favorites.delete().where(models.favorites.c.id == favorite_id)
+    print("crud.delete_favorite() - about to print query")
+    print(query)
+
+    result = await database.execute(query)
+    #seems that 'result' contains the count of rows impacted
+    print("crud.delete_favorite() - after delete, about to print 'result'")
+    print(result)
+
+    return {"message":"Favorite deleted"}
