@@ -106,17 +106,6 @@ async def get_photo_card(database: Database,
     print(result)
     return result
 
-async def get_photo_card_bkup(database: Database,
-                         photo_card_id: int):
-    print("crud.get_photo_card() - at top")
-    query = models.photo_cards.select().where(models.photo_cards.c.id == photo_card_id)
-    print("crud.get_photo_card() - about to print query")
-    print(query)
-    result = await database.fetch_one(query)
-    print("crud.get_photo_card() - after query - result is:")
-    print(result)
-    return result
-
 async def is_photo_card_shared(database: Database,
                                front_file_name: str,
                                back_file_name: str):
