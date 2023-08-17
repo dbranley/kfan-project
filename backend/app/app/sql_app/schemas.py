@@ -17,6 +17,7 @@ class PhotoCard(PhotoCardBase):
     front_file_name: str
     back_file_name: str
     owner_name: str
+    favorite_id: int | None = None
 
     # class Config:
     #     orm_mode = True

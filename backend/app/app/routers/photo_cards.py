@@ -141,9 +141,27 @@ async def read_photo_cards(request: Request, my_cards: bool=False, skip: int=0, 
 
 @database.transaction()
 @router.get("/api/photo-cards/{id}", tags=["photo_cards"], response_model=schemas.PhotoCard)
-async def read_photo_cards(id: int):
+async def read_photo_cards(id: int,
+                           request: Request):
 
-    db_photo_card = await crud.get_photo_card(database, photo_card_id=id)
+    #if user is logged in, then get their user_id to pass to get query
+    #-but default to 0, which assumes no user id available
+    user_id = 0
+    try:
+
+        token = request.cookies.get("token")
+
+        print("photo_cards.read_photo_cards() - about to call users.get_current_user()")
+        user = await users.get_current_user(token, database)
+        print("photo_cards.read_photo_cards() - after calling  users.get_current_user() - user is:")
+        print(user)
+        if user is not None:
+            user_id = user.id     
+    except:
+        #ignore auth exception and just leave user_id as None
+        pass
+
+    db_photo_card = await crud.get_photo_card(database, photo_card_id=id, user_id=user_id)
 
     if db_photo_card is None:
         raise HTTPException(status_code=404, detail="Photo card not found")

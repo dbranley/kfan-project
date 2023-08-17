@@ -93,6 +93,9 @@ const PhotoCardDetail = (props) => {
         <Text>
           Share?: {`${photoCardQuery.data.share ? 'Yes' : 'No'}`}
         </Text>
+        <Text>
+          Favorite?: {`${photoCardQuery.data.favorite_id === null ? 'No' : 'Yes'}`}
+        </Text>
       </Box>
       <Divider my="xl"/>
       {deleteError != null && <div><Text size="md" c="red" align="left">{deleteError}</Text></div>}

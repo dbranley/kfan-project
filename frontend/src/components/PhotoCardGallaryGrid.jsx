@@ -121,9 +121,13 @@ export default function PhotoCardGallaryGrid(props) {
                                     // fit="contain"
                                 />
                             </Card.Section>
-                            <Text size="sm" color="dimmed" mt="md">{photoCard.card_name.length > 20 ?
-                                    `${photoCard.card_name.substring(0,20)}...` : photoCard.card_name
-                                    }</Text>                       
+                            <Group position="apart">
+                                <Text size="sm" color="dimmed" mt="md">{photoCard.card_name.length > 20 ?
+                                        `${photoCard.card_name.substring(0,20)}...` : photoCard.card_name
+                                        }</Text>     
+                                <Text size="sm" color="dimmed" mt="md">{`${photoCard.favorite_id === null ? '' : 'fav'}`}</Text>
+                            </Group>
+                            {/* <Text>Fav</Text>                   */}
                         </Card>
                         </Grid.Col>
 
@@ -147,9 +151,12 @@ export default function PhotoCardGallaryGrid(props) {
                                     // fit="contain"
                                 />
                             </Card.Section>
-                            <Text size="sm" color="dimmed" mt="md">{photoCard.card_name.length > 20 ?
-                                    `${photoCard.card_name.substring(0,20)}...` : photoCard.card_name
-                                    }</Text>                       
+                            <Group position="apart">
+                                <Text size="sm" color="dimmed" mt="md">{photoCard.card_name.length > 20 ?
+                                        `${photoCard.card_name.substring(0,20)}...` : photoCard.card_name
+                                        }</Text>                       
+                                <Text size="sm" color="dimmed" mt="md">{`${photoCard.favorite_id === null ? '' : 'fav'}`}</Text>
+                            </Group>
                         </Card>
                         </Grid.Col>
 

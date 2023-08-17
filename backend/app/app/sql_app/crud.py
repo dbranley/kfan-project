@@ -1,7 +1,7 @@
 
 from . import models, schemas
 from databases import Database 
-from sqlalchemy.sql import select, and_, or_
+from sqlalchemy.sql import select, and_, or_, join
 from asyncpg.exceptions import UniqueViolationError
 from fastapi import HTTPException, status
 
@@ -73,6 +73,41 @@ async def get_photo_cards(database: Database, user_id: int, my_cards: bool, skip
      
 
      if my_cards:
+        j_comb = models.photo_cards.join(right=models.users, \
+                      onclause=and_(models.photo_cards.c.user_id == models.users.c.id,\
+                                    models.photo_cards.c.user_id == user_id)). \
+                      join(right=models.favorites,  \
+                            onclause=and_(models.photo_cards.c.id == models.favorites.c.photo_card_id, \
+                                    models.favorites.c.user_id == user_id), isouter=True)        
+        query = select([models.photo_cards, models.users.c.username.label("owner_name"), models.favorites.c.id.label("favorite_id")]).\
+                 select_from(j_comb). \
+                 offset(skip).limit(limit).\
+                 order_by(models.photo_cards.c.id.desc())
+     else:
+        j_comb = models.photo_cards.join(right=models.users, \
+                      onclause=and_(models.photo_cards.c.user_id == models.users.c.id,\
+                          or_(models.photo_cards.c.share == True, models.photo_cards.c.user_id == user_id))). \
+                      join(right=models.favorites,  \
+                            onclause=and_(models.photo_cards.c.id == models.favorites.c.photo_card_id, \
+                                    models.favorites.c.user_id == user_id), isouter=True)
+        
+        query = select([models.photo_cards, models.users.c.username.label("owner_name"), models.favorites.c.id.label("favorite_id")]).\
+                 select_from(j_comb). \
+                 offset(skip).limit(limit).\
+                 order_by(models.photo_cards.c.id.desc())
+
+     print("crud.get_photo_cards() - about to print query")
+     print(query)
+     result = await database.fetch_all(query)
+     print("crud.get_photo_cards - after query - result is:")
+     print(result)     
+     return result
+
+async def get_photo_cards_bkup(database: Database, user_id: int, my_cards: bool, skip: int=0, limit: int=100):
+     print("crud.get_photo_cards_bkup() - at top")
+     
+
+     if my_cards:
         query = select([models.photo_cards, models.users.c.username.label("owner_name")]).\
                  where(and_(models.photo_cards.c.user_id == models.users.c.id,\
                             models.photo_cards.c.user_id == user_id)).\
@@ -93,12 +128,35 @@ async def get_photo_cards(database: Database, user_id: int, my_cards: bool, skip
      print(result)     
      return result
 
-async def get_photo_card(database: Database,
+
+async def get_photo_card_bkup(database: Database,
                          photo_card_id: int):
-    print("crud.get_photo_card() - at top -- new implementation")
-    # query = models.photo_cards.select().where(models.photo_cards.c.id == photo_card_id)
+    print("crud.get_photo_card_bkup() - at top -- new implementation")
+    # query = models.photo_cards.select().where(models.photo_cards.c.id == photo_card_id)   
     query = select([models.photo_cards, models.users.c.username.label("owner_name")]).where(models.photo_cards.c.user_id == models.users.c.id, 
                                                                         models.photo_cards.c.id == photo_card_id)
+    print("crud.get_photo_card() - about to print query")
+    print(query)
+    result = await database.fetch_one(query)
+    print("crud.get_photo_card() - after query - result is:")
+    print(result)
+    return result
+
+
+async def get_photo_card(database: Database,
+                         photo_card_id: int,
+                         user_id: int=0):
+    print("crud.get_photo_card() - at top -- new implementation")
+    # query = models.photo_cards.select().where(models.photo_cards.c.id == photo_card_id)
+    j = models.photo_cards.join(right=models.users, \
+                    onclause=and_(models.photo_cards.c.user_id == models.users.c.id,\
+                                models.photo_cards.c.id == photo_card_id)). \
+                    join(right=models.favorites,  \
+                        onclause=and_(models.photo_cards.c.id == models.favorites.c.photo_card_id, \
+                                models.favorites.c.user_id == user_id), isouter=True)     
+   
+    query = select([models.photo_cards, models.users.c.username.label("owner_name"), models.favorites.c.id.label("favorite_id")]).\
+                select_from(j)
     print("crud.get_photo_card() - about to print query")
     print(query)
     result = await database.fetch_one(query)

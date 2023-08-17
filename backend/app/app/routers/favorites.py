@@ -35,7 +35,7 @@ async def create_favorite(photo_card_id: int,
                 raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Photo card is private")
 
         # TODO - check if already exists - don't create duplicates
-        # TODO - create new unique constraint on Favorites talbe - user_id + photo_id
+        # TODO - create new unique constraint on Favorites table - user_id + photo_id
 
         # Now create the FavoriteBase object
         favorite = schemas.FavoriteBase(user_id=user.id,
