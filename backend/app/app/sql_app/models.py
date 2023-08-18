@@ -1,7 +1,7 @@
 #These are the SQLAlchemy models - defines interaction with DB
 
 import sqlalchemy
-from sqlalchemy import Boolean, Column, Integer, String, ForeignKey
+from sqlalchemy import Boolean, Column, Integer, String, ForeignKey, UniqueConstraint
 
 from .database import Base
 
@@ -34,9 +34,9 @@ favorites = sqlalchemy.Table(
     "favorites",
     metadata,
     sqlalchemy.Column("id", sqlalchemy.Integer, primary_key=True, index=True),
-    sqlalchemy.Column("user_id", sqlalchemy.Integer, ForeignKey("users.id"), nullable=False),
-    sqlalchemy.Column("photo_card_id", sqlalchemy.Integer, ForeignKey("photo_cards.id"), nullable=False)
-
+    sqlalchemy.Column("user_id", sqlalchemy.Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False),
+    sqlalchemy.Column("photo_card_id", sqlalchemy.Integer, ForeignKey("photo_cards.id", ondelete="CASCADE"), nullable=False),
+    UniqueConstraint("user_id", "photo_card_id", name="fav_uix_1"),
 )
 
 # class PhotoCard(Base):

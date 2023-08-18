@@ -1,12 +1,16 @@
 import React, { useContext, useState } from "react";
-import { Box, Button, Container, Divider, Grid, Group, Image, Stack, Text } from "@mantine/core";
+import { Box, Button, Center, Container, Divider, Grid, Group, Image, Stack, Text, Tooltip } from "@mantine/core";
 import { Carousel } from "@mantine/carousel";
 import PropTypes from "prop-types";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { getPhotoCard, deletePhotoCard } from "../services/photo-cards";
+import { getPhotoCard, 
+         deletePhotoCard, 
+         addPhotoCardFavorite, 
+         removePhotoCardFavorite } from "../services/photo-cards";
 // import AuthContext from "../store/auth-context";
 import { useNavigate } from "react-router-dom";
 import { SESSION_EXPIRATION_TIME, getCurrentUser } from "../services/auth";
+import { IconHeart } from "@tabler/icons-react";
 
 const PhotoCardDetail = (props) => {
 
@@ -43,6 +47,30 @@ const PhotoCardDetail = (props) => {
 
   });
 
+  const addPhotoCardFavoriteMutation = useMutation({
+    mutationFn: addPhotoCardFavorite,
+    onSuccess: () => {
+        queryClient.invalidateQueries(["photoCards"]);
+    },
+    onError: (error) => {
+        console.log("PhotoCardDetail.addPhotoCardFavoriteMutation() - got an error");
+        console.log(error);
+        //TODO - do something here!!
+    }
+  });
+
+  const removePhotoCardFavoriteMutation = useMutation({
+    mutationFn: removePhotoCardFavorite,
+    onSuccess: () => {
+        queryClient.invalidateQueries(["photoCards"]);
+    },
+    onError: (error) => {
+        console.log("PhotoCardDetail.removePhotoCardFavoriteMutation() - got an error");
+        console.log(error);
+        //TODO - do something here!!
+    }
+  });  
+
   const deletePhotoCardHandler = async () => {
     console.log("PhotoCardDetails - deletePhotoCardHandler() - about to call delete mutation");
     deletePhotoCardMutation.mutate(photoCardQuery.data.id);
@@ -58,6 +86,19 @@ const PhotoCardDetail = (props) => {
 
   console.log("PhotoCardDetail - photoCardQuery.data is: ");
   console.log(photoCardQuery.data);
+
+
+  const addFavoritePhotoCardHandler = async(photoCardId) => {
+    console.log("PhotoCardDetail.addFavoritePhotoCardHandler() - at top")
+    console.log(photoCardId);
+    addPhotoCardFavoriteMutation.mutate(photoCardId);
+  }
+
+  const removeFavoritePhotoCardHandler = async(photoCardId) => {
+    console.log("PhotoCardDetail.removeFavoritePhotoCardHandler() - at top")
+    console.log(photoCardId);
+    removePhotoCardFavoriteMutation.mutate(photoCardId);
+  }
 
   return (
     <Grid>
@@ -94,7 +135,24 @@ const PhotoCardDetail = (props) => {
           Share?: {`${photoCardQuery.data.share ? 'Yes' : 'No'}`}
         </Text>
       </Box>
-      <Divider my="xl"/>
+      <Container fluid ml="0.25rem">
+      {currentUserQuery.status === "success" && 
+              currentUserQuery.data !== null && 
+              currentUserQuery.data.id !== 0 ? (
+                photoCardQuery.data.favorite_id === null ? (
+                  <IconHeart onClick={()=>addFavoritePhotoCardHandler(photoCardQuery.data.id)} style={{cursor:"pointer"}} size="2rem" strokeWidth={1} color={'#868e96'}/>
+                ) : (
+                  <IconHeart onClick={()=>removeFavoritePhotoCardHandler(photoCardQuery.data.id)} style={{cursor:"pointer"}} size="2rem" strokeWidth={3} color={'#fd7e14'} fill={'#fd7e14'}/>
+                )                                    
+
+              ) : (
+                <Tooltip label="Login to set favorites!" color="orange.5" withArrow openDelay={500} radius="sm" fz="sm">
+                  <IconHeart ml={10} size="2rem" strokeWidth={1} color={'#868e96'}/>
+                </Tooltip>
+              )
+      }
+      </Container>
+      <Divider my="xs"/>
       {deleteError != null && <div><Text size="md" c="red" align="left">{deleteError}</Text></div>}
       {currentUserQuery.status === "success" && 
               currentUserQuery.data !== null && 

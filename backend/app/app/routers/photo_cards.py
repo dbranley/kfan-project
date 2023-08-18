@@ -112,10 +112,11 @@ async def create_photo_card(
 
 @database.transaction()
 @router.get("/api/photo-cards", tags=["photo_cards"], response_model=list[schemas.PhotoCard])
-async def read_photo_cards(request: Request, my_cards: bool=False, skip: int=0, limit: int=100):
+async def read_photo_cards(request: Request, my_cards: bool=False, my_favorites: bool=False, skip: int=0, limit: int=100):
 
-    print("photo_cards.read_photo_cards() - at top - my_cards is:")
+    print("photo_cards.read_photo_cards() - at top - my_cards is and my_favorites is:")
     print(my_cards)
+    print(my_favorites)
     #if user is logged in, then get their user_id to pass to get query
     #-but default to 0, which assumes no user id available
     user_id = 0
@@ -136,14 +137,38 @@ async def read_photo_cards(request: Request, my_cards: bool=False, skip: int=0, 
     if my_cards == True and user_id == 0:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Must login to view just your photo cards")
 
-    photo_cards = await crud.get_photo_cards(database, my_cards=my_cards, user_id=user_id, skip=skip, limit=limit)
+    if my_favorites == True and user_id == 0:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Must login to view your favorite photo cards")
+
+    if my_favorites == True:
+        photo_cards = await crud.get_my_favorite_photo_cards(database, my_cards=my_cards, user_id=user_id, skip=skip, limit=limit)
+    else: 
+        photo_cards = await crud.get_photo_cards(database, my_cards=my_cards, user_id=user_id, skip=skip, limit=limit)
     return photo_cards
 
 @database.transaction()
 @router.get("/api/photo-cards/{id}", tags=["photo_cards"], response_model=schemas.PhotoCard)
-async def read_photo_cards(id: int):
+async def read_photo_cards(id: int,
+                           request: Request):
 
-    db_photo_card = await crud.get_photo_card(database, photo_card_id=id)
+    #if user is logged in, then get their user_id to pass to get query
+    #-but default to 0, which assumes no user id available
+    user_id = 0
+    try:
+
+        token = request.cookies.get("token")
+
+        print("photo_cards.read_photo_cards() - about to call users.get_current_user()")
+        user = await users.get_current_user(token, database)
+        print("photo_cards.read_photo_cards() - after calling  users.get_current_user() - user is:")
+        print(user)
+        if user is not None:
+            user_id = user.id     
+    except:
+        #ignore auth exception and just leave user_id as None
+        pass
+
+    db_photo_card = await crud.get_photo_card(database, photo_card_id=id, user_id=user_id)
 
     if db_photo_card is None:
         raise HTTPException(status_code=404, detail="Photo card not found")
@@ -189,7 +214,7 @@ async def delete_photo_card(id: int,
 
 
     except HTTPException as httpex:
-        print("photo_cards.create_photo_card() - in the except 'HTTPException' block - printing exception here: ")
+        print("photo_cards.delete_photo_card() - in the except 'HTTPException' block - printing exception here: ")
         print(httpex)
 
         await transaction.rollback()
@@ -199,16 +224,16 @@ async def delete_photo_card(id: int,
         raise httpex
     
     except Exception as ex:
-        print("photo_cards.create_photo_card() - in the except 'Exception' block - printing exception here: ")
+        print("photo_cards.delete_photo_card() - in the except 'Exception' block - printing exception here: ")
         print(ex)
 
         #this duplicates same code above so should do something about that
         await transaction.rollback()
 
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                    detail="Exception thrown while saving photo card - error is - " + str(ex))
+                    detail="Exception thrown while deleting photo card - error is - " + str(ex))
     else:
-        print("create_photo_card() - in 'else' so about to commit")
+        print("photo_cards.delete_photo_card() - in 'else' so about to commit")
         await transaction.commit()
     
     return resp

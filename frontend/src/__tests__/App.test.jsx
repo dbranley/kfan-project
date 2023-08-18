@@ -33,6 +33,8 @@ vi.mock('../services/photo-cards.js', async () => {
         getPhotoCard: vi.fn(),
         addPhotoCard: vi.fn(),
         deletePhotoCard: vi.fn(),
+        addPhotoCardFavorite: vi.fn(),
+        removePhotoCardFavorite: vi.fn(),
     }
 });
 

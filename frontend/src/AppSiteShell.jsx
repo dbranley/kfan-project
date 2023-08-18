@@ -82,6 +82,15 @@ export default function AppSiteShell() {
 
                 {currentUserQuery.status === "success" && 
                  currentUserQuery.data !== null && 
+                 currentUserQuery.data.id !== 0 &&                      
+                 <Button component={Link} to="/my-favorites" variant="subtle" compact 
+                 leftIcon={<IconHomePlus size="1.3rem"/>} 
+                 fullWidth display={"inline-flex"} size="md" radius={0}
+                 onClick={()=>{setOpened(false)}}
+                 >My Favorites</Button>}  
+
+                {currentUserQuery.status === "success" && 
+                 currentUserQuery.data !== null && 
                  currentUserQuery.data.id !== 0 &&   
                  <Button component={Link} to="/upload" variant="subtle" compact 
                  leftIcon={<IconBookUpload size="1.3rem"/>} 

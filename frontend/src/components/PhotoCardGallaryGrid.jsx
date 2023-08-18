@@ -1,26 +1,57 @@
 import React, { useState } from "react";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { Card, Grid, Group, Image, MediaQuery, Text } from "@mantine/core";
-
+import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
+import { Button, Card, Grid, Group, Image, MediaQuery, Text, Tooltip } from "@mantine/core";
+// import { Heart } from 'tabler-icons-react';
+import { IconHeart, IconHeartFilled } from "@tabler/icons-react";
 import PropTypes from "prop-types";
-
 import { Link} from "react-router-dom";
 
-import { getPhotoCards } from "../services/photo-cards";
+import { SESSION_EXPIRATION_TIME, getCurrentUser } from "../services/auth";
+import { getPhotoCards, addPhotoCardFavorite, removePhotoCardFavorite } from "../services/photo-cards";
 
 
 export default function PhotoCardGallaryGrid(props) {
-
-    // const { hovered, ref } = useHover();
-    const [hovered, setHovered] = useState(false);
-    const [hoveredList, setHoveredList] = useState([]);
+    console.log("PhotoCardGallaryGrid - at top - props is:");
+    console.log(props);
+    console.log("PhotoCardGallaryGrid - at top - props.foo is:");
+    console.log(props.myFavorites);
 
     const queryClient = useQueryClient();
 
+    const currentUserQuery = useQuery({
+        queryKey: ["currentUser"],
+        queryFn: getCurrentUser,
+        staleTime: SESSION_EXPIRATION_TIME
+    });
+
     const photoCardsQuery = useQuery({
-        queryKey: ["photoCards", props.myCards],
-        queryFn: () => getPhotoCards(props.myCards),
+        queryKey: ["photoCards", props.myCards, props.myFavorites],
+        queryFn: () => getPhotoCards(props.myCards, props.myFavorites),
         // queryFn: () => getPhotoCard(props.photoCardId)
+    });
+
+    const addPhotoCardFavoriteMutation = useMutation({
+        mutationFn: addPhotoCardFavorite,
+        onSuccess: () => {
+            queryClient.invalidateQueries(["photoCards"]);
+        },
+        onError: (error) => {
+            console.log("PhotoCardGallaryGrid.addPhotoCardFavoriteMutation() - got an error");
+            console.log(error);
+            //TODO - do something here!!
+        }
+    });
+
+    const removePhotoCardFavoriteMutation = useMutation({
+        mutationFn: removePhotoCardFavorite,
+        onSuccess: () => {
+            queryClient.invalidateQueries(["photoCards"]);
+        },
+        onError: (error) => {
+            console.log("PhotoCardGallaryGrid.removePhotoCardFavoriteMutation() - got an error");
+            console.log(error);
+            //TODO - do something here!!
+        }
     });
 
     if (photoCardsQuery.status === "loading"){
@@ -31,76 +62,17 @@ export default function PhotoCardGallaryGrid(props) {
         return <div>{JSON.stringify(photoCardsQuery.error)}</div>
     }
 
-    console.log("PhotoCardGallary - hovered is:");
-    console.log(hovered);
+    const addFavoritePhotoCardHandler = async(photoCardId) => {
+        console.log("PhotoCardGallaryGrid.addFavoritePhotoCardHandler() - at top")
+        console.log(photoCardId);
+        addPhotoCardFavoriteMutation.mutate(photoCardId);
+    }
 
-    let newHovered = false;
-    console.log(newHovered);
-    console.log("PhotoCardGallary - hoveredList is:");
-    console.log(hoveredList);
-
-    //this 'cardRenderer' field no longer used, but keeping as reference
-    const cardRenderer = (photoCard, index) => {
-        if (hoveredList.includes(index)){
-            return (
-                <Card radius="md" 
-                        shadow="xl" 
-                        padding="sm"
-                        // withBorder
-                        key={index} 
-                        component={Link} to="/card/101"
-                        onMouseOver={()=>{
-                        setHoveredList([...hoveredList, index])
-                        }} 
-                        onMouseLeave={()=>{
-                        console.log("in onMouseLeave()")
-                        setHoveredList(hoveredList.filter((item) => item != index))
-                        }}
-                >
-             
-              <Card.Section>
-                  <Image 
-                      src={`/api/photo-cards-${photoCard.share ? 'public' : 'private'}/${photoCard.front_file_name}`}
-                      height={260} 
-                  />
-              </Card.Section>
-              <Group position="apart" mt="md" mb="xs">
-                  <Text weight={500}>{photoCard.card_name}</Text>
-              </Group>
-              
-          </Card>
-            );
-        } else {
-            return (
-                <Card radius="md" 
-                        shadow="" 
-                        // withBorder
-                        padding="sm"
-                        key={index} 
-                        component={Link} to="/card/101"
-                        onMouseOver={()=>{
-                        setHoveredList([...hoveredList, index])
-                        }} 
-                        onMouseLeave={()=>{
-                        console.log("in onMouseLeave()")
-                        setHoveredList(hoveredList.filter((item) => item != index))
-                        }}
-                >
-             
-              <Card.Section>
-                  <Image 
-                      src={`/api/photo-cards-${photoCard.share ? 'public' : 'private'}/${photoCard.front_file_name}`}
-                      height={260}
-                  />
-              </Card.Section>
-              <Group position="apart" mt="md" mb="xs">
-                  <Text weight={500}>{photoCard.card_name}</Text>
-              </Group>
-              
-          </Card>
-            );
-        }
-    };
+    const removeFavoritePhotoCardHandler = async(photoCardId) => {
+        console.log("PhotoCardGallaryGrid.removeFavoritePhotoCardHandler() - at top")
+        console.log(photoCardId);
+        removePhotoCardFavoriteMutation.mutate(photoCardId);
+    }
 
     return (
         <div>
@@ -112,18 +84,33 @@ export default function PhotoCardGallaryGrid(props) {
                             shadow="md"
                             padding="sm"
                             key={index} 
-                            component={Link} to={`/card/${photoCard.id}`}
                         >
-                            <Card.Section>
+                            <Card.Section component={Link} to={`/card/${photoCard.id}`}>
                                 <Image 
                                     src={`/api/photo-cards-${photoCard.share ? 'public' : 'private'}/${photoCard.front_file_name}`}
                                     height={260}
                                     // fit="contain"
                                 />
                             </Card.Section>
-                            <Text size="sm" color="dimmed" mt="md">{photoCard.card_name.length > 20 ?
-                                    `${photoCard.card_name.substring(0,20)}...` : photoCard.card_name
-                                    }</Text>                       
+                            <Group position="apart" mt="md">
+                                <Text size="sm" color="dimmed" ta="right" >{photoCard.card_name.length > 20 ?
+                                        `${photoCard.card_name.substring(0,20)}...` : photoCard.card_name
+                                        }</Text>     
+                                {currentUserQuery.status === "success" && 
+                                 currentUserQuery.data !== null && 
+                                 currentUserQuery.data.id !== 0 ? (
+                                    photoCard.favorite_id === null ? (
+                                        <IconHeart onClick={()=>addFavoritePhotoCardHandler(photoCard.id)} style={{cursor:"pointer"}} size="1.1rem" strokeWidth={2} color={'#868e96'}/>
+                                    ) : (
+                                        <IconHeart onClick={()=>removeFavoritePhotoCardHandler(photoCard.id)} style={{cursor:"pointer"}} size="1.1rem" strokeWidth={3} color={'#fd7e14'} fill={'#fd7e14'}/>
+                                    )                                    
+                                 ) : (
+                                    <Tooltip label="Login to set favorites!" color="orange.5" withArrow openDelay={500} radius="sm" fz="sm">
+                                        <IconHeart size="1.1rem" strokeWidth={2} color={'#868e96'}/>
+                                    </Tooltip>
+                                 )
+                                }
+                            </Group>
                         </Card>
                         </Grid.Col>
 
@@ -138,18 +125,32 @@ export default function PhotoCardGallaryGrid(props) {
                             shadow="md"
                             padding="sm"
                             key={index} 
-                            component={Link} to={`/card/${photoCard.id}`}
                         >
-                            <Card.Section>
+                            <Card.Section component={Link} to={`/card/${photoCard.id}`}>
                                 <Image 
                                     src={`/api/photo-cards-${photoCard.share ? 'public' : 'private'}/${photoCard.front_file_name}`}
                                     height={260}
                                     // fit="contain"
                                 />
                             </Card.Section>
-                            <Text size="sm" color="dimmed" mt="md">{photoCard.card_name.length > 20 ?
-                                    `${photoCard.card_name.substring(0,20)}...` : photoCard.card_name
-                                    }</Text>                       
+                            <Group position="apart"  mt="md">
+                                <Text component={Link} to={`/card/${photoCard.id}`} size="sm" color="dimmed">{photoCard.card_name.length > 20 ?
+                                        `${photoCard.card_name.substring(0,20)}...` : photoCard.card_name
+                                        }</Text>                       
+                                {currentUserQuery.status === "success" && 
+                                 currentUserQuery.data !== null && 
+                                 currentUserQuery.data.id !== 0 ? (
+                                    photoCard.favorite_id === null ? (
+                                        <IconHeart onClick={()=>addFavoritePhotoCardHandler(photoCard.id)} style={{cursor:"pointer"}} size="1.1rem" strokeWidth={2} color={'#868e96'}/>
+                                    ) : (
+                                        <IconHeart onClick={()=>removeFavoritePhotoCardHandler(photoCard.id)} style={{cursor:"pointer"}} size="1.1rem" strokeWidth={3} color={'#fd7e14'} fill={'#fd7e14'}/>
+                                    )                                    
+                                 ) : (
+                                    <IconHeart size="1.1rem" strokeWidth={2} color={'#868e96'}/>
+                                 )
+                                
+                                }
+                            </Group>
                         </Card>
                         </Grid.Col>
 
@@ -163,4 +164,5 @@ export default function PhotoCardGallaryGrid(props) {
 
 PhotoCardGallaryGrid.propTypes = {
     myCards: PropTypes.bool.isRequired,
+    myFavorites: PropTypes.bool.isRequired,
   };

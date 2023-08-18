@@ -1,0 +1,7 @@
+{
+    "python.testing.unittestEnabled": false,
+    "python.testing.pytestEnabled": true,
+    "testing.showAllMessages": false,
+    "python.testing.cwd": "backend/app",
+    "python.testing.autoTestDiscoverOnSaveEnabled": false
+}

@@ -10,6 +10,8 @@ load_dotenv()
 
 SQLACHEMY_DATABASE_URL = os.getenv("DATABASE_URL")
 #SQLACHEMY_DATABASE_URL = "sqlite:///./app/sql_app.db"
+# print("database.py - SQLACHEMY_DATABASE_URL is:")
+# print(SQLACHEMY_DATABASE_URL)
 
 TESTING = os.getenv("TESTING", "False")
 print("database - at top - TESTING is:")
