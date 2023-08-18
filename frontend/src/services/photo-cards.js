@@ -1,13 +1,14 @@
 import axios from "axios";
 
 
-export async function getPhotoCards(myCards){
+export async function getPhotoCards(myCards, myFavorites){
 
-    console.log("getPhotoCards(myCards)");
-    
+    console.log("getPhotoCards(myCards, myFavorites)");
+    console.log(myFavorites)
+
     try{
         const response = await axios.get(
-            '/api/photo-cards?my_cards='+myCards
+            '/api/photo-cards?my_cards='+myCards+'&my_favorites='+myFavorites
         );
         console.log("getPhotoCards() - response is: ");
         console.log(response);
@@ -104,3 +105,44 @@ export async function deletePhotoCard(photoCardId){
     }
 }
 
+export async function addPhotoCardFavorite(photoCardId){
+
+    console.log("addPhotoCardFavorite() - photoCardData="+photoCardId+"=");
+    console.log(photoCardId);
+
+    try{
+        const response = await axios.post(
+            '/api/favorites?photo_card_id='+photoCardId,
+        );
+
+        const status = response.status;
+        console.log("addPhotoCardFavorite() - at end - response.status is: ");
+        console.log(status);
+        return response;
+    } catch(error){
+        console.log("addPhotoCardFavorite() - got exception");
+        console.log(error);
+        throw error;
+    }
+}
+
+export async function removePhotoCardFavorite(photoCardId){
+
+    console.log("removePhotoCardFavorite() - photoCardData="+photoCardId+"=");
+    console.log(photoCardId);
+
+    try{
+        const response = await axios.delete(
+            '/api/favorites?photo_card_id='+photoCardId,
+        );
+
+        const status = response.status;
+        console.log("removePhotoCardFavorite() - at end - response.status is: ");
+        console.log(status);
+        return response;
+    } catch(error){
+        console.log("removePhotoCardFavorite() - got exception");
+        console.log(error);
+        throw error;
+    }
+}

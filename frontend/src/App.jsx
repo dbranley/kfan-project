@@ -16,8 +16,9 @@ const router = createHashRouter([
     path: "/",
     element: <AppSiteShell />,
     children: [
-      {index: true, element: <PhotoCardsGridPage myCards={false}/>},
-      {path: "my-cards", element: <PhotoCardsGridPage myCards={true}/>},
+      {index: true, element: <PhotoCardsGridPage  myCards={false} myFavorites={false} />},
+      {path: "my-cards", element: <PhotoCardsGridPage myCards={true} myFavorites={false}/>},
+      {path: "my-favorites", element: <PhotoCardsGridPage myCards={false} myFavorites={true}/>},
       {path: "upload", element: <UploadPhotoCardPage/>},
       {path: "card/:photoCardId", element: <PhotoCardDetailPage/>},
     ],

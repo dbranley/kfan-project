@@ -112,10 +112,11 @@ async def create_photo_card(
 
 @database.transaction()
 @router.get("/api/photo-cards", tags=["photo_cards"], response_model=list[schemas.PhotoCard])
-async def read_photo_cards(request: Request, my_cards: bool=False, skip: int=0, limit: int=100):
+async def read_photo_cards(request: Request, my_cards: bool=False, my_favorites: bool=False, skip: int=0, limit: int=100):
 
-    print("photo_cards.read_photo_cards() - at top - my_cards is:")
+    print("photo_cards.read_photo_cards() - at top - my_cards is and my_favorites is:")
     print(my_cards)
+    print(my_favorites)
     #if user is logged in, then get their user_id to pass to get query
     #-but default to 0, which assumes no user id available
     user_id = 0
@@ -136,7 +137,13 @@ async def read_photo_cards(request: Request, my_cards: bool=False, skip: int=0, 
     if my_cards == True and user_id == 0:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Must login to view just your photo cards")
 
-    photo_cards = await crud.get_photo_cards(database, my_cards=my_cards, user_id=user_id, skip=skip, limit=limit)
+    if my_favorites == True and user_id == 0:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Must login to view your favorite photo cards")
+
+    if my_favorites == True:
+        photo_cards = await crud.get_my_favorite_photo_cards(database, my_cards=my_cards, user_id=user_id, skip=skip, limit=limit)
+    else: 
+        photo_cards = await crud.get_photo_cards(database, my_cards=my_cards, user_id=user_id, skip=skip, limit=limit)
     return photo_cards
 
 @database.transaction()
