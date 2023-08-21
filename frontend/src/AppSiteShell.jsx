@@ -119,7 +119,7 @@ export default function AppSiteShell() {
                   mr="xl"
                 />
               </MediaQuery>
-              <Image width={122} height={31} src="/public/logo-darkorange.svg" />
+              <Image width={122} height={31} src="/public/logo-darkorange.svg" component={Link} to="/"/>
               {/* <MediaQuery largerThan="sm" styles={{ display: "none" }}>
                   <Text align="left" size="xl">K-Pop Collection</Text>
               </MediaQuery>   */}

@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Button, Container, Group, Modal, Text } from "@mantine/core";
+import { Avatar, Button, Container, Group, Menu, Modal, Text } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 
 
@@ -55,13 +55,25 @@ export default function AuthButton() {
   if (currentUserQuery.status === "success" && currentUserQuery.data !== null && currentUserQuery.data.id !== 0) {
     console.log("AuthButton - in if-block where about to create logout button");
     content = (
-      // <Button size="xs" onClick={authCtx.onLogout}>
-      <Button data-testid="logout-button-id" size="xs" onClick={()=>{
-          logoutMutation.mutate();
-          navigate("/");
-        }}>
-        Logout
-      </Button>
+      <Menu trigger="hover" openDelay={100}>
+        <Menu.Target>
+          <Avatar data-testid="profile-avatar-id" radius="xl" size="sm" variant="filled" color="orange" style={{cursor:"pointer"}} />
+        </Menu.Target>
+        <Menu.Dropdown>
+          <Menu.Label>{currentUserQuery.data.username}</Menu.Label>
+          <Menu.Item>Profile</Menu.Item>
+          <Menu.Item data-testid="logout-button-id" size="xs" onClick={()=>{
+            logoutMutation.mutate();
+            navigate("/");
+          }}>Logout</Menu.Item>
+        </Menu.Dropdown>
+      </Menu>
+    //   <Button data-testid="logout-button-id" size="xs" onClick={()=>{
+    //     logoutMutation.mutate();
+    //     navigate("/");
+    //   }}>
+    //   Logout
+    // </Button>
     );
   } else if (successOpened && opened) {
     console.log("AuthButton - in else-if-block where about to create login modal");

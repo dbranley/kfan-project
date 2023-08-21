@@ -63,8 +63,10 @@ describe("AuthButton tests when already logged in", () => {
         //         </Router>
         //     </QueryClientProvider>
         // );
-        const logoutButtonByTestId = await screen.findAllByTestId("logout-button-id")
-        expect(logoutButtonByTestId).toHaveLength(1);   
+        const profileAvatarId = await screen.findAllByTestId("profile-avatar-id")
+        expect(profileAvatarId).toHaveLength(1); 
+        // const logoutButtonByTestId = await screen.findAllByTestId("logout-button-id")
+        // expect(logoutButtonByTestId).toHaveLength(1);   
         screen.debug();
     });
   
