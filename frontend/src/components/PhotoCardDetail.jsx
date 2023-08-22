@@ -1,5 +1,15 @@
 import React, { useContext, useState } from "react";
-import { Box, Button, Center, Container, Divider, Grid, Group, Image, Stack, Text, Tooltip } from "@mantine/core";
+import { Avatar, 
+         Box, 
+         Button, 
+         Container, 
+         Divider, 
+         Grid, 
+         Group, 
+         Image, 
+         Stack, 
+         Text, 
+         Tooltip } from "@mantine/core";
 import { Carousel } from "@mantine/carousel";
 import PropTypes from "prop-types";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -103,7 +113,7 @@ const PhotoCardDetail = (props) => {
   return (
     <Grid>
       <Grid.Col span={8}>
-      <Carousel withIndicators dragFree>
+      <Carousel withIndicators dragFree loop>
         <Carousel.Slide>
           <Image
             src={`/api/photo-cards-${
@@ -130,12 +140,18 @@ const PhotoCardDetail = (props) => {
         <Text size="xl" fw={700} c="brown">{photoCardQuery.data.card_name}</Text>
         <Divider my="sm"/>
         <Text>Group: {photoCardQuery.data.group_name}</Text>
-        <Text>Owner: {photoCardQuery.data.owner_name}</Text>
+        {/* <Text>Owner: {photoCardQuery.data.owner_name}</Text> */}
         <Text>
           Share?: {`${photoCardQuery.data.share ? 'Yes' : 'No'}`}
         </Text>
       </Box>
-      <Container fluid ml="0.25rem">
+
+      
+      <Container fluid ml="0rem">
+        <Group>
+        <Tooltip label={'@'+photoCardQuery.data.owner_name} color="orange.5" withArrow openDelay={500} radius="sm" fz="sm">
+          <Avatar radius="xl" size="md" color="orange">{photoCardQuery.data.owner_name.charAt(0).toUpperCase()}</Avatar>
+        </Tooltip>        
       {currentUserQuery.status === "success" && 
               currentUserQuery.data !== null && 
               currentUserQuery.data.id !== 0 ? (
@@ -151,6 +167,7 @@ const PhotoCardDetail = (props) => {
                 </Tooltip>
               )
       }
+      </Group>
       </Container>
       <Divider my="xs"/>
       {deleteError != null && <div><Text size="md" c="red" align="left">{deleteError}</Text></div>}

@@ -1,14 +1,14 @@
 import axios from "axios";
 
 
-export async function getPhotoCards(myCards, myFavorites){
+export async function getPhotoCards(myCards, myFavorites, collectorId){
 
-    console.log("getPhotoCards(myCards, myFavorites)");
+    console.log("getPhotoCards(myCards, myFavorites, collectorId)");
     console.log(myFavorites)
 
     try{
         const response = await axios.get(
-            '/api/photo-cards?my_cards='+myCards+'&my_favorites='+myFavorites
+            '/api/photo-cards?my_cards='+myCards+'&my_favorites='+myFavorites+'&collector_id='+collectorId
         );
         console.log("getPhotoCards() - response is: ");
         console.log(response);

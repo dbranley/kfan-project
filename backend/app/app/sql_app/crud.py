@@ -68,7 +68,7 @@ async def create_photo_card(database: Database,
     return resp_photo_card
 
 
-async def get_photo_cards(database: Database, user_id: int, my_cards: bool, skip: int=0, limit: int=100):
+async def get_photo_cards(database: Database, user_id: int, my_cards: bool, collector_id: int, skip: int=0, limit: int=100):
      print("crud.get_photo_cards() - at top")
      
 
@@ -79,31 +79,40 @@ async def get_photo_cards(database: Database, user_id: int, my_cards: bool, skip
                       join(right=models.favorites,  \
                             onclause=and_(models.photo_cards.c.id == models.favorites.c.photo_card_id, \
                                     models.favorites.c.user_id == user_id), isouter=True)        
-        query = select([models.photo_cards, models.users.c.username.label("owner_name"), models.favorites.c.id.label("favorite_id")]).\
-                 select_from(j_comb). \
-                 offset(skip).limit(limit).\
-                 order_by(models.photo_cards.c.id.desc())
-     else:
+     
+     #collector_id == 0 means 'NO' filter on owner of the card
+     elif collector_id == 0:
         j_comb = models.photo_cards.join(right=models.users, \
                       onclause=and_(models.photo_cards.c.user_id == models.users.c.id,\
                           or_(models.photo_cards.c.share == True, models.photo_cards.c.user_id == user_id))). \
                       join(right=models.favorites,  \
                             onclause=and_(models.photo_cards.c.id == models.favorites.c.photo_card_id, \
                                     models.favorites.c.user_id == user_id), isouter=True)
-        
-        query = select([models.photo_cards, models.users.c.username.label("owner_name"), models.favorites.c.id.label("favorite_id")]).\
-                 select_from(j_comb). \
-                 offset(skip).limit(limit).\
-                 order_by(models.photo_cards.c.id.desc())
+
+    
+     #collector_id != 0 means we need to filter on owner of the card
+     else: 
+        j_comb = models.photo_cards.join(right=models.users, \
+                      onclause=and_(models.photo_cards.c.user_id == models.users.c.id, \
+                                    models.photo_cards.c.user_id == collector_id, \
+                          or_(models.photo_cards.c.share == True, models.photo_cards.c.user_id == user_id))). \
+                      join(right=models.favorites,  \
+                            onclause=and_(models.photo_cards.c.id == models.favorites.c.photo_card_id, \
+                                    models.favorites.c.user_id == user_id), isouter=True)
+                
+     query = select([models.photo_cards, models.users.c.username.label("owner_name"), models.favorites.c.id.label("favorite_id")]).\
+                select_from(j_comb). \
+                offset(skip).limit(limit).\
+                order_by(models.photo_cards.c.id.desc())
 
      print("crud.get_photo_cards() - about to print query")
      print(query)
      result = await database.fetch_all(query)
-     print("crud.get_photo_cards - after query - result is:")
+     print("crud.get_photo_cards() - after query - result is:")
      print(result)     
      return result
 
-async def get_my_favorite_photo_cards(database: Database, user_id: int, my_cards: bool, skip: int=0, limit: int=100):
+async def get_my_favorite_photo_cards(database: Database, user_id: int, my_cards: bool, collector_id: int, skip: int=0, limit: int=100):
      print("crud.get_my_favorite_photo_cards() - at top")
      
      if my_cards:
@@ -113,19 +122,27 @@ async def get_my_favorite_photo_cards(database: Database, user_id: int, my_cards
                       join(right=models.favorites,  \
                             onclause=and_(models.photo_cards.c.id == models.favorites.c.photo_card_id, \
                                     models.favorites.c.user_id == user_id))        
-        query = select([models.photo_cards, models.users.c.username.label("owner_name"), models.favorites.c.id.label("favorite_id")]).\
-                 select_from(j_comb). \
-                 offset(skip).limit(limit).\
-                 order_by(models.photo_cards.c.id.desc())
-     else:
+
+     #collector_id == 0 means 'NO' filter on owner of the card
+     elif collector_id == 0:
         j_comb = models.photo_cards.join(right=models.users, \
                       onclause=and_(models.photo_cards.c.user_id == models.users.c.id,\
                           or_(models.photo_cards.c.share == True, models.photo_cards.c.user_id == user_id))). \
                       join(right=models.favorites,  \
                             onclause=and_(models.photo_cards.c.id == models.favorites.c.photo_card_id, \
                                     models.favorites.c.user_id == user_id))
-        
-        query = select([models.photo_cards, models.users.c.username.label("owner_name"), models.favorites.c.id.label("favorite_id")]).\
+     
+     #collector_id != 0 means we need to filter on owner of the card
+     else: 
+        j_comb = models.photo_cards.join(right=models.users, \
+                      onclause=and_(models.photo_cards.c.user_id == models.users.c.id,\
+                                    models.photo_cards.c.user_id == collector_id, \
+                          or_(models.photo_cards.c.share == True, models.photo_cards.c.user_id == user_id))). \
+                      join(right=models.favorites,  \
+                            onclause=and_(models.photo_cards.c.id == models.favorites.c.photo_card_id, \
+                                    models.favorites.c.user_id == user_id)) 
+     
+     query = select([models.photo_cards, models.users.c.username.label("owner_name"), models.favorites.c.id.label("favorite_id")]).\
                  select_from(j_comb). \
                  offset(skip).limit(limit).\
                  order_by(models.photo_cards.c.id.desc())
