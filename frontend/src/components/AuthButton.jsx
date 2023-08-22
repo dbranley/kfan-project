@@ -60,7 +60,7 @@ export default function AuthButton() {
           <Avatar data-testid="profile-avatar-id" radius="xl" size="sm" variant="filled" color="orange" style={{cursor:"pointer"}} />
         </Menu.Target>
         <Menu.Dropdown>
-          <Menu.Label>{currentUserQuery.data.username}</Menu.Label>
+          <Menu.Label>@{currentUserQuery.data.username}</Menu.Label>
           <Menu.Item>Profile</Menu.Item>
           <Menu.Item data-testid="logout-button-id" size="xs" onClick={()=>{
             logoutMutation.mutate();

@@ -113,7 +113,7 @@ const PhotoCardDetail = (props) => {
   return (
     <Grid>
       <Grid.Col span={8}>
-      <Carousel withIndicators dragFree>
+      <Carousel withIndicators dragFree loop>
         <Carousel.Slide>
           <Image
             src={`/api/photo-cards-${
@@ -149,7 +149,7 @@ const PhotoCardDetail = (props) => {
       
       <Container fluid ml="0rem">
         <Group>
-        <Tooltip label={photoCardQuery.data.owner_name} color="orange.5" withArrow openDelay={500} radius="sm" fz="sm">
+        <Tooltip label={'@'+photoCardQuery.data.owner_name} color="orange.5" withArrow openDelay={500} radius="sm" fz="sm">
           <Avatar radius="xl" size="md" color="orange">{photoCardQuery.data.owner_name.charAt(0).toUpperCase()}</Avatar>
         </Tooltip>        
       {currentUserQuery.status === "success" && 
