@@ -183,6 +183,74 @@ async def read_photo_cards(id: int,
         raise HTTPException(status_code=404, detail="Photo card not found")
     return db_photo_card
 
+@router.put("/api/photo-cards/{id}", tags=["photo_cards"])
+async def update_photo_card(id: int,
+                            share: bool,
+                            request: Request):
+    print("photo_cards.update_photo_card() - at top - id="+str(id)+"=, share="+str(share)+"=")
+
+    transaction = await database.transaction()
+    try:
+        #verify user is authenticated
+        token = request.cookies.get("token")
+
+        print("photo_cards.update_photo_card() - about to call users.get_current_user()")
+        user = await users.get_current_user(token, database)
+        print("photo_cards.update_photo_card() - after calling  users.get_current_user() - user is:")
+        print(user)
+        if user is None:
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)        
+        
+        photo_card = await crud.get_photo_card(database, id)
+        print("photo_cards.update_photo_card() - after calling crud.get_photo_card() - photo_card object is: ")
+        print(photo_card)
+
+        if photo_card is None:
+            print("photo_cards.update_photo_card() - photo card does not exist")
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Photo card does not exist")
+        
+        #now make sure that only the 'owner' of the photo is updating it
+        if photo_card.user_id != user.id:
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Only owner of photo can update it")
+
+        #make sure state of 'share' is actually changing
+        if photo_card.share == share:
+            print("photo_cards.update_photo_card() - 'share' value not changing")
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Photo card already has 'share' set to given value")
+        
+        #if changing to 'not share', then delete any favorites that might exist
+        if share is False:
+            resp = await crud.delete_favorites(database=database, photo_card_id=id)
+
+        #now update 'share' in the photo_card
+        resp = await crud.update_photo_card(database=database, photo_card_id=id, share=share)
+
+
+    except HTTPException as httpex:
+        print("photo_cards.update_photo_card() - in the except 'HTTPException' block - printing exception here: ")
+        print(httpex)
+
+        await transaction.rollback()
+
+        #now rethrow this
+        raise httpex
+    
+    except Exception as ex:
+        print("photo_cards.update_photo_card() - in the except 'Exception' block - printing exception here: ")
+        print(ex)
+
+        #this duplicates same code above so should do something about that
+        await transaction.rollback()
+
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                    detail="Exception thrown while updating photo card - error is - " + str(ex))
+    else:
+        print("photo_cards.update_photo_card() - in 'else' so about to commit")
+        await transaction.commit()
+    
+    return resp
+
+
 @router.delete("/api/photo-cards/{id}", tags=["photo_cards"])
 async def delete_photo_card(id: int,
                             request: Request):

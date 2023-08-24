@@ -67,6 +67,23 @@ async def create_photo_card(database: Database,
                                         owner_name='')
     return resp_photo_card
 
+async def update_photo_card(database: Database, 
+                            photo_card_id: int,
+                            share: bool):
+    print("crud.update_photo_card()")
+
+    query = models.photo_cards.update().where(models.photo_cards.c.id == photo_card_id) \
+                                       .values(share = share)
+
+    print("crud.update_photo_card() - about to print query")
+    print(query)
+    
+    result = await database.execute(query)
+
+    print("crud.update_photo_card() - after update, about to print 'result'")
+    print(result)
+
+    return {"message":"Photo Card updated"}
 
 async def get_photo_cards(database: Database, user_id: int, my_cards: bool, collector_id: int, skip: int=0, limit: int=100):
      print("crud.get_photo_cards() - at top")
@@ -281,6 +298,7 @@ async def get_favorite(database: Database,
     return result
 
 async def delete_favorite(database: Database, favorite_id: int):
+
     print("crud.delete_favorite()")
     query = models.favorites.delete().where(models.favorites.c.id == favorite_id)
     print("crud.delete_favorite() - about to print query")
@@ -292,3 +310,17 @@ async def delete_favorite(database: Database, favorite_id: int):
     print(result)
 
     return {"message":"Favorite deleted"}
+
+async def delete_favorites(database: Database, photo_card_id: int):
+
+    print("crud.delete_favorites()")
+    query = models.favorites.delete().where(models.favorites.c.photo_card_id == photo_card_id)
+    print("crud.delete_favorites() - about to print query")
+    print(query)
+
+    result = await database.execute(query)
+    #seems that 'result' contains the count of rows impacted
+    print("crud.delete_favorites() - after delete, about to print 'result'")
+    print(result)
+
+    return {"message":"Favorites deleted"}

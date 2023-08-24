@@ -7,7 +7,9 @@ import { Avatar,
          Grid, 
          Group, 
          Image, 
+         Space, 
          Stack, 
+         Switch, 
          Text, 
          Tooltip } from "@mantine/core";
 import { Carousel } from "@mantine/carousel";
@@ -15,12 +17,13 @@ import PropTypes from "prop-types";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { getPhotoCard, 
          deletePhotoCard, 
+         updatePhotoCard,
          addPhotoCardFavorite, 
-         removePhotoCardFavorite } from "../services/photo-cards";
+         removePhotoCardFavorite} from "../services/photo-cards";
 // import AuthContext from "../store/auth-context";
 import { useNavigate } from "react-router-dom";
 import { SESSION_EXPIRATION_TIME, getCurrentUser } from "../services/auth";
-import { IconHeart } from "@tabler/icons-react";
+import { IconHeart, IconTrash } from "@tabler/icons-react";
 
 const PhotoCardDetail = (props) => {
 
@@ -52,9 +55,21 @@ const PhotoCardDetail = (props) => {
       onError: (error) => {
           console.log("PhotoCardDetails - deletePhotoCardMutation() - got an error: ");
           console.log(error);
-          setDeleteError("Upload failed with '"+error.message+"'");
+          setDeleteError("Delete failed with '"+error.message+"'");
       }
 
+  });
+
+  const updatePhotoCardMutation = useMutation({
+    mutationFn: updatePhotoCard,
+    onSuccess: () => {
+      queryClient.invalidateQueries(["photoCards"])
+    },
+    onError: (error) => {
+      console.log("PhotoCardDetails - updatePhotoCardMutation() - got an error: ");
+      console.log(error);
+      setDeleteError("Update failed with '"+error.request.response+"'");
+    }
   });
 
   const addPhotoCardFavoriteMutation = useMutation({
@@ -86,6 +101,16 @@ const PhotoCardDetail = (props) => {
     deletePhotoCardMutation.mutate(photoCardQuery.data.id);
   }
 
+  const updatePhotoCardHandler = async(photoCardId, share) => {
+    console.log("PhotoCardDetails - updatePhotoCardHandler() - share is:");
+    console.log(share);
+    console.log("PhotoCardDetails - updatePhotoCardHandler() - about to call update mutation")
+    updatePhotoCardMutation.mutate({
+      id : photoCardId,
+      share : share 
+    }); //, share);
+  };
+
   if (photoCardQuery.status === "loading") {
     return <div>Loading...</div>;
   }
@@ -111,8 +136,9 @@ const PhotoCardDetail = (props) => {
   }
 
   return (
-    <Grid>
-      <Grid.Col span={8}>
+    <Container>
+      <Text size="xl" fw={700} c="brown">{photoCardQuery.data.card_name}</Text>
+      {/* <Divider my="sm"/> */}
       <Carousel withIndicators dragFree loop>
         <Carousel.Slide>
           <Image
@@ -133,22 +159,18 @@ const PhotoCardDetail = (props) => {
           />
         </Carousel.Slide>
       </Carousel>
-      </Grid.Col>
-      <Grid.Col span={4}>
-      <Stack align="flex-start" justify="space-evenly">
-      <Box >
-        <Text size="xl" fw={700} c="brown">{photoCardQuery.data.card_name}</Text>
-        <Divider my="sm"/>
-        <Text>Group: {photoCardQuery.data.group_name}</Text>
-        {/* <Text>Owner: {photoCardQuery.data.owner_name}</Text> */}
-        <Text>
-          Share?: {`${photoCardQuery.data.share ? 'Yes' : 'No'}`}
-        </Text>
-      </Box>
+      {/* <Stack align="flex-start" justify="space-evenly"> */}
+      {/* <Box >
+        <Text c="orange">{photoCardQuery.data.group_name}</Text>
+      </Box> */}
 
       
-      <Container fluid ml="0rem">
-        <Group>
+      <Container fluid ml="0rem" mt="0.5rem">
+        <Text c="orange" fz="xl">{photoCardQuery.data.group_name}</Text>
+        <Space h="sm"/>
+        {deleteError != null && <div><Text size="md" c="red" align="left">{deleteError}</Text></div>}
+        <Group position="left" spacing="xl">
+        {/* <Text c="orange" fz="xl">{photoCardQuery.data.group_name}</Text> */}
         <Tooltip label={'@'+photoCardQuery.data.owner_name} color="orange.5" withArrow openDelay={500} radius="sm" fz="sm">
           <Avatar radius="xl" size="md" color="orange">{photoCardQuery.data.owner_name.charAt(0).toUpperCase()}</Avatar>
         </Tooltip>        
@@ -167,19 +189,42 @@ const PhotoCardDetail = (props) => {
                 </Tooltip>
               )
       }
+      {/* </Group>
+      <Group position="right" spacing="xl"> */}
+      {currentUserQuery.status === "success" && 
+              currentUserQuery.data !== null && 
+              currentUserQuery.data.id !== 0 &&
+              currentUserQuery.data.id === photoCardQuery.data.user_id &&  
+                <Switch label="Share" color="orange" checked={photoCardQuery.data.share}
+                        onChange={(event)=>updatePhotoCardHandler(photoCardQuery.data.id, event.currentTarget.checked)}/>
+              }
+      {currentUserQuery.status === "success" && 
+              currentUserQuery.data !== null && 
+              currentUserQuery.data.id !== 0 &&
+              currentUserQuery.data.id === photoCardQuery.data.user_id &&  
+                <Tooltip label="Delete card" color="orange.5" withArrow openDelay={500} radius="sm" fz="sm">
+                  <IconTrash onClick={deletePhotoCardHandler} size="2rem" color={'#fd7e14'}/>
+                </Tooltip>
+              }              
       </Group>
       </Container>
-      <Divider my="xs"/>
+      {/* <Divider my="xs"/>
       {deleteError != null && <div><Text size="md" c="red" align="left">{deleteError}</Text></div>}
       {currentUserQuery.status === "success" && 
               currentUserQuery.data !== null && 
               currentUserQuery.data.id !== 0 &&
               currentUserQuery.data.id === photoCardQuery.data.user_id &&  
-              <Button onClick={deletePhotoCardHandler}>Delete</Button>}
-      </Stack>
-      </Grid.Col>
-
-    </Grid>
+              <div>
+                <Switch label="Share" color="orange" checked={photoCardQuery.data.share}/>
+                <Space h="md"/>
+                <Tooltip label="Delete card" color="orange.5" withArrow openDelay={500} radius="sm" fz="sm">
+                  <IconTrash onClick={deletePhotoCardHandler} size="2rem" color={'#fd7e14'}/>
+                </Tooltip>
+                
+              </div>
+              } */}
+      {/* </Stack> */}
+    </Container>
   );
 };
 

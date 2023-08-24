@@ -105,6 +105,29 @@ export async function deletePhotoCard(photoCardId){
     }
 }
 
+//  photoCardData objec is:
+//    id: photo card id, 
+//    share: boolean from event
+export async function updatePhotoCard(photoCardData){
+
+    console.log("updatePhotoCard() - photoCardData="+photoCardData.id+"=, share="+photoCardData.share+"=");
+
+    try{
+        const response = await axios.put(
+            '/api/photo-cards/'+photoCardData.id+'?share='+photoCardData.share,
+        );
+
+        const status = response.status;
+        console.log("updatePhotoCard() - at end - response.status is: ");
+        console.log(status);
+        return response;
+    } catch(error){
+        console.log("updatePhotoCard() - got exception");
+        console.log(error);
+        throw error;
+    }
+}
+
 export async function addPhotoCardFavorite(photoCardId){
 
     console.log("addPhotoCardFavorite() - photoCardData="+photoCardId+"=");
