@@ -1,15 +1,9 @@
 import React, { useContext, useState } from "react";
 import { Avatar, 
-         Box, 
-         Button, 
          Container, 
-         Divider, 
-         Grid, 
          Group, 
          Image, 
          Space, 
-         Stack, 
-         Switch, 
          Text, 
          Tooltip } from "@mantine/core";
 import { Carousel } from "@mantine/carousel";
@@ -20,14 +14,12 @@ import { getPhotoCard,
          updatePhotoCard,
          addPhotoCardFavorite, 
          removePhotoCardFavorite} from "../services/photo-cards";
-// import AuthContext from "../store/auth-context";
 import { useNavigate } from "react-router-dom";
 import { SESSION_EXPIRATION_TIME, getCurrentUser } from "../services/auth";
-import { IconHeart, IconTrash } from "@tabler/icons-react";
+import { IconHeart, IconTrash, IconLock, IconLockOpen } from "@tabler/icons-react";
+import { extractMessageFromRestError } from "../utils";
 
 const PhotoCardDetail = (props) => {
-
-  // const authCtx = useContext(AuthContext);
 
   const [deleteError, setDeleteError] = useState(null);
 
@@ -55,7 +47,7 @@ const PhotoCardDetail = (props) => {
       onError: (error) => {
           console.log("PhotoCardDetails - deletePhotoCardMutation() - got an error: ");
           console.log(error);
-          setDeleteError("Delete failed with '"+error.message+"'");
+          setDeleteError("Delete failed with '"+extractMessageFromRestError(error)+"'");
       }
 
   });
@@ -63,12 +55,13 @@ const PhotoCardDetail = (props) => {
   const updatePhotoCardMutation = useMutation({
     mutationFn: updatePhotoCard,
     onSuccess: () => {
-      queryClient.invalidateQueries(["photoCards"])
+      setDeleteError(null);
+      queryClient.invalidateQueries(["photoCards"]);
     },
     onError: (error) => {
       console.log("PhotoCardDetails - updatePhotoCardMutation() - got an error: ");
       console.log(error);
-      setDeleteError("Update failed with '"+error.request.response+"'");
+      setDeleteError("Update failed with '"+extractMessageFromRestError(error)+"'");
     }
   });
 
@@ -145,7 +138,7 @@ const PhotoCardDetail = (props) => {
             src={`/api/photo-cards-${
               photoCardQuery.data.share ? "public" : "private"
             }/${photoCardQuery.data.front_file_name}`}
-            height={500}
+            height={450}
             fit="contain"
           />
         </Carousel.Slide>
@@ -154,7 +147,7 @@ const PhotoCardDetail = (props) => {
             src={`/api/photo-cards-${
               photoCardQuery.data.share ? "public" : "private"
             }/${photoCardQuery.data.back_file_name}`}
-            height={500}
+            height={450}
             fit="contain"
           />
         </Carousel.Slide>
@@ -194,9 +187,18 @@ const PhotoCardDetail = (props) => {
       {currentUserQuery.status === "success" && 
               currentUserQuery.data !== null && 
               currentUserQuery.data.id !== 0 &&
-              currentUserQuery.data.id === photoCardQuery.data.user_id &&  
-                <Switch label="Share" color="orange" checked={photoCardQuery.data.share}
-                        onChange={(event)=>updatePhotoCardHandler(photoCardQuery.data.id, event.currentTarget.checked)}/>
+              currentUserQuery.data.id === photoCardQuery.data.user_id &&
+              ((photoCardQuery.data.share &&
+                <Tooltip label="Click to unshare card" color="orange.5" withArrow openDelay={500} radius="sm" fz="sm">
+                  <IconLockOpen color={'#fd7e14'} size="2rem" onClick={()=>updatePhotoCardHandler(photoCardQuery.data.id, false)}/>
+                </Tooltip>
+               ) || (
+                <Tooltip label="Click to share card" color="orange.5" withArrow openDelay={500} radius="sm" fz="sm">
+                  <IconLock color={'#fd7e14'} size="2rem" onClick={()=>updatePhotoCardHandler(photoCardQuery.data.id, true)}/>
+                </Tooltip>
+               ))    
+                // <Switch label="Share" color="orange" checked={photoCardQuery.data.share} size="1.5rem" fz="lg"
+                //         onChange={(event)=>updatePhotoCardHandler(photoCardQuery.data.id, event.currentTarget.checked)}/>
               }
       {currentUserQuery.status === "success" && 
               currentUserQuery.data !== null && 

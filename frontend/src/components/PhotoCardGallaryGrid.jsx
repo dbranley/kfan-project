@@ -1,13 +1,16 @@
 import React, { useState, useEffect } from "react";
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
-import { Avatar, Badge, Button, Card, Divider, Grid, Group, Image, MediaQuery, Space, Text, Title, Tooltip } from "@mantine/core";
+import { Avatar, Button, Card, Grid, Group, Image, MediaQuery, Space, Text, Tooltip } from "@mantine/core";
 // import { Heart } from 'tabler-icons-react';
-import { IconHeart, IconCircleX, IconHeartFilled } from "@tabler/icons-react";
+import { IconHeart, IconCircleX, IconLock, IconLockOpen } from "@tabler/icons-react";
 import PropTypes from "prop-types";
-import { Link} from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 
 import { SESSION_EXPIRATION_TIME, getCurrentUser } from "../services/auth";
-import { getPhotoCards, addPhotoCardFavorite, removePhotoCardFavorite } from "../services/photo-cards";
+import { getPhotoCards, 
+         updatePhotoCard, 
+         addPhotoCardFavorite, 
+         removePhotoCardFavorite } from "../services/photo-cards";
 
 
 export default function PhotoCardGallaryGrid(props) {
@@ -18,6 +21,8 @@ export default function PhotoCardGallaryGrid(props) {
 
     const [collectorId, setCollectorId] = useState(0);
     const [collectorName, setCollectorName] = useState(null);
+
+    const location = useLocation();
 
     const queryClient = useQueryClient();
 
@@ -57,6 +62,18 @@ export default function PhotoCardGallaryGrid(props) {
         }
     });
 
+    const updatePhotoCardMutation = useMutation({
+        mutationFn: updatePhotoCard,
+        onSuccess: () => {
+          queryClient.invalidateQueries(["photoCards"]);
+        },
+        onError: (error) => {
+          console.log("PhotoCardGallaryGrid.updatePhotoCardMutation() - got an error: ");
+          console.log(error);
+          //put on screen!
+        }
+      });
+
     useEffect(() => {
         console.log("PhotoCardGallaryGrid.useEffect() - at top")
         if (props.myCards === true){
@@ -93,6 +110,18 @@ export default function PhotoCardGallaryGrid(props) {
         }
     }
 
+    const updatePhotoCardHandler = async(photoCardId, share) => {
+        console.log("PhotoCardGallaryGrid.updatePhotoCardHandler() - share is:");
+        console.log(share);
+        console.log("PhotoCardGallaryGrid.updatePhotoCardHandler() - about to call update mutation")
+        updatePhotoCardMutation.mutate({
+          id : photoCardId,
+          share : share 
+        }); 
+      };
+
+    console.log("PhotoCardGallaryGrid - location is: ")
+    console.log(location);
 
     return (
         <div>
@@ -133,13 +162,26 @@ export default function PhotoCardGallaryGrid(props) {
                                 </Text>
                             {/* </Group> */}
                             <Group position="right" mt="md" >
-                                <Tooltip label={'@'+photoCard.owner_name} color="orange.5" withArrow openDelay={500} radius="sm" fz="sm">
-                                    <Avatar radius="xl" size="sm" color="orange" 
-                                            onClick={() => {filterListByOwnerHandler(photoCard.user_id, photoCard.owner_name)}} 
-                                            style={{cursor:"pointer"}}>
-                                        {photoCard.owner_name.charAt(0).toUpperCase()}
-                                    </Avatar>
-                                </Tooltip>      
+                                {location.pathname === '/my-cards' && 
+                                    ((photoCard.share &&
+                                        <Tooltip label="Click to unshare card" color="orange.5" withArrow openDelay={500} radius="sm" fz="sm">
+                                            <IconLockOpen color={'#fd7e14'} size="1.2rem" onClick={()=>updatePhotoCardHandler(photoCard.id, false)} />
+                                        </Tooltip>
+                                    ) || (
+                                        <Tooltip label="Click to share card" color="orange.5" withArrow openDelay={500} radius="sm" fz="sm">
+                                            <IconLock color={'#fd7e14'} size="1.2rem" onClick={()=>updatePhotoCardHandler(photoCard.id, true)}/>
+                                        </Tooltip>
+                                    )) 
+                                }
+                                {location.pathname !== '/my-cards' &&                                 
+                                    <Tooltip label={'@'+photoCard.owner_name} color="orange.5" withArrow openDelay={500} radius="sm" fz="sm">
+                                        <Avatar radius="xl" size="sm" color="orange" 
+                                                onClick={() => {filterListByOwnerHandler(photoCard.user_id, photoCard.owner_name)}} 
+                                                style={{cursor:"pointer"}}>
+                                            {photoCard.owner_name.charAt(0).toUpperCase()}
+                                        </Avatar>
+                                    </Tooltip>      
+                                }
                                 {currentUserQuery.status === "success" && 
                                  currentUserQuery.data !== null && 
                                  currentUserQuery.data.id !== 0 ? (
@@ -198,9 +240,29 @@ export default function PhotoCardGallaryGrid(props) {
                                         `${photoCard.card_name.substring(0,10)}...` : photoCard.card_name}
                                 </Text>
                                 <Group position="right" mt="md" >    
-                                    <Avatar radius="xl" size="sm" color="orange" onClick={() => {filterListByOwnerHandler(photoCard.user_id, photoCard.owner_name)}}>
+                                    {location.pathname === '/my-cards' && 
+                                        ((photoCard.share &&
+                                            <Tooltip label="Click to unshare card" color="orange.5" withArrow openDelay={500} radius="sm" fz="sm">
+                                                <IconLockOpen color={'#fd7e14'} size="1.2rem" onClick={()=>updatePhotoCardHandler(photoCard.id, false)} />
+                                            </Tooltip>
+                                        ) || (
+                                            <Tooltip label="Click to share card" color="orange.5" withArrow openDelay={500} radius="sm" fz="sm">
+                                                <IconLock color={'#fd7e14'} size="1.2rem" onClick={()=>updatePhotoCardHandler(photoCard.id, true)}/>
+                                            </Tooltip>
+                                        )) 
+                                    }
+                                    {location.pathname !== '/my-cards' &&                                 
+                                        <Tooltip label={'@'+photoCard.owner_name} color="orange.5" withArrow openDelay={500} radius="sm" fz="sm">
+                                            <Avatar radius="xl" size="sm" color="orange" 
+                                                    onClick={() => {filterListByOwnerHandler(photoCard.user_id, photoCard.owner_name)}} 
+                                                    style={{cursor:"pointer"}}>
+                                                {photoCard.owner_name.charAt(0).toUpperCase()}
+                                            </Avatar>
+                                        </Tooltip>      
+                                    }                                
+                                    {/* <Avatar radius="xl" size="sm" color="orange" onClick={() => {filterListByOwnerHandler(photoCard.user_id, photoCard.owner_name)}}>
                                         {photoCard.owner_name.charAt(0).toUpperCase()}
-                                    </Avatar>                   
+                                    </Avatar>                    */}
                                     {currentUserQuery.status === "success" && 
                                     currentUserQuery.data !== null && 
                                     currentUserQuery.data.id !== 0 ? (

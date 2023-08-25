@@ -218,9 +218,9 @@ async def update_photo_card(id: int,
             print("photo_cards.update_photo_card() - 'share' value not changing")
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Photo card already has 'share' set to given value")
         
-        #if changing to 'not share', then delete any favorites that might exist
+        #if changing to 'not share', then delete any favorites that might exist - but not the owner's favorite
         if share is False:
-            resp = await crud.delete_favorites(database=database, photo_card_id=id)
+            resp = await crud.delete_favorites_except_owners(database=database, photo_card_id=id, user_id=user.id)
 
         #now update 'share' in the photo_card
         resp = await crud.update_photo_card(database=database, photo_card_id=id, share=share)

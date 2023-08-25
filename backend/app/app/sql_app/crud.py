@@ -311,16 +311,17 @@ async def delete_favorite(database: Database, favorite_id: int):
 
     return {"message":"Favorite deleted"}
 
-async def delete_favorites(database: Database, photo_card_id: int):
+async def delete_favorites_except_owners(database: Database, photo_card_id: int, user_id: int):
 
-    print("crud.delete_favorites()")
-    query = models.favorites.delete().where(models.favorites.c.photo_card_id == photo_card_id)
-    print("crud.delete_favorites() - about to print query")
+    print("crud.delete_favorites_except_owners()")
+    query = models.favorites.delete().where(models.favorites.c.photo_card_id == photo_card_id,
+                                            models.favorites.c.user_id != user_id);
+    print("crud.delete_favorites_except_owners() - about to print query")
     print(query)
 
     result = await database.execute(query)
     #seems that 'result' contains the count of rows impacted
-    print("crud.delete_favorites() - after delete, about to print 'result'")
+    print("crud.delete_favorites_except_owners() - after delete, about to print 'result'")
     print(result)
 
     return {"message":"Favorites deleted"}
