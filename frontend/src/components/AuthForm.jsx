@@ -107,12 +107,9 @@ const AuthForm = (props) => {
       return;
     }
 
-    console.log("AuthForm.registerSubmitHandler() - registerForm.values is:");
-    console.log(registerForm.values);    
-
     //TODO -- hook up react query mutation here
     registerUserMutation.mutate({
-      username: registerForm.values.username,
+      username: registerForm.values.username.toLowerCase(),
       email: registerForm.values.email,
       password: registerForm.values.password
     });
@@ -129,7 +126,7 @@ const AuthForm = (props) => {
       return;
     }
 
-    const enteredUserNameValue = loginForm.values.username;
+    const enteredUserNameValue = loginForm.values.username.toLowerCase();
     const enteredPasswordValue = loginForm.values.password;
 
     //do I need 'await' here??

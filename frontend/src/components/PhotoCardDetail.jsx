@@ -1,6 +1,7 @@
-import React, { useContext, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Avatar, 
          Container, 
+         Divider, 
          Group, 
          Image, 
          MediaQuery, 
@@ -10,14 +11,20 @@ import { Avatar,
 import { Carousel } from "@mantine/carousel";
 import PropTypes from "prop-types";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useNavigate } from "react-router-dom";
+import { SESSION_EXPIRATION_TIME, getCurrentUser } from "../services/auth";
+import { IconHeart, 
+         IconTrash, 
+         IconLock, 
+         IconLockOpen, 
+         IconArrowBigLeft } from "@tabler/icons-react";
+
 import { getPhotoCard, 
          deletePhotoCard, 
          updatePhotoCard,
          addPhotoCardFavorite, 
          removePhotoCardFavorite} from "../services/photo-cards";
-import { useNavigate } from "react-router-dom";
-import { SESSION_EXPIRATION_TIME, getCurrentUser } from "../services/auth";
-import { IconHeart, IconTrash, IconLock, IconLockOpen } from "@tabler/icons-react";
+
 import { extractMessageFromRestError } from "../utils";
 
 const PhotoCardDetail = (props) => {
@@ -25,6 +32,11 @@ const PhotoCardDetail = (props) => {
   const [deleteError, setDeleteError] = useState(null);
 
   const navigate = useNavigate();
+
+  //doing this will force focus to top of page on 1st render of this detail page
+  useEffect(() => {
+    window.scrollTo(0,0);
+  }, []);
 
   const photoCardQuery = useQuery({
     queryKey: ["photoCards", props.photoCardId],
@@ -131,7 +143,10 @@ const PhotoCardDetail = (props) => {
 
   return (
     <Container>
-      <Text size="xl" fw={700} c="brown">{photoCardQuery.data.card_name}</Text>
+      <Group>
+        <IconArrowBigLeft size="2rem" fill={'#d9480f'} color={'#d9480f'} onClick={() => navigate(-1)}/>
+        <Text size="xl" fw={700} c="brown">{photoCardQuery.data.card_name}</Text>
+      </Group>
       {/* <Divider my="sm"/> */}
       <MediaQuery smallerThan={430} styles={{ display: "none"}}>
         <Carousel withIndicators dragFree loop>
@@ -156,7 +171,8 @@ const PhotoCardDetail = (props) => {
         </Carousel>
       </MediaQuery>
       <MediaQuery largerThan={430} styles={{ display: "none"}}>
-        <Carousel withIndicators dragFree loop>
+        {/* <Space h="xs"/> */}
+        <Carousel withIndicators dragFree loop mt="xs">
           <Carousel.Slide>
             <Image
               src={`/api/photo-cards-${
