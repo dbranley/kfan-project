@@ -18,6 +18,20 @@ async def create_user(database: Database,
 
     return {"id": last_record_id, "username": user.username, "email": user.email, "upload": False}
 
+async def update_user_pwd(database: Database, 
+                          user_id: int,
+                          new_password: str):
+    print("crud.update_user_pwd() - at top")
+
+    query = models.users.update().where(models.users.c.id == user_id) \
+                                    .values(password = new_password)
+    
+    result = await database.execute(query)
+
+    print("crud.update_user_pwd() - after update, about to print 'result'")
+    print(result)
+
+    return {"message":"User updated"}    
 
 async def get_user(database: Database,
              user_id: int):
