@@ -3,6 +3,7 @@ import { Avatar,
          Container, 
          Group, 
          Image, 
+         MediaQuery, 
          Space, 
          Text, 
          Tooltip } from "@mantine/core";
@@ -132,26 +133,50 @@ const PhotoCardDetail = (props) => {
     <Container>
       <Text size="xl" fw={700} c="brown">{photoCardQuery.data.card_name}</Text>
       {/* <Divider my="sm"/> */}
-      <Carousel withIndicators dragFree loop>
-        <Carousel.Slide>
-          <Image
-            src={`/api/photo-cards-${
-              photoCardQuery.data.share ? "public" : "private"
-            }/${photoCardQuery.data.front_file_name}`}
-            height={450}
-            fit="contain"
-          />
-        </Carousel.Slide>
-        <Carousel.Slide>
-          <Image
-            src={`/api/photo-cards-${
-              photoCardQuery.data.share ? "public" : "private"
-            }/${photoCardQuery.data.back_file_name}`}
-            height={450}
-            fit="contain"
-          />
-        </Carousel.Slide>
-      </Carousel>
+      <MediaQuery smallerThan={430} styles={{ display: "none"}}>
+        <Carousel withIndicators dragFree loop>
+          <Carousel.Slide>
+            <Image
+              src={`/api/photo-cards-${
+                photoCardQuery.data.share ? "public" : "private"
+              }/${photoCardQuery.data.front_file_name}`}
+              height={500}
+              fit="contain"
+            />
+          </Carousel.Slide>
+          <Carousel.Slide>
+            <Image
+              src={`/api/photo-cards-${
+                photoCardQuery.data.share ? "public" : "private"
+              }/${photoCardQuery.data.back_file_name}`}
+              height={500}
+              fit="contain"
+            />
+          </Carousel.Slide>
+        </Carousel>
+      </MediaQuery>
+      <MediaQuery largerThan={430} styles={{ display: "none"}}>
+        <Carousel withIndicators dragFree loop>
+          <Carousel.Slide>
+            <Image
+              src={`/api/photo-cards-${
+                photoCardQuery.data.share ? "public" : "private"
+              }/${photoCardQuery.data.front_file_name}`}
+              height={400}
+              fit="contain"
+            />
+          </Carousel.Slide>
+          <Carousel.Slide>
+            <Image
+              src={`/api/photo-cards-${
+                photoCardQuery.data.share ? "public" : "private"
+              }/${photoCardQuery.data.back_file_name}`}
+              height={400}
+              fit="contain"
+            />
+          </Carousel.Slide>
+        </Carousel>
+      </MediaQuery>      
       {/* <Stack align="flex-start" justify="space-evenly"> */}
       {/* <Box >
         <Text c="orange">{photoCardQuery.data.group_name}</Text>
