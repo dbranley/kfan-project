@@ -56,7 +56,6 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None):
     return encoded_jwt
 
 def verify_password(plain_password, hashed_password):
-    print("verify_password() - plain_password="+plain_password+"=, hashed_password="+hashed_password+"=")
     return pwd_context.verify(plain_password, hashed_password)
 
 
@@ -187,19 +186,8 @@ async def update_password(user_update: schemas.UserPwdUpdate,
 
         print("users.update_password() - about to call users.get_current_user()")
         user = await get_current_user(token, database)
-        print("users.update_password() - after calling  users.get_current_user() - user is:")
-        print(user)
         if user is None:
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)   
-
-        #now make sure the original_password matches what is in the DB now
-        # db_user = await authenticate_user(user.username, get_password_hash(original_password), database)
-        # print("users.update_password() - back from 'authenticate_user() - resp db_user is:")
-        # print(db_user)
-        # if db_user is None:
-        #     print("users.update_password() - original password given is incorrect")
-        #     raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
-        #                         detail="Invalid request")     
 
         if not verify_password(user_update.original_password, user.password):
             print("users.update_password() - original password given is incorrect")

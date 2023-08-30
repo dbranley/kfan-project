@@ -28,17 +28,12 @@ async def update_user_pwd(database: Database,
     
     result = await database.execute(query)
 
-    print("crud.update_user_pwd() - after update, about to print 'result'")
-    print(result)
-
     return {"message":"User updated"}    
 
 async def get_user(database: Database,
              user_id: int):
     print("crud.get_user() - at top")
     query = models.users.select().where(models.users.c.id == user_id)
-    print("get_user() - about to print query")
-    print(query)
     result = await database.fetch_one(query)
     return result
 
@@ -46,8 +41,6 @@ async def get_user_by_username(database: Database,
                          username: str):
        print("crud.get_user_by_username")
        query = models.users.select().where(models.users.c.username == username)
-       print("get_user_by_username() - about to print query")
-       print(query)
        return await database.fetch_one(query)
 
 #PhotoCards cruds
@@ -89,13 +82,8 @@ async def update_photo_card(database: Database,
     query = models.photo_cards.update().where(models.photo_cards.c.id == photo_card_id) \
                                        .values(share = share)
 
-    print("crud.update_photo_card() - about to print query")
-    print(query)
-    
+   
     result = await database.execute(query)
-
-    print("crud.update_photo_card() - after update, about to print 'result'")
-    print(result)
 
     return {"message":"Photo Card updated"}
 
