@@ -30,8 +30,6 @@ export async function register(registerUserData){
 }
 
 export async function changePassword(changePasswordData){
-    console.log("auth.changePassword() - changePasswordData is:");
-    console.log(changePasswordData);
     
     try{
         const response = await axios.post(
