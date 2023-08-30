@@ -37,6 +37,10 @@ class User(UserBase):
     email: str
     upload: bool
 
+class UserPwdUpdate(BaseModel):
+    original_password: str
+    new_password: str
+
     # class Config:
     #     orm_mode = True
 

@@ -56,7 +56,6 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None):
     return encoded_jwt
 
 def verify_password(plain_password, hashed_password):
-    print("verify_password() - plain_password="+plain_password+"=, hashed_password="+hashed_password+"=")
     return pwd_context.verify(plain_password, hashed_password)
 
 
@@ -175,6 +174,62 @@ async def read_user(user_id: int):
     if db_user is None:
         raise HTTPException(status_code=404, detail="User not found")
     return db_user
+
+@router.post("/api/user/password", tags=["users"])
+async def update_password(user_update: schemas.UserPwdUpdate, 
+                         request: Request):
+    print("users.update_password() - at top")
+    transaction = await database.transaction()
+    try:
+        #verify user is authenticated
+        token = request.cookies.get("token")
+
+        print("users.update_password() - about to call users.get_current_user()")
+        user = await get_current_user(token, database)
+        if user is None:
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)   
+
+        if not verify_password(user_update.original_password, user.password):
+            print("users.update_password() - original password given is incorrect")
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
+                            detail="Invalid request")
+
+
+        #now make sure the new_password is a valid format
+        if len(user_update.new_password) == 0:
+            print("users.update_password() - new password is an empty string")
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
+                                detail="Invalid request")
+
+        #hash the password
+        new_password_hash = get_password_hash(user_update.new_password)
+        
+        #now update the password for the user
+        resp = await crud.update_user_pwd(database=database, user_id=user.id, new_password=new_password_hash)
+    
+    except HTTPException as httpex:
+        print("users.update_password() - in the except 'HTTPException' block - printing exception here: ")
+        print(httpex)
+
+        await transaction.rollback()
+
+        #now rethrow this
+        raise httpex
+    
+    except Exception as ex:
+        print("users.update_password() - in the except 'Exception' block - printing exception here: ")
+        print(ex)
+
+        #this duplicates same code above so should do something about that
+        await transaction.rollback()
+
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                    detail="Exception thrown while updating the user - error is - " + str(ex))
+    else:
+        print("users.update_password() - in 'else' so about to commit")
+        await transaction.commit()
+    
+    return resp    
 
 
 @database.transaction()

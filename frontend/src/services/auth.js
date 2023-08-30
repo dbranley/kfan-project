@@ -29,6 +29,29 @@ export async function register(registerUserData){
     }
 }
 
+export async function changePassword(changePasswordData){
+    
+    try{
+        const response = await axios.post(
+            '/api/user/password',
+            {
+                original_password: changePasswordData.originalPassword,
+                new_password: changePasswordData.newPassword,
+            }
+        );
+        if (response.status != 200){
+            throw new Error('Request failed - status code='+response.status+'=, status text='+response.statusText+'=');
+        }
+        const data = await response.data;
+        return data;
+
+    } catch(error){
+        console.log(error);
+        throw(error);
+    }
+}
+
+
 // loginUserData object is:
 //   username
 //   password
