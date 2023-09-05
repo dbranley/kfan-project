@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import { Avatar, Button, Card, Grid, Group, Image, MediaQuery, Space, Text, Tooltip } from "@mantine/core";
 // import { Heart } from 'tabler-icons-react';
-import { IconHeart, IconCircleX, IconLock, IconLockOpen } from "@tabler/icons-react";
+import { IconHeart, IconCircleX, IconLock, IconLockOpen, IconStar } from "@tabler/icons-react";
 import PropTypes from "prop-types";
 import { Link, useLocation } from "react-router-dom";
 
@@ -21,6 +21,9 @@ export default function PhotoCardGallaryGrid(props) {
 
     const [collectorId, setCollectorId] = useState(0);
     const [collectorName, setCollectorName] = useState(null);
+
+    const [yoursOpened, setYoursOpened] = useState(0);
+    const [loginToFavOpened, setLoginToFavOpened] = useState(0);
 
     const location = useLocation();
 
@@ -173,22 +176,45 @@ export default function PhotoCardGallaryGrid(props) {
                                         </Tooltip>
                                     )) 
                                 }
-                                {location.pathname !== '/my-cards' &&                                 
-                                    <Tooltip label={'@'+photoCard.owner_name} color="orange.5" withArrow openDelay={500} radius="sm" fz="sm">
-                                        <Avatar radius="xl" size="sm" color="orange" 
-                                                onClick={() => {filterListByOwnerHandler(photoCard.user_id, photoCard.owner_name)}} 
-                                                style={{cursor:"pointer"}}>
-                                            {photoCard.owner_name.charAt(0).toUpperCase()}
-                                        </Avatar>
-                                    </Tooltip>      
+                                {(location.pathname !== '/my-cards' &&  
+                                    ((currentUserQuery.status === "success" && 
+                                     currentUserQuery.data !== null && 
+                                     currentUserQuery.data.id !== 0 &&
+                                     currentUserQuery.data.id === photoCard.user_id) ? (
+                                        <Tooltip label={"Your card"} color="orange.5" withArrow openDelay={500} radius="sm" fz="sm">
+                                            <IconStar size="1.1rem" strokeWidth={2} color={'#fd7e14'} />
+                                        </Tooltip>                                         
+
+                                     ) : (
+                                        <Tooltip label={'@'+photoCard.owner_name} color="orange.5" withArrow openDelay={500} radius="sm" fz="sm">
+                                            <Avatar radius="xl" size="sm" color="orange" 
+                                                    onClick={() => {filterListByOwnerHandler(photoCard.user_id, photoCard.owner_name)}} 
+                                                    style={{cursor:"pointer"}}>
+                                                {photoCard.owner_name.charAt(0).toUpperCase()}
+                                            </Avatar>
+                                        </Tooltip>                                         
+                                     ))
+
+                                    )                               
+                                    // <Tooltip label={'@'+photoCard.owner_name} color="orange.5" withArrow openDelay={500} radius="sm" fz="sm">
+                                    //     <Avatar radius="xl" size="sm" color="orange" 
+                                    //             onClick={() => {filterListByOwnerHandler(photoCard.user_id, photoCard.owner_name)}} 
+                                    //             style={{cursor:"pointer"}}>
+                                    //         {photoCard.owner_name.charAt(0).toUpperCase()}
+                                    //     </Avatar>
+                                    // </Tooltip>      
                                 }
                                 {currentUserQuery.status === "success" && 
                                  currentUserQuery.data !== null && 
                                  currentUserQuery.data.id !== 0 ? (
                                     photoCard.favorite_id === null ? (
-                                        <IconHeart onClick={()=>addFavoritePhotoCardHandler(photoCard.id)} style={{cursor:"pointer"}} size="1.1rem" strokeWidth={2} color={'#868e96'}/>
+                                        <Tooltip label="Click to set as favorite" color="orange.5" withArrow openDelay={500} radius="sm" fz="sm">
+                                            <IconHeart onClick={()=>addFavoritePhotoCardHandler(photoCard.id)} style={{cursor:"pointer"}} size="1.1rem" strokeWidth={2} color={'#868e96'}/>
+                                        </Tooltip>
                                     ) : (
-                                        <IconHeart onClick={()=>removeFavoritePhotoCardHandler(photoCard.id)} style={{cursor:"pointer"}} size="1.1rem" strokeWidth={3} color={'#fd7e14'} fill={'#fd7e14'}/>
+                                        <Tooltip label="Click to remove favorite" color="orange.5" withArrow openDelay={500} radius="sm" fz="sm">
+                                            <IconHeart onClick={()=>removeFavoritePhotoCardHandler(photoCard.id)} style={{cursor:"pointer"}} size="1.1rem" strokeWidth={3} color={'#fd7e14'} fill={'#fd7e14'}/>
+                                        </Tooltip>
                                     )                                    
                                  ) : (
                                     <Tooltip label="Login to set favorites!" color="orange.5" withArrow openDelay={500} radius="sm" fz="sm">
@@ -214,7 +240,11 @@ export default function PhotoCardGallaryGrid(props) {
                     {/* {props.myCards === true && <Badge radius="xl" compact variant="light">My Cards</Badge>}
                     {props.myFavorites === true && <Badge radius="xl" compact variant="light">My Favorites</Badge>} */}
                     {collectorName !== null && 
-                     <Button variant="light" radius="xl" size="sm" compact rightIcon={<IconCircleX/>} onClick={() => {filterListByOwnerHandler(0, null)}}>
+                     <Button variant="light" radius="xl" size="sm" compact rightIcon={<IconCircleX/>} onClick={() => {
+                        setYoursOpened(0);
+                        setLoginToFavOpened(0);
+                        filterListByOwnerHandler(0, null);
+                     }}>
                         @{collectorName}
                      </Button>
                     }                    
@@ -251,14 +281,44 @@ export default function PhotoCardGallaryGrid(props) {
                                             </Tooltip>
                                         )) 
                                     }
-                                    {location.pathname !== '/my-cards' &&                                 
+                                    {(location.pathname !== '/my-cards' && 
+                                        ((currentUserQuery.status === "success" && 
+                                        currentUserQuery.data !== null && 
+                                        currentUserQuery.data.id !== 0 &&
+                                        currentUserQuery.data.id === photoCard.user_id) ? (
+                                        <Tooltip label={"Your card"} color="orange.5" withArrow openDelay={500} radius="sm" fz="sm" opened={yoursOpened === photoCard.id}>
+                                            <IconStar size="1.1rem" strokeWidth={2} color={'#fd7e14'} onClick={() => {
+                                                if (yoursOpened === 0){
+                                                    setYoursOpened(photoCard.id);
+                                                } else if (yoursOpened === photoCard.id){
+                                                    setYoursOpened(0);
+                                                } else {
+                                                    setYoursOpened(photoCard.id);
+                                                }
+                                            }}/>
+                                        </Tooltip>                                         
+
+                                        ) : (
                                         <Tooltip label={'@'+photoCard.owner_name} color="orange.5" withArrow openDelay={500} radius="sm" fz="sm">
                                             <Avatar radius="xl" size="sm" color="orange" 
-                                                    onClick={() => {filterListByOwnerHandler(photoCard.user_id, photoCard.owner_name)}} 
+                                                    onClick={() => {
+                                                        setYoursOpened(0);
+                                                        setLoginToFavOpened(0);
+                                                        filterListByOwnerHandler(photoCard.user_id, photoCard.owner_name);
+                                                    }} 
                                                     style={{cursor:"pointer"}}>
                                                 {photoCard.owner_name.charAt(0).toUpperCase()}
                                             </Avatar>
-                                        </Tooltip>      
+                                        </Tooltip>                                         
+                                        ))
+                                     )                                                                     
+                                        // <Tooltip label={'@'+photoCard.owner_name} color="orange.5" withArrow openDelay={500} radius="sm" fz="sm">
+                                        //     <Avatar radius="xl" size="sm" color="orange" 
+                                        //             onClick={() => {filterListByOwnerHandler(photoCard.user_id, photoCard.owner_name)}} 
+                                        //             style={{cursor:"pointer"}}>
+                                        //         {photoCard.owner_name.charAt(0).toUpperCase()}
+                                        //     </Avatar>
+                                        // </Tooltip>      
                                     }                                
                                     {/* <Avatar radius="xl" size="sm" color="orange" onClick={() => {filterListByOwnerHandler(photoCard.user_id, photoCard.owner_name)}}>
                                         {photoCard.owner_name.charAt(0).toUpperCase()}
@@ -267,12 +327,31 @@ export default function PhotoCardGallaryGrid(props) {
                                     currentUserQuery.data !== null && 
                                     currentUserQuery.data.id !== 0 ? (
                                         photoCard.favorite_id === null ? (
-                                            <IconHeart onClick={()=>addFavoritePhotoCardHandler(photoCard.id)} style={{cursor:"pointer"}} size="1.1rem" strokeWidth={2} color={'#868e96'}/>
+                                            <IconHeart onClick={()=>{
+                                                setYoursOpened(0);
+                                                setLoginToFavOpened(0);
+                                                addFavoritePhotoCardHandler(photoCard.id);
+                                            }} style={{cursor:"pointer"}} size="1.1rem" strokeWidth={2} color={'#868e96'}/>
                                         ) : (
-                                            <IconHeart onClick={()=>removeFavoritePhotoCardHandler(photoCard.id)} style={{cursor:"pointer"}} size="1.1rem" strokeWidth={3} color={'#fd7e14'} fill={'#fd7e14'}/>
+                                            <IconHeart onClick={()=>{
+                                                setYoursOpened(0);
+                                                setLoginToFavOpened(0);
+                                                removeFavoritePhotoCardHandler(photoCard.id);
+                                            }} style={{cursor:"pointer"}} size="1.1rem" strokeWidth={3} color={'#fd7e14'} fill={'#fd7e14'}/>
                                         )                                    
                                     ) : (
-                                        <IconHeart size="1.1rem" strokeWidth={2} color={'#868e96'}/>
+                                        // <IconHeart size="1.1rem" strokeWidth={2} color={'#868e96'}/>
+                                        <Tooltip label="Login to set favorites!" color="orange.5" withArrow openDelay={500} radius="sm" fz="sm" opened={loginToFavOpened === photoCard.id}>
+                                            <IconHeart size="1.1rem" strokeWidth={2} color={'#868e96'} onClick={() => {
+                                                if (loginToFavOpened === 0){
+                                                    setLoginToFavOpened(photoCard.id);
+                                                } else if (loginToFavOpened === photoCard.id){
+                                                    setLoginToFavOpened(0);
+                                                } else {
+                                                    setLoginToFavOpened(photoCard.id);
+                                                }
+                                            }}/>
+                                        </Tooltip>                                        
                                     )
                                     
                                     }

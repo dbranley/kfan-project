@@ -90,6 +90,7 @@ export default function AuthButton() {
             </Group>
           </Container>
         </Modal>
+        <Avatar data-testid="profile-avatar-id" radius="xl" size="sm" variant="filled" color="orange" style={{cursor:"pointer"}} />
       </div>
     );
 

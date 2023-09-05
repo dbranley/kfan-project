@@ -30,6 +30,8 @@ import { extractMessageFromRestError } from "../utils";
 const PhotoCardDetail = (props) => {
 
   const [deleteError, setDeleteError] = useState(null);
+  const [ownerOpened, setOwnerOpened] = useState(false);
+  const [loginToFavOpened, setLoginToFavOpened] = useState(false);
 
   const navigate = useNavigate();
 
@@ -149,7 +151,13 @@ const PhotoCardDetail = (props) => {
       </Group>
       {/* <Divider my="sm"/> */}
       <MediaQuery smallerThan={430} styles={{ display: "none"}}>
-        <Carousel withIndicators dragFree loop>
+        {/* <Carousel withIndicators dragFree controlsOffset="xl" controlSize={40} slideSize="49%" */}
+        <div>
+        <Carousel draggable={false} withControls={false} slideGap="xs" slideSize="50%" withIndicators={false} align="start">
+                  {/* styles={{ control: {
+                                '&[data-inactive]': {opacity : 0, cursor: 'default',}
+                                    }
+                        }}> */}
           <Carousel.Slide>
             <Image
               src={`/api/photo-cards-${
@@ -169,104 +177,150 @@ const PhotoCardDetail = (props) => {
             />
           </Carousel.Slide>
         </Carousel>
+        <Container fluid ml="0rem" mt="0.5rem">
+          <Text c="orange" fz="xl">{photoCardQuery.data.group_name}</Text>
+          <Space h="sm"/>
+          {deleteError != null && <div><Text size="md" c="red" align="left">{deleteError}</Text></div>}
+          <Group position="left" spacing="xl">
+          {/* <Text c="orange" fz="xl">{photoCardQuery.data.group_name}</Text> */}
+          <Tooltip label={'@'+photoCardQuery.data.owner_name} color="orange.5" withArrow openDelay={500} radius="sm" fz="sm">
+            <Avatar radius="xl" size="md" color="orange">{photoCardQuery.data.owner_name.charAt(0).toUpperCase()}</Avatar>
+          </Tooltip>        
+        {currentUserQuery.status === "success" && 
+                currentUserQuery.data !== null && 
+                currentUserQuery.data.id !== 0 ? (
+                  photoCardQuery.data.favorite_id === null ? (
+                    <IconHeart onClick={()=>{
+                      addFavoritePhotoCardHandler(photoCardQuery.data.id);
+                    }} style={{cursor:"pointer"}} size="2rem" strokeWidth={1} color={'#868e96'}/>
+                  ) : (
+                    <IconHeart onClick={()=>{
+                      removeFavoritePhotoCardHandler(photoCardQuery.data.id);
+                    }} style={{cursor:"pointer"}} size="2rem" strokeWidth={3} color={'#fd7e14'} fill={'#fd7e14'}/>
+                  )                                    
+
+                ) : (
+                  <Tooltip label="Login to set favorites!" color="orange.5" withArrow openDelay={500} radius="sm" fz="sm">
+                    <IconHeart ml={10} size="2rem" strokeWidth={1} color={'#868e96'} />
+                  </Tooltip>
+                )
+        }
+        {currentUserQuery.status === "success" && 
+                currentUserQuery.data !== null && 
+                currentUserQuery.data.id !== 0 &&
+                currentUserQuery.data.id === photoCardQuery.data.user_id &&
+                ((photoCardQuery.data.share &&
+                  <IconLockOpen color={'#fd7e14'} size="2rem" onClick={()=>{
+                    updatePhotoCardHandler(photoCardQuery.data.id, false);
+                  }}/>
+                ) || (
+                  <IconLock color={'#fd7e14'} size="2rem" onClick={()=>{
+                    updatePhotoCardHandler(photoCardQuery.data.id, true);
+                  }}/>
+                ))    
+                }
+        {currentUserQuery.status === "success" && 
+                currentUserQuery.data !== null && 
+                currentUserQuery.data.id !== 0 &&
+                currentUserQuery.data.id === photoCardQuery.data.user_id &&  
+                  <IconTrash onClick={deletePhotoCardHandler} size="2rem" color={'#fd7e14'}/>
+                }              
+        </Group>
+        </Container>   
+        </div>     
       </MediaQuery>
       <MediaQuery largerThan={430} styles={{ display: "none"}}>
         {/* <Space h="xs"/> */}
-        <Carousel withIndicators dragFree loop mt="xs">
-          <Carousel.Slide>
-            <Image
-              src={`/api/photo-cards-${
-                photoCardQuery.data.share ? "public" : "private"
-              }/${photoCardQuery.data.front_file_name}`}
-              height={400}
-              fit="contain"
-            />
-          </Carousel.Slide>
-          <Carousel.Slide>
-            <Image
-              src={`/api/photo-cards-${
-                photoCardQuery.data.share ? "public" : "private"
-              }/${photoCardQuery.data.back_file_name}`}
-              height={400}
-              fit="contain"
-            />
-          </Carousel.Slide>
-        </Carousel>
+        <div>
+          <Carousel withIndicators dragFree mt="xs" controlSize={30} slideGap="xs" 
+                styles={{ control: {
+                  '&[data-inactive]': {opacity : 0, cursor: 'default',}
+                      }
+                  }}>
+            <Carousel.Slide>
+              <Image
+                src={`/api/photo-cards-${
+                  photoCardQuery.data.share ? "public" : "private"
+                }/${photoCardQuery.data.front_file_name}`}
+                height={400}
+                fit="contain"
+              />
+            </Carousel.Slide>
+            <Carousel.Slide>
+              <Image
+                src={`/api/photo-cards-${
+                  photoCardQuery.data.share ? "public" : "private"
+                }/${photoCardQuery.data.back_file_name}`}
+                height={400}
+                fit="contain"
+              />
+            </Carousel.Slide>
+          </Carousel>
+          <Container fluid ml="0rem" mt="0.5rem">
+          <Text c="orange" fz="xl">{photoCardQuery.data.group_name}</Text>
+          <Space h="sm"/>
+          {deleteError != null && <div><Text size="md" c="red" align="left">{deleteError}</Text></div>}
+          <Group position="left" spacing="xl">
+          {/* <Text c="orange" fz="xl">{photoCardQuery.data.group_name}</Text> */}
+          <Tooltip label={'@'+photoCardQuery.data.owner_name} color="orange.5" withArrow openDelay={500} radius="sm" fz="sm" opened={ownerOpened}>
+            <Avatar radius="xl" size="md" color="orange" onClick={()=> {
+              setLoginToFavOpened(false);
+              setOwnerOpened((o)=>!o);
+              }}>{photoCardQuery.data.owner_name.charAt(0).toUpperCase()}</Avatar>
+          </Tooltip>        
+        {currentUserQuery.status === "success" && 
+                currentUserQuery.data !== null && 
+                currentUserQuery.data.id !== 0 ? (
+                  photoCardQuery.data.favorite_id === null ? (
+                    <IconHeart onClick={()=>{
+                      setOwnerOpened(false);
+                      addFavoritePhotoCardHandler(photoCardQuery.data.id);
+                    }} style={{cursor:"pointer"}} size="2rem" strokeWidth={1} color={'#868e96'}/>
+                  ) : (
+                    <IconHeart onClick={()=>{
+                      setOwnerOpened(false);
+                      removeFavoritePhotoCardHandler(photoCardQuery.data.id);
+                    }} style={{cursor:"pointer"}} size="2rem" strokeWidth={3} color={'#fd7e14'} fill={'#fd7e14'}/>
+                  )                                    
+
+                ) : (
+                  <Tooltip label="Login to set favorites!" color="orange.5" withArrow openDelay={500} radius="sm" fz="sm" opened={loginToFavOpened}>
+                    <IconHeart ml={10} size="2rem" strokeWidth={1} color={'#868e96'} onClick={()=> {
+                        setOwnerOpened(false);
+                        setLoginToFavOpened((o)=>!o);
+                        }}/>
+                  </Tooltip>
+                )
+        }
+        {currentUserQuery.status === "success" && 
+                currentUserQuery.data !== null && 
+                currentUserQuery.data.id !== 0 &&
+                currentUserQuery.data.id === photoCardQuery.data.user_id &&
+                ((photoCardQuery.data.share &&
+                  <IconLockOpen color={'#fd7e14'} size="2rem" onClick={()=>{
+                    setOwnerOpened(false);
+                    updatePhotoCardHandler(photoCardQuery.data.id, false);
+                  }}/>
+                ) || (
+                  <IconLock color={'#fd7e14'} size="2rem" onClick={()=>{
+                    setOwnerOpened(false);
+                    updatePhotoCardHandler(photoCardQuery.data.id, true);
+                  }}/>
+                ))    
+                }
+        {currentUserQuery.status === "success" && 
+                currentUserQuery.data !== null && 
+                currentUserQuery.data.id !== 0 &&
+                currentUserQuery.data.id === photoCardQuery.data.user_id &&  
+                  <IconTrash onClick={deletePhotoCardHandler} size="2rem" color={'#fd7e14'}/>
+                }              
+        </Group>
+        </Container>
+        </div>
+
       </MediaQuery>      
-      {/* <Stack align="flex-start" justify="space-evenly"> */}
-      {/* <Box >
-        <Text c="orange">{photoCardQuery.data.group_name}</Text>
-      </Box> */}
 
       
-      <Container fluid ml="0rem" mt="0.5rem">
-        <Text c="orange" fz="xl">{photoCardQuery.data.group_name}</Text>
-        <Space h="sm"/>
-        {deleteError != null && <div><Text size="md" c="red" align="left">{deleteError}</Text></div>}
-        <Group position="left" spacing="xl">
-        {/* <Text c="orange" fz="xl">{photoCardQuery.data.group_name}</Text> */}
-        <Tooltip label={'@'+photoCardQuery.data.owner_name} color="orange.5" withArrow openDelay={500} radius="sm" fz="sm">
-          <Avatar radius="xl" size="md" color="orange">{photoCardQuery.data.owner_name.charAt(0).toUpperCase()}</Avatar>
-        </Tooltip>        
-      {currentUserQuery.status === "success" && 
-              currentUserQuery.data !== null && 
-              currentUserQuery.data.id !== 0 ? (
-                photoCardQuery.data.favorite_id === null ? (
-                  <IconHeart onClick={()=>addFavoritePhotoCardHandler(photoCardQuery.data.id)} style={{cursor:"pointer"}} size="2rem" strokeWidth={1} color={'#868e96'}/>
-                ) : (
-                  <IconHeart onClick={()=>removeFavoritePhotoCardHandler(photoCardQuery.data.id)} style={{cursor:"pointer"}} size="2rem" strokeWidth={3} color={'#fd7e14'} fill={'#fd7e14'}/>
-                )                                    
-
-              ) : (
-                <Tooltip label="Login to set favorites!" color="orange.5" withArrow openDelay={500} radius="sm" fz="sm">
-                  <IconHeart ml={10} size="2rem" strokeWidth={1} color={'#868e96'}/>
-                </Tooltip>
-              )
-      }
-      {/* </Group>
-      <Group position="right" spacing="xl"> */}
-      {currentUserQuery.status === "success" && 
-              currentUserQuery.data !== null && 
-              currentUserQuery.data.id !== 0 &&
-              currentUserQuery.data.id === photoCardQuery.data.user_id &&
-              ((photoCardQuery.data.share &&
-                <Tooltip label="Click to unshare card" color="orange.5" withArrow openDelay={500} radius="sm" fz="sm">
-                  <IconLockOpen color={'#fd7e14'} size="2rem" onClick={()=>updatePhotoCardHandler(photoCardQuery.data.id, false)}/>
-                </Tooltip>
-               ) || (
-                <Tooltip label="Click to share card" color="orange.5" withArrow openDelay={500} radius="sm" fz="sm">
-                  <IconLock color={'#fd7e14'} size="2rem" onClick={()=>updatePhotoCardHandler(photoCardQuery.data.id, true)}/>
-                </Tooltip>
-               ))    
-                // <Switch label="Share" color="orange" checked={photoCardQuery.data.share} size="1.5rem" fz="lg"
-                //         onChange={(event)=>updatePhotoCardHandler(photoCardQuery.data.id, event.currentTarget.checked)}/>
-              }
-      {currentUserQuery.status === "success" && 
-              currentUserQuery.data !== null && 
-              currentUserQuery.data.id !== 0 &&
-              currentUserQuery.data.id === photoCardQuery.data.user_id &&  
-                <Tooltip label="Delete card" color="orange.5" withArrow openDelay={500} radius="sm" fz="sm">
-                  <IconTrash onClick={deletePhotoCardHandler} size="2rem" color={'#fd7e14'}/>
-                </Tooltip>
-              }              
-      </Group>
-      </Container>
-      {/* <Divider my="xs"/>
-      {deleteError != null && <div><Text size="md" c="red" align="left">{deleteError}</Text></div>}
-      {currentUserQuery.status === "success" && 
-              currentUserQuery.data !== null && 
-              currentUserQuery.data.id !== 0 &&
-              currentUserQuery.data.id === photoCardQuery.data.user_id &&  
-              <div>
-                <Switch label="Share" color="orange" checked={photoCardQuery.data.share}/>
-                <Space h="md"/>
-                <Tooltip label="Delete card" color="orange.5" withArrow openDelay={500} radius="sm" fz="sm">
-                  <IconTrash onClick={deletePhotoCardHandler} size="2rem" color={'#fd7e14'}/>
-                </Tooltip>
-                
-              </div>
-              } */}
-      {/* </Stack> */}
     </Container>
   );
 };
