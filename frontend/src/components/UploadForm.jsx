@@ -4,11 +4,12 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useForm } from "@mantine/form";
 import { IconUpload } from "@tabler/icons-react";
 
-import { addPhotoCard } from "../services/photo-cards";
 import { Box, Button, Checkbox, Container, FileInput, Group, Modal, Text, TextInput, LoadingOverlay, FocusTrap } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { Link } from "react-router-dom";
 
+import { addPhotoCard } from "../services/photo-cards";
+import { extractMessageFromRestError } from "../utils";
 
 const UploadForm = () => {
 
@@ -47,7 +48,7 @@ const UploadForm = () => {
         onError: (error) => {
             console.log("UploadForm - createPhotoCardMutation() - got an error: ");
             console.log(error);
-            setError("Upload failed with '"+error.message+"'");
+            setError("Upload failed with '"+extractMessageFromRestError(error)+"'");
         }
 
     });

@@ -144,16 +144,19 @@ const PhotoCardDetail = (props) => {
   }
 
   return (
-    <Container>
-      <Group>
+    <Container px={0}>
+      {/* <Group>
         <IconArrowBigLeft size="2rem" fill={'#d9480f'} color={'#d9480f'} onClick={() => navigate(-1)}/>
         <Text size="xl" fw={700} c="brown">{photoCardQuery.data.card_name}</Text>
-      </Group>
+      </Group> */}
       {/* <Divider my="sm"/> */}
       <MediaQuery smallerThan={430} styles={{ display: "none"}}>
-        {/* <Carousel withIndicators dragFree controlsOffset="xl" controlSize={40} slideSize="49%" */}
         <div>
-        <Carousel draggable={false} withControls={false} slideGap="xs" slideSize="50%" withIndicators={false} align="start">
+          <Group>
+            <IconArrowBigLeft size="2rem" fill={'#d9480f'} color={'#d9480f'} onClick={() => navigate(-1)}/>
+            <Text size="xl" fw={700} c="brown">{photoCardQuery.data.card_name}</Text>
+          </Group>          
+        <Carousel draggable={false} withControls={false} slideGap="xs" slideSize="50%" withIndicators={false} align="start" mt="xs">
                   {/* styles={{ control: {
                                 '&[data-inactive]': {opacity : 0, cursor: 'default',}
                                     }
@@ -232,6 +235,11 @@ const PhotoCardDetail = (props) => {
       <MediaQuery largerThan={430} styles={{ display: "none"}}>
         {/* <Space h="xs"/> */}
         <div>
+          <Group>
+            <IconArrowBigLeft size="2rem" fill={'#d9480f'} color={'#d9480f'} onClick={() => navigate(-1)}/>
+            <Text size="xl" fw={700} c="brown">{photoCardQuery.data.card_name.length > 24 ?
+                                        `${photoCardQuery.data.card_name.substring(0,24)}...` : photoCardQuery.data.card_name}</Text>
+          </Group>          
           <Carousel withIndicators dragFree mt="xs" controlSize={30} slideGap="xs" 
                 styles={{ control: {
                   '&[data-inactive]': {opacity : 0, cursor: 'default',}

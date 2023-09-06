@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
-import { Avatar, Button, Card, Grid, Group, Image, MediaQuery, Space, Text, Tooltip } from "@mantine/core";
+import { Avatar, Button, Card, Grid, Group, Image, MediaQuery, Space, Stack, Text, Tooltip } from "@mantine/core";
 // import { Heart } from 'tabler-icons-react';
 import { IconHeart, IconCircleX, IconLock, IconLockOpen, IconStar } from "@tabler/icons-react";
 import PropTypes from "prop-types";
@@ -146,33 +146,37 @@ export default function PhotoCardGallaryGrid(props) {
                 <Grid data-testid={`${props.myCards ? "photo-card-grid-left-mine-id" : "photo-card-grid-left-public-id"}`} justify="left" align="start">
                     {photoCardsQuery.data.map((photoCard, index) => (
                         <Grid.Col key={index} span="content" style={{width: 200}} align="left">
-                        <Card radius="sm" 
+                        <Card radius="md" 
                             shadow="md"
-                            padding="sm"
+                            padding="xs"
                             key={index} 
                         >
                             <Card.Section component={Link} to={`/card/${photoCard.id}`}>
                                 <Image 
                                     src={`/api/photo-cards-${photoCard.share ? 'public' : 'private'}/${photoCard.front_file_name}`}
                                     height={260}
-                                    // fit="contain"
+                                    // styles={{
+                                    //     height:350,
+                                    //     aspectRatio: 16/9
+                                    // }}
+                                    // fit="cover"
                                 />
                             </Card.Section>
-                            <Group position="apart" mt="md">
+                            <Stack align="flex-start" justify="flex-start" spacing={3}>
                             {/* <Group position="" mt="md"> */}
-                                <Text mt="md" size="sm" color="dimmed" ta="right" >{photoCard.card_name.length > 10 ?
-                                        `${photoCard.card_name.substring(0,10)}...` : photoCard.card_name}
+                                <Text mt={3} size="sm" color="dimmed" ta="right" >{photoCard.card_name.length > 18 ?
+                                        `${photoCard.card_name.substring(0,18)}...` : photoCard.card_name}
                                 </Text>
                             {/* </Group> */}
-                            <Group position="right" mt="md" >
+                            <Group position="right" >
                                 {location.pathname === '/my-cards' && 
                                     ((photoCard.share &&
                                         <Tooltip label="Click to unshare card" color="orange.5" withArrow openDelay={500} radius="sm" fz="sm">
-                                            <IconLockOpen color={'#fd7e14'} size="1.2rem" onClick={()=>updatePhotoCardHandler(photoCard.id, false)} />
+                                            <IconLockOpen color={'#fd7e14'} size="1.5rem" onClick={()=>updatePhotoCardHandler(photoCard.id, false)} />
                                         </Tooltip>
                                     ) || (
                                         <Tooltip label="Click to share card" color="orange.5" withArrow openDelay={500} radius="sm" fz="sm">
-                                            <IconLock color={'#fd7e14'} size="1.2rem" onClick={()=>updatePhotoCardHandler(photoCard.id, true)}/>
+                                            <IconLock color={'#fd7e14'} size="1.5rem" onClick={()=>updatePhotoCardHandler(photoCard.id, true)}/>
                                         </Tooltip>
                                     )) 
                                 }
@@ -182,12 +186,12 @@ export default function PhotoCardGallaryGrid(props) {
                                      currentUserQuery.data.id !== 0 &&
                                      currentUserQuery.data.id === photoCard.user_id) ? (
                                         <Tooltip label={"Your card"} color="orange.5" withArrow openDelay={500} radius="sm" fz="sm">
-                                            <IconStar size="1.1rem" strokeWidth={2} color={'#fd7e14'} />
+                                            <IconStar size="1.5rem" strokeWidth={2} color={'#fd7e14'} />
                                         </Tooltip>                                         
 
                                      ) : (
                                         <Tooltip label={'@'+photoCard.owner_name} color="orange.5" withArrow openDelay={500} radius="sm" fz="sm">
-                                            <Avatar radius="xl" size="sm" color="orange" 
+                                            <Avatar radius="xl" size="1.5rem" color="orange" 
                                                     onClick={() => {filterListByOwnerHandler(photoCard.user_id, photoCard.owner_name)}} 
                                                     style={{cursor:"pointer"}}>
                                                 {photoCard.owner_name.charAt(0).toUpperCase()}
@@ -209,21 +213,21 @@ export default function PhotoCardGallaryGrid(props) {
                                  currentUserQuery.data.id !== 0 ? (
                                     photoCard.favorite_id === null ? (
                                         <Tooltip label="Click to set as favorite" color="orange.5" withArrow openDelay={500} radius="sm" fz="sm">
-                                            <IconHeart onClick={()=>addFavoritePhotoCardHandler(photoCard.id)} style={{cursor:"pointer"}} size="1.1rem" strokeWidth={2} color={'#868e96'}/>
+                                            <IconHeart onClick={()=>addFavoritePhotoCardHandler(photoCard.id)} style={{cursor:"pointer"}} size="1.5rem" strokeWidth={2} color={'#868e96'}/>
                                         </Tooltip>
                                     ) : (
                                         <Tooltip label="Click to remove favorite" color="orange.5" withArrow openDelay={500} radius="sm" fz="sm">
-                                            <IconHeart onClick={()=>removeFavoritePhotoCardHandler(photoCard.id)} style={{cursor:"pointer"}} size="1.1rem" strokeWidth={3} color={'#fd7e14'} fill={'#fd7e14'}/>
+                                            <IconHeart onClick={()=>removeFavoritePhotoCardHandler(photoCard.id)} style={{cursor:"pointer"}} size="1.5rem" strokeWidth={2} color={'#fd7e14'} fill={'#fd7e14'}/>
                                         </Tooltip>
                                     )                                    
                                  ) : (
                                     <Tooltip label="Login to set favorites!" color="orange.5" withArrow openDelay={500} radius="sm" fz="sm">
-                                        <IconHeart size="1.1rem" strokeWidth={2} color={'#868e96'}/>
+                                        <IconHeart size="1.5rem" strokeWidth={2} color={'#868e96'}/>
                                     </Tooltip>
                                  )
                                 }
                             </Group>
-                            </Group>
+                            </Stack>
                         </Card>
                         </Grid.Col>
 
@@ -253,9 +257,9 @@ export default function PhotoCardGallaryGrid(props) {
                 <Grid data-testid={`${props.myCards ? "photo-card-grid-center-mine-id" : "photo-card-grid-center-public-id"}`} justify="center" align="start">
                     {photoCardsQuery.data.map((photoCard, index) => (
                         <Grid.Col key={index} span="content" style={{width: 200}} align="left">
-                        <Card radius="sm" 
+                        <Card radius="md" 
                             shadow="md"
-                            padding="sm"
+                            padding="xs"
                             key={index} 
                         >
                             <Card.Section component={Link} to={`/card/${photoCard.id}`}>
@@ -265,20 +269,16 @@ export default function PhotoCardGallaryGrid(props) {
                                     // fit="contain"
                                 />
                             </Card.Section>
-                            <Group position="apart">
-                                <Text component={Link} to={`/card/${photoCard.id}`} size="sm" color="dimmed" mt="md">{photoCard.card_name.length > 10 ?
-                                        `${photoCard.card_name.substring(0,10)}...` : photoCard.card_name}
+                            <Stack align="flex-start" justify="flex-start" spacing={3}>
+                                <Text mt={3} size="sm" color="dimmed" ta="right">{photoCard.card_name.length > 18 ?
+                                        `${photoCard.card_name.substring(0,18)}...` : photoCard.card_name}
                                 </Text>
-                                <Group position="right" mt="md" >    
+                                <Group position="right" >    
                                     {location.pathname === '/my-cards' && 
                                         ((photoCard.share &&
-                                            <Tooltip label="Click to unshare card" color="orange.5" withArrow openDelay={500} radius="sm" fz="sm">
-                                                <IconLockOpen color={'#fd7e14'} size="1.2rem" onClick={()=>updatePhotoCardHandler(photoCard.id, false)} />
-                                            </Tooltip>
+                                            <IconLockOpen color={'#fd7e14'} size="1.5rem" onClick={()=>updatePhotoCardHandler(photoCard.id, false)} />
                                         ) || (
-                                            <Tooltip label="Click to share card" color="orange.5" withArrow openDelay={500} radius="sm" fz="sm">
-                                                <IconLock color={'#fd7e14'} size="1.2rem" onClick={()=>updatePhotoCardHandler(photoCard.id, true)}/>
-                                            </Tooltip>
+                                            <IconLock color={'#fd7e14'} size="1.5rem" onClick={()=>updatePhotoCardHandler(photoCard.id, true)}/>
                                         )) 
                                     }
                                     {(location.pathname !== '/my-cards' && 
@@ -287,7 +287,7 @@ export default function PhotoCardGallaryGrid(props) {
                                         currentUserQuery.data.id !== 0 &&
                                         currentUserQuery.data.id === photoCard.user_id) ? (
                                         <Tooltip label={"Your card"} color="orange.5" withArrow openDelay={500} radius="sm" fz="sm" opened={yoursOpened === photoCard.id}>
-                                            <IconStar size="1.1rem" strokeWidth={2} color={'#fd7e14'} onClick={() => {
+                                            <IconStar size="1.5rem" strokeWidth={2} color={'#fd7e14'} onClick={() => {
                                                 if (yoursOpened === 0){
                                                     setYoursOpened(photoCard.id);
                                                 } else if (yoursOpened === photoCard.id){
@@ -300,7 +300,7 @@ export default function PhotoCardGallaryGrid(props) {
 
                                         ) : (
                                         <Tooltip label={'@'+photoCard.owner_name} color="orange.5" withArrow openDelay={500} radius="sm" fz="sm">
-                                            <Avatar radius="xl" size="sm" color="orange" 
+                                            <Avatar radius="xl" size="1.5rem" color="orange" 
                                                     onClick={() => {
                                                         setYoursOpened(0);
                                                         setLoginToFavOpened(0);
@@ -331,18 +331,18 @@ export default function PhotoCardGallaryGrid(props) {
                                                 setYoursOpened(0);
                                                 setLoginToFavOpened(0);
                                                 addFavoritePhotoCardHandler(photoCard.id);
-                                            }} style={{cursor:"pointer"}} size="1.1rem" strokeWidth={2} color={'#868e96'}/>
+                                            }} style={{cursor:"pointer"}} size="1.5rem" strokeWidth={2} color={'#868e96'}/>
                                         ) : (
                                             <IconHeart onClick={()=>{
                                                 setYoursOpened(0);
                                                 setLoginToFavOpened(0);
                                                 removeFavoritePhotoCardHandler(photoCard.id);
-                                            }} style={{cursor:"pointer"}} size="1.1rem" strokeWidth={3} color={'#fd7e14'} fill={'#fd7e14'}/>
+                                            }} style={{cursor:"pointer"}} size="1.5rem" strokeWidth={3} color={'#fd7e14'} fill={'#fd7e14'}/>
                                         )                                    
                                     ) : (
                                         // <IconHeart size="1.1rem" strokeWidth={2} color={'#868e96'}/>
                                         <Tooltip label="Login to set favorites!" color="orange.5" withArrow openDelay={500} radius="sm" fz="sm" opened={loginToFavOpened === photoCard.id}>
-                                            <IconHeart size="1.1rem" strokeWidth={2} color={'#868e96'} onClick={() => {
+                                            <IconHeart size="1.5rem" strokeWidth={2} color={'#868e96'} onClick={() => {
                                                 if (loginToFavOpened === 0){
                                                     setLoginToFavOpened(photoCard.id);
                                                 } else if (loginToFavOpened === photoCard.id){
@@ -356,7 +356,7 @@ export default function PhotoCardGallaryGrid(props) {
                                     
                                     }
                                 </Group>
-                            </Group>
+                            </Stack>
                         </Card>
                         </Grid.Col>
 
