@@ -17,7 +17,10 @@ import { IconHeart,
          IconTrash, 
          IconLock, 
          IconLockOpen, 
-         IconArrowBigLeft } from "@tabler/icons-react";
+         IconArrowBigLeft,
+         IconDisc,
+         IconCalendarEvent,
+         IconShirt } from "@tabler/icons-react";
 
 import { getPhotoCard, 
          deletePhotoCard, 
@@ -32,6 +35,7 @@ const PhotoCardDetail = (props) => {
   const [deleteError, setDeleteError] = useState(null);
   const [ownerOpened, setOwnerOpened] = useState(false);
   const [loginToFavOpened, setLoginToFavOpened] = useState(false);
+  const [cardSourceOpened, setCardSourceOpened] = useState(false);
 
   const navigate = useNavigate();
 
@@ -182,7 +186,44 @@ const PhotoCardDetail = (props) => {
         </Carousel>
         <Container fluid ml="0rem" mt="0.5rem">
           <Text c="orange" fz="xl">{photoCardQuery.data.group_name}</Text>
-          <Space h="sm"/>
+          <Space h="md"/>
+          {photoCardQuery.data.source_type !== null &&
+           photoCardQuery.data.source_type === 'album' &&
+            <div>
+              <Group>
+                <Tooltip label="From an album!" color="orange.5" withArrow openDelay={500} radius="sm" fz="sm">
+                  <IconDisc size="2rem" strokeWidth={2} color={'#fd7e14'}/>
+                </Tooltip>
+                <Text c="orange" fz="xl">{photoCardQuery.data.source_name}</Text>
+              </Group>
+              <Space h="md"/>
+            </div>
+          }
+          {photoCardQuery.data.source_type !== null &&
+           photoCardQuery.data.source_type === 'event' &&
+            <div>
+              <Group>
+                <Tooltip label="From an event!" color="orange.5" withArrow openDelay={500} radius="sm" fz="sm">
+                  <IconCalendarEvent size="2rem" strokeWidth={2} color={'#fd7e14'}/>
+                </Tooltip>
+                <Text c="orange" fz="xl">{photoCardQuery.data.source_name}</Text>
+              </Group>
+              <Space h="md"/>
+            </div>
+          }          
+          {photoCardQuery.data.source_type !== null &&
+           photoCardQuery.data.source_type === 'merch' &&
+            <div>
+              <Group>
+                <Tooltip label="From some merch!" color="orange.5" withArrow openDelay={500} radius="sm" fz="sm">
+                  <IconShirt size="2rem" strokeWidth={2} color={'#fd7e14'}/>
+                </Tooltip>
+                <Text c="orange" fz="xl">{photoCardQuery.data.source_name}</Text>
+              </Group>
+              <Space h="md"/>
+            </div>
+          }
+
           {deleteError != null && <div><Text size="md" c="red" align="left">{deleteError}</Text></div>}
           <Group position="left" spacing="xl">
           {/* <Text c="orange" fz="xl">{photoCardQuery.data.group_name}</Text> */}
@@ -266,13 +307,63 @@ const PhotoCardDetail = (props) => {
           </Carousel>
           <Container fluid ml="0rem" mt="0.5rem">
           <Text c="orange" fz="xl">{photoCardQuery.data.group_name}</Text>
-          <Space h="sm"/>
+          <Space h="xs"/>
+          {photoCardQuery.data.source_type !== null &&
+           photoCardQuery.data.source_type === 'album' &&
+            <div>
+              <Group>
+                <Tooltip label="From an album!" color="orange.5" withArrow openDelay={500} radius="sm" fz="sm" opened={cardSourceOpened}>
+                  <IconDisc size="2rem" strokeWidth={2} color={'#fd7e14'} onClick={()=>{
+                    setOwnerOpened(false);
+                    setLoginToFavOpened(false);
+                    setCardSourceOpened((o)=>!o);
+                  }}/>
+                </Tooltip>
+                <Text c="orange" fz="xl">{photoCardQuery.data.source_name}</Text>
+              </Group>
+              <Space h="xs"/>
+            </div>
+          }
+          {photoCardQuery.data.source_type !== null &&
+           photoCardQuery.data.source_type === 'event' &&
+            <div>
+              <Group>
+                <Tooltip label="From an event!" color="orange.5" withArrow openDelay={500} radius="sm" fz="sm" opened={cardSourceOpened}>
+                  <IconCalendarEvent size="2rem" strokeWidth={2} color={'#fd7e14'} onClick={()=>{
+                    setOwnerOpened(false);
+                    setLoginToFavOpened(false);
+                    setCardSourceOpened((o)=>!o);
+                  }}/>
+                </Tooltip>
+                <Text c="orange" fz="xl">{photoCardQuery.data.source_name}</Text>
+              </Group>
+              <Space h="xs"/>
+            </div>
+          }          
+          {photoCardQuery.data.source_type !== null &&
+           photoCardQuery.data.source_type === 'merch' &&
+            <div>
+              <Group>
+                <Tooltip label="From some merch!" color="orange.5" withArrow openDelay={500} radius="sm" fz="sm" opened={cardSourceOpened}>
+                  <IconShirt size="2rem" strokeWidth={2} color={'#fd7e14'} onClick={()=>{
+                    setOwnerOpened(false);
+                    setLoginToFavOpened(false);
+                    setCardSourceOpened((o)=>!o);
+                  }}/>
+                </Tooltip>
+                <Text c="orange" fz="xl">{photoCardQuery.data.source_name}</Text>
+              </Group>
+              <Space h="xs"/>
+            </div>
+          }
+
           {deleteError != null && <div><Text size="md" c="red" align="left">{deleteError}</Text></div>}
           <Group position="left" spacing="xl">
           {/* <Text c="orange" fz="xl">{photoCardQuery.data.group_name}</Text> */}
           <Tooltip label={'@'+photoCardQuery.data.owner_name} color="orange.5" withArrow openDelay={500} radius="sm" fz="sm" opened={ownerOpened}>
             <Avatar radius="xl" size="md" color="orange" onClick={()=> {
               setLoginToFavOpened(false);
+              setCardSourceOpened(false);
               setOwnerOpened((o)=>!o);
               }}>{photoCardQuery.data.owner_name.charAt(0).toUpperCase()}</Avatar>
           </Tooltip>        
@@ -282,11 +373,13 @@ const PhotoCardDetail = (props) => {
                   photoCardQuery.data.favorite_id === null ? (
                     <IconHeart onClick={()=>{
                       setOwnerOpened(false);
+                      setCardSourceOpened(false);
                       addFavoritePhotoCardHandler(photoCardQuery.data.id);
                     }} style={{cursor:"pointer"}} size="2rem" strokeWidth={1} color={'#868e96'}/>
                   ) : (
                     <IconHeart onClick={()=>{
                       setOwnerOpened(false);
+                      setCardSourceOpened(false);
                       removeFavoritePhotoCardHandler(photoCardQuery.data.id);
                     }} style={{cursor:"pointer"}} size="2rem" strokeWidth={3} color={'#fd7e14'} fill={'#fd7e14'}/>
                   )                                    
@@ -295,6 +388,7 @@ const PhotoCardDetail = (props) => {
                   <Tooltip label="Login to set favorites!" color="orange.5" withArrow openDelay={500} radius="sm" fz="sm" opened={loginToFavOpened}>
                     <IconHeart ml={10} size="2rem" strokeWidth={1} color={'#868e96'} onClick={()=> {
                         setOwnerOpened(false);
+                        setCardSourceOpened(false);
                         setLoginToFavOpened((o)=>!o);
                         }}/>
                   </Tooltip>
@@ -307,11 +401,13 @@ const PhotoCardDetail = (props) => {
                 ((photoCardQuery.data.share &&
                   <IconLockOpen color={'#fd7e14'} size="2rem" onClick={()=>{
                     setOwnerOpened(false);
+                    setCardSourceOpened(false);
                     updatePhotoCardHandler(photoCardQuery.data.id, false);
                   }}/>
                 ) || (
                   <IconLock color={'#fd7e14'} size="2rem" onClick={()=>{
                     setOwnerOpened(false);
+                    setCardSourceOpened(false);
                     updatePhotoCardHandler(photoCardQuery.data.id, true);
                   }}/>
                 ))    

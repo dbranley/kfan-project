@@ -20,9 +20,10 @@ async def create_photo_card(
                        group_name: Annotated[str, Form()],
                        card_name: Annotated[str, Form()],
                        share: Annotated[bool, Form()],
-                       request: Request):
+                       request: Request,
+                       source_type: Annotated[str, Form()] = None,
+                       source_name: Annotated[str, Form()] = None):
     print("photo_cards.create_photo_card() - at top")
-
 
     front_file_name = ''
     back_file_name = ''
@@ -43,7 +44,18 @@ async def create_photo_card(
             print("photo_cards.create_photo_card() - user is not authorized to upload photos")
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)       
         
-
+        #validate source_type and source_name - if they are present
+        if (source_type is not None):
+            if (source_type != 'album' and source_type != 'event' and source_type != 'merch' and source_type != 'other'):
+                print("photo_cards.create_photo_card() - source_type invalid")
+                raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="source_type is not valid")
+            if (source_name is None):
+                print("photo_cards.create_photo_card() - valid source_type but no source_name")
+                raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="source_type provided without source_name")         
+        elif (source_name is not None):
+            print("photo_cards.create_photo_card() - source_name provided but no source_type")
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="source_name provided without source_type")
+        
         unique_file_prefix = uuid.uuid4().hex
         front_file_name = await save_image_file(front_file, unique_file_prefix, "front")
         print("photo_cards.create_photo_card() - after saving front file - front_file_name="+front_file_name+"=")
@@ -54,6 +66,8 @@ async def create_photo_card(
         photo_card_create = schemas.PhotoCardCreate(group_name=group_name,
                                                     card_name=card_name,
                                                     share=share,
+                                                    source_type=source_type,
+                                                    source_name=source_name,
                                                     front_file_name=front_file_name,
                                                     back_file_name=back_file_name,
                                                     user_id=user.id)

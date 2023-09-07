@@ -2,9 +2,21 @@ import React, { useRef, useState, useEffect } from "react";
 import PropTypes from 'prop-types';
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useForm } from "@mantine/form";
-import { IconUpload } from "@tabler/icons-react";
+import { IconUpload, IconDisc, IconCalendarEvent, IconShirt } from "@tabler/icons-react";
 
-import { Box, Button, Checkbox, Container, FileInput, Group, Modal, Text, TextInput, LoadingOverlay, FocusTrap } from "@mantine/core";
+import { Box, 
+         Button, 
+         Center, 
+         Checkbox, 
+         Container, 
+         FileInput, 
+         Group, 
+         Modal,
+         SegmentedControl, 
+         Text, 
+         TextInput, 
+         LoadingOverlay, 
+         FocusTrap } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { Link } from "react-router-dom";
 
@@ -15,6 +27,9 @@ const UploadForm = () => {
 
     const [error, setError] = useState(null);
     const [uploadSuccessful, setUploadSuccessful] = useState(false);
+    const [enableSourceType, setEnableSourceType] = useState(false);
+    const [sourceTypeValue, setSourceTypeValue] = useState("album");
+    const [cardSource, setCardSource] = useState("");
 
     const [successOpened, {open, close}] = useDisclosure(false);
     const [visible, { toggle, open: openLoader, close: closeLoader }] = useDisclosure(false);
@@ -25,13 +40,15 @@ const UploadForm = () => {
             backfile: null,
             groupname: '',
             cardname: '',
+            sourcetype: 'album',
+            sourcename: '',
             share: false,
         },
         validate: {
             frontfile: (value) => ((value === null || value === undefined) ? 'Front photo required': null),
             backfile: (value) => ((value === null || value === undefined) ? 'Back photo required': null),
             groupname: (value) => (value.length <1 ? 'Group name required': null),
-            cardname: (value) => (value.length <1 || value.length > 100? 'Card name required and not longer than 100 characters': null)
+            cardname: (value) => (value.length <1 || value.length > 100? 'Card name required and not longer than 100 characters': null),
         }
     });
 
@@ -79,12 +96,20 @@ const UploadForm = () => {
         const enteredGroupNameValue = form.values.groupname; //groupNameInputRef.current.value;
         const enteredCardNameValue = form.values.cardname; //memberNameInputRef.current.value;
         const shareValue = form.values.share; //isPrivateInputRef.current.checked;
+        
+        const enteredSourceName = form.values.sourcename;
+        var enteredSourceType = '';
+        if (enteredSourceName.length > 0){
+            enteredSourceType = form.values.sourcetype;
+        }
 
         createPhotoCardMutation.mutate({
             frontFile: enteredFrontFileObj,
             backFile: enteredBackFileObj,
             groupName: enteredGroupNameValue,
             cardName: enteredCardNameValue,
+            sourceType: enteredSourceType,
+            sourceName: enteredSourceName,
             share: shareValue
         });
     };
@@ -136,6 +161,53 @@ const UploadForm = () => {
                         label="Card Name"
                         placeholder="Enter a name for the card"
                         {...form.getInputProps('cardname')}
+                    />
+                    <TextInput
+                        disabled={visible}
+                        label="Source of Card"
+                        placeholder="Enter where the card came from"
+                        onChange={(event) => {
+                            console.log("typing into 'Source of Card'");
+                            if (event.currentTarget.value.length === 0){
+                                setEnableSourceType(false);
+                            } else {
+                                setEnableSourceType(true);
+                            }
+                        }}
+                        {...form.getInputProps('sourcename')}
+                    />
+                    <SegmentedControl 
+                        fullWidth
+                        mt={1}
+                        disabled={!form.isDirty('sourcename')}
+                        data={[
+                            { value: 'album',
+                              label: (
+                              <Center>
+                                <IconDisc size="1.1rem" color={`${form.isDirty('sourcename') ? '#fd7e14' : '#868e96'}`}/>
+                                <Box ml={10}>Album</Box>
+                              </Center>
+                              ),
+                          },
+                          { value: 'event',
+                            label: (
+                              <Center>
+                                <IconCalendarEvent size="1.1rem" color={`${form.isDirty('sourcename') ? '#fd7e14' : '#868e96'}`}/>
+                                <Box ml={10}>Event</Box>
+                              </Center>
+                            ),
+                          },
+                          { value: 'merch',
+                            label: (
+                              <Center>
+                                <IconShirt size="1.1rem" color={`${form.isDirty('sourcename') ? '#fd7e14' : '#868e96'}`}/>
+                                <Box ml={10}>Merch</Box>
+                              </Center>
+                            ),
+                          },                        
+                        ]}
+                        {...form.getInputProps('sourcetype')}
+
                     />
                     <Checkbox mt="sm"
                         disabled={visible}

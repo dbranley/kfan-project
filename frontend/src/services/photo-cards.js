@@ -45,7 +45,9 @@ export async function getPhotoCard(id){
 //    backFile: file object from event,
 //    groupName: string object from event,
 //    cardName: string object from event,
-//    share: boolean from event
+//    share: boolean from event,
+//    source_type: string object from event,
+//    source_name: string object from event, 
 export async function addPhotoCard(photoCardData){
 
     console.log("addPhotoCard() - photoCardData is: ");
@@ -62,6 +64,8 @@ export async function addPhotoCard(photoCardData){
                 group_name: photoCardData.groupName,
                 card_name: photoCardData.cardName,
                 share: photoCardData.share,
+                source_type: photoCardData.sourceType,
+                source_name: photoCardData.sourceName,
             },
             {
                 headers: {

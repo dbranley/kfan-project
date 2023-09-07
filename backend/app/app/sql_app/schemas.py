@@ -7,6 +7,8 @@ class PhotoCardBase(BaseModel):
     card_name: str
     share: bool
     user_id: int
+    source_type: str | None = None
+    source_name: str | None = None
 
 class PhotoCardCreate(PhotoCardBase):
     front_file_name: str 

@@ -53,6 +53,8 @@ async def create_photo_card(database: Database,
                                                group_name=photo_card.group_name,
                                                card_name=photo_card.card_name,
                                                share=photo_card.share,
+                                               source_type=photo_card.source_type,
+                                               source_name=photo_card.source_name,
                                                user_id=photo_card.user_id)
 
     print("crud.create_photo_card() - about to print query")
@@ -68,6 +70,8 @@ async def create_photo_card(database: Database,
                                         group_name=photo_card.group_name,
                                         card_name=photo_card.card_name,
                                         share=photo_card.share,
+                                        source_type=photo_card.source_type,
+                                        source_name=photo_card.source_name,
                                         front_file_name=photo_card.front_file_name,
                                         back_file_name=photo_card.back_file_name,
                                         user_id=photo_card.user_id,

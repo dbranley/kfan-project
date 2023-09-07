@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import { Avatar, Button, Card, Grid, Group, Image, MediaQuery, Space, Stack, Text, Tooltip } from "@mantine/core";
 // import { Heart } from 'tabler-icons-react';
-import { IconHeart, IconCircleX, IconLock, IconLockOpen, IconStar } from "@tabler/icons-react";
+import { IconHeart, IconCircleX, IconLock, IconLockOpen, IconStar, IconDisc, IconCalendarEvent, IconShirt } from "@tabler/icons-react";
 import PropTypes from "prop-types";
 import { Link, useLocation } from "react-router-dom";
 
@@ -24,6 +24,7 @@ export default function PhotoCardGallaryGrid(props) {
 
     const [yoursOpened, setYoursOpened] = useState(0);
     const [loginToFavOpened, setLoginToFavOpened] = useState(0);
+    const [cardSourceOpened, setCardSourceOpened] = useState(0);
 
     const location = useLocation();
 
@@ -199,15 +200,28 @@ export default function PhotoCardGallaryGrid(props) {
                                         </Tooltip>                                         
                                      ))
 
-                                    )                               
-                                    // <Tooltip label={'@'+photoCard.owner_name} color="orange.5" withArrow openDelay={500} radius="sm" fz="sm">
-                                    //     <Avatar radius="xl" size="sm" color="orange" 
-                                    //             onClick={() => {filterListByOwnerHandler(photoCard.user_id, photoCard.owner_name)}} 
-                                    //             style={{cursor:"pointer"}}>
-                                    //         {photoCard.owner_name.charAt(0).toUpperCase()}
-                                    //     </Avatar>
-                                    // </Tooltip>      
+                                    )                                  
                                 }
+
+                                {photoCard.source_type !== null &&
+                                 photoCard.source_type === 'album' &&
+                                     <Tooltip label={photoCard.source_name} color="orange.5" withArrow openDelay={500} radius="sm" fz="sm">
+                                         <IconDisc size="1.5rem" strokeWidth={2} color={'#fd7e14'}/>
+                                     </Tooltip>
+                                }
+                                {photoCard.source_type !== null &&
+                                 photoCard.source_type === 'event' &&
+                                     <Tooltip label={photoCard.source_name} color="orange.5" withArrow openDelay={500} radius="sm" fz="sm">
+                                         <IconCalendarEvent size="1.5rem" strokeWidth={2} color={'#fd7e14'}/>
+                                     </Tooltip>
+                                }
+                                {photoCard.source_type !== null &&
+                                 photoCard.source_type === 'merch' &&
+                                     <Tooltip label={photoCard.source_name} color="orange.5" withArrow openDelay={500} radius="sm" fz="sm">
+                                         <IconShirt size="1.5rem" strokeWidth={2} color={'#fd7e14'}/>
+                                     </Tooltip>
+                                }
+                         
                                 {currentUserQuery.status === "success" && 
                                  currentUserQuery.data !== null && 
                                  currentUserQuery.data.id !== 0 ? (
@@ -276,9 +290,15 @@ export default function PhotoCardGallaryGrid(props) {
                                 <Group position="right" >    
                                     {location.pathname === '/my-cards' && 
                                         ((photoCard.share &&
-                                            <IconLockOpen color={'#fd7e14'} size="1.5rem" onClick={()=>updatePhotoCardHandler(photoCard.id, false)} />
+                                            <IconLockOpen color={'#fd7e14'} size="1.5rem" onClick={()=> {
+                                                setCardSourceOpened(0);
+                                                updatePhotoCardHandler(photoCard.id, false);
+                                            }} />
                                         ) || (
-                                            <IconLock color={'#fd7e14'} size="1.5rem" onClick={()=>updatePhotoCardHandler(photoCard.id, true)}/>
+                                            <IconLock color={'#fd7e14'} size="1.5rem" onClick={()=>{
+                                                setCardSourceOpened(0);
+                                                updatePhotoCardHandler(photoCard.id, true);
+                                            }}/>
                                         )) 
                                     }
                                     {(location.pathname !== '/my-cards' && 
@@ -290,39 +310,86 @@ export default function PhotoCardGallaryGrid(props) {
                                             <IconStar size="1.5rem" strokeWidth={2} color={'#fd7e14'} onClick={() => {
                                                 if (yoursOpened === 0){
                                                     setYoursOpened(photoCard.id);
+                                                    setCardSourceOpened(0);
                                                 } else if (yoursOpened === photoCard.id){
                                                     setYoursOpened(0);
                                                 } else {
+                                                    setCardSourceOpened(0);
                                                     setYoursOpened(photoCard.id);
                                                 }
                                             }}/>
                                         </Tooltip>                                         
 
                                         ) : (
-                                        <Tooltip label={'@'+photoCard.owner_name} color="orange.5" withArrow openDelay={500} radius="sm" fz="sm">
-                                            <Avatar radius="xl" size="1.5rem" color="orange" 
-                                                    onClick={() => {
-                                                        setYoursOpened(0);
-                                                        setLoginToFavOpened(0);
-                                                        filterListByOwnerHandler(photoCard.user_id, photoCard.owner_name);
-                                                    }} 
-                                                    style={{cursor:"pointer"}}>
-                                                {photoCard.owner_name.charAt(0).toUpperCase()}
-                                            </Avatar>
-                                        </Tooltip>                                         
+                                        <Avatar radius="xl" size="1.5rem" color="orange" 
+                                                onClick={() => {
+                                                    setYoursOpened(0);
+                                                    setLoginToFavOpened(0);
+                                                    setCardSourceOpened(0);
+                                                    filterListByOwnerHandler(photoCard.user_id, photoCard.owner_name);
+                                                }} 
+                                                style={{cursor:"pointer"}}>
+                                            {photoCard.owner_name.charAt(0).toUpperCase()}
+                                        </Avatar>
                                         ))
                                      )                                                                     
-                                        // <Tooltip label={'@'+photoCard.owner_name} color="orange.5" withArrow openDelay={500} radius="sm" fz="sm">
-                                        //     <Avatar radius="xl" size="sm" color="orange" 
-                                        //             onClick={() => {filterListByOwnerHandler(photoCard.user_id, photoCard.owner_name)}} 
-                                        //             style={{cursor:"pointer"}}>
-                                        //         {photoCard.owner_name.charAt(0).toUpperCase()}
-                                        //     </Avatar>
-                                        // </Tooltip>      
-                                    }                                
-                                    {/* <Avatar radius="xl" size="sm" color="orange" onClick={() => {filterListByOwnerHandler(photoCard.user_id, photoCard.owner_name)}}>
-                                        {photoCard.owner_name.charAt(0).toUpperCase()}
-                                    </Avatar>                    */}
+                                    }
+                               
+                                    {photoCard.source_type !== null &&
+                                    photoCard.source_type === 'album' &&
+                                        <Tooltip label={photoCard.source_name} color="orange.5" withArrow openDelay={500} radius="sm" fz="sm" opened={cardSourceOpened === photoCard.id}>
+                                            <IconDisc size="1.5rem" strokeWidth={2} color={'#fd7e14'} onClick={() => {
+                                                if (cardSourceOpened === 0){
+                                                    setYoursOpened(0);
+                                                    setLoginToFavOpened(0);
+                                                    setCardSourceOpened(photoCard.id);
+                                                } else if (cardSourceOpened === photoCard.id){
+                                                    setCardSourceOpened(0);
+                                                } else {
+                                                    setYoursOpened(0);
+                                                    setLoginToFavOpened(0);
+                                                    setCardSourceOpened(photoCard.id);
+                                                }
+                                            }}/>
+                                        </Tooltip>
+                                    }
+                                    {photoCard.source_type !== null &&
+                                    photoCard.source_type === 'event' &&
+                                        <Tooltip label={photoCard.source_name} color="orange.5" withArrow openDelay={500} radius="sm" fz="sm" opened={cardSourceOpened === photoCard.id}>
+                                            <IconCalendarEvent size="1.5rem" strokeWidth={2} color={'#fd7e14'} onClick={() => {
+                                                if (cardSourceOpened === 0){
+                                                    setYoursOpened(0);
+                                                    setLoginToFavOpened(0);
+                                                    setCardSourceOpened(photoCard.id);
+                                                } else if (cardSourceOpened === photoCard.id){
+                                                    setCardSourceOpened(0);
+                                                } else {
+                                                    setYoursOpened(0);
+                                                    setLoginToFavOpened(0);
+                                                    setCardSourceOpened(photoCard.id);
+                                                }
+                                            }}/>
+                                        </Tooltip>
+                                    }
+                                    {photoCard.source_type !== null &&
+                                    photoCard.source_type === 'merch' &&
+                                        <Tooltip label={photoCard.source_name} color="orange.5" withArrow openDelay={500} radius="sm" fz="sm" opened={cardSourceOpened === photoCard.id}>
+                                            <IconShirt size="1.5rem" strokeWidth={2} color={'#fd7e14'} onClick={() => {
+                                                if (cardSourceOpened === 0){
+                                                    setYoursOpened(0);
+                                                    setLoginToFavOpened(0);
+                                                    setCardSourceOpened(photoCard.id);
+                                                } else if (cardSourceOpened === photoCard.id){
+                                                    setCardSourceOpened(0);
+                                                } else {
+                                                    setYoursOpened(0);
+                                                    setLoginToFavOpened(0);
+                                                    setCardSourceOpened(photoCard.id);
+                                                }
+                                            }}/>
+                                        </Tooltip>
+                                    }
+
                                     {currentUserQuery.status === "success" && 
                                     currentUserQuery.data !== null && 
                                     currentUserQuery.data.id !== 0 ? (
@@ -330,12 +397,14 @@ export default function PhotoCardGallaryGrid(props) {
                                             <IconHeart onClick={()=>{
                                                 setYoursOpened(0);
                                                 setLoginToFavOpened(0);
+                                                setCardSourceOpened(0);
                                                 addFavoritePhotoCardHandler(photoCard.id);
                                             }} style={{cursor:"pointer"}} size="1.5rem" strokeWidth={2} color={'#868e96'}/>
                                         ) : (
                                             <IconHeart onClick={()=>{
                                                 setYoursOpened(0);
                                                 setLoginToFavOpened(0);
+                                                setCardSourceOpened(0);
                                                 removeFavoritePhotoCardHandler(photoCard.id);
                                             }} style={{cursor:"pointer"}} size="1.5rem" strokeWidth={3} color={'#fd7e14'} fill={'#fd7e14'}/>
                                         )                                    
@@ -344,10 +413,12 @@ export default function PhotoCardGallaryGrid(props) {
                                         <Tooltip label="Login to set favorites!" color="orange.5" withArrow openDelay={500} radius="sm" fz="sm" opened={loginToFavOpened === photoCard.id}>
                                             <IconHeart size="1.5rem" strokeWidth={2} color={'#868e96'} onClick={() => {
                                                 if (loginToFavOpened === 0){
+                                                    setCardSourceOpened(0);
                                                     setLoginToFavOpened(photoCard.id);
                                                 } else if (loginToFavOpened === photoCard.id){
                                                     setLoginToFavOpened(0);
                                                 } else {
+                                                    setCardSourceOpened(0);
                                                     setLoginToFavOpened(photoCard.id);
                                                 }
                                             }}/>

@@ -27,6 +27,8 @@ photo_cards = sqlalchemy.Table(
     sqlalchemy.Column("group_name", sqlalchemy.String),
     sqlalchemy.Column("card_name", sqlalchemy.String),
     sqlalchemy.Column("share", sqlalchemy.Boolean, default=False),
+    sqlalchemy.Column("source_type", sqlalchemy.String, nullable=True),
+    sqlalchemy.Column("source_name", sqlalchemy.String, nullable=True),
     sqlalchemy.Column("user_id", sqlalchemy.Integer, ForeignKey("users.id"), nullable=False)
 )
     
