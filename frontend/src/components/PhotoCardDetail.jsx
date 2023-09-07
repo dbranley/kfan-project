@@ -291,7 +291,7 @@ const PhotoCardDetail = (props) => {
                 src={`/api/photo-cards-${
                   photoCardQuery.data.share ? "public" : "private"
                 }/${photoCardQuery.data.front_file_name}`}
-                height={400}
+                height={380}
                 fit="contain"
               />
             </Carousel.Slide>
@@ -300,18 +300,18 @@ const PhotoCardDetail = (props) => {
                 src={`/api/photo-cards-${
                   photoCardQuery.data.share ? "public" : "private"
                 }/${photoCardQuery.data.back_file_name}`}
-                height={400}
+                height={380}
                 fit="contain"
               />
             </Carousel.Slide>
           </Carousel>
           <Container fluid ml="0rem" mt="0.5rem">
           <Text c="orange" fz="xl">{photoCardQuery.data.group_name}</Text>
-          <Space h="xs"/>
+          {/* <Space h="xs"/> */}
           {photoCardQuery.data.source_type !== null &&
            photoCardQuery.data.source_type === 'album' &&
             <div>
-              <Group>
+              <Group spacing={4}>
                 <Tooltip label="From an album!" color="orange.5" withArrow openDelay={500} radius="sm" fz="sm" opened={cardSourceOpened}>
                   <IconDisc size="2rem" strokeWidth={2} color={'#fd7e14'} onClick={()=>{
                     setOwnerOpened(false);
@@ -319,7 +319,8 @@ const PhotoCardDetail = (props) => {
                     setCardSourceOpened((o)=>!o);
                   }}/>
                 </Tooltip>
-                <Text c="orange" fz="xl">{photoCardQuery.data.source_name}</Text>
+                <Text c="orange" fz="xl">{photoCardQuery.data.source_name.length > 27 ?
+                                        `${photoCardQuery.data.source_name.substring(0,27)}...` : photoCardQuery.data.source_name }</Text>
               </Group>
               <Space h="xs"/>
             </div>
@@ -335,7 +336,8 @@ const PhotoCardDetail = (props) => {
                     setCardSourceOpened((o)=>!o);
                   }}/>
                 </Tooltip>
-                <Text c="orange" fz="xl">{photoCardQuery.data.source_name}</Text>
+                <Text c="orange" fz="xl">{photoCardQuery.data.source_name.length > 27 ?
+                                        `${photoCardQuery.data.source_name.substring(0,27)}...` : photoCardQuery.data.source_name }</Text>
               </Group>
               <Space h="xs"/>
             </div>
@@ -351,7 +353,8 @@ const PhotoCardDetail = (props) => {
                     setCardSourceOpened((o)=>!o);
                   }}/>
                 </Tooltip>
-                <Text c="orange" fz="xl">{photoCardQuery.data.source_name}</Text>
+                <Text c="orange" fz="xl">{photoCardQuery.data.source_name.length > 27 ?
+                                        `${photoCardQuery.data.source_name.substring(0,27)}...` : photoCardQuery.data.source_name }</Text>
               </Group>
               <Space h="xs"/>
             </div>
