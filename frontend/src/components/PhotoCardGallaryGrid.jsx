@@ -205,19 +205,25 @@ export default function PhotoCardGallaryGrid(props) {
 
                                 {photoCard.source_type !== null &&
                                  photoCard.source_type === 'album' &&
-                                     <Tooltip label={photoCard.source_name} color="orange.5" withArrow openDelay={500} radius="sm" fz="sm">
+                                     <Tooltip label={photoCard.source_name.length > 19 ?
+                                        `${photoCard.source_name.substring(0,19)}...` : photoCard.source_name} 
+                                        color="orange.5" withArrow openDelay={500} radius="sm" fz="sm">
                                          <IconDisc size="1.5rem" strokeWidth={2} color={'#fd7e14'}/>
                                      </Tooltip>
                                 }
                                 {photoCard.source_type !== null &&
                                  photoCard.source_type === 'event' &&
-                                     <Tooltip label={photoCard.source_name} color="orange.5" withArrow openDelay={500} radius="sm" fz="sm">
+                                     <Tooltip label={photoCard.source_name.length > 19 ?
+                                        `${photoCard.source_name.substring(0,19)}...` : photoCard.source_name} 
+                                        color="orange.5" withArrow openDelay={500} radius="sm" fz="sm">
                                          <IconCalendarEvent size="1.5rem" strokeWidth={2} color={'#fd7e14'}/>
                                      </Tooltip>
                                 }
                                 {photoCard.source_type !== null &&
                                  photoCard.source_type === 'merch' &&
-                                     <Tooltip label={photoCard.source_name} color="orange.5" withArrow openDelay={500} radius="sm" fz="sm">
+                                     <Tooltip label={photoCard.source_name.length > 19 ?
+                                        `${photoCard.source_name.substring(0,19)}...` : photoCard.source_name} 
+                                        color="orange.5" withArrow openDelay={500} radius="sm" fz="sm">
                                          <IconShirt size="1.5rem" strokeWidth={2} color={'#fd7e14'}/>
                                      </Tooltip>
                                 }
@@ -337,7 +343,9 @@ export default function PhotoCardGallaryGrid(props) {
                                
                                     {photoCard.source_type !== null &&
                                     photoCard.source_type === 'album' &&
-                                        <Tooltip label={photoCard.source_name} color="orange.5" withArrow openDelay={500} radius="sm" fz="sm" opened={cardSourceOpened === photoCard.id}>
+                                        <Tooltip label={photoCard.source_name.length > 19 ?
+                                            `${photoCard.source_name.substring(0,19)}...` : photoCard.source_name} 
+                                            color="orange.5" withArrow openDelay={500} radius="sm" fz="sm" opened={cardSourceOpened === photoCard.id}>
                                             <IconDisc size="1.5rem" strokeWidth={2} color={'#fd7e14'} onClick={() => {
                                                 if (cardSourceOpened === 0){
                                                     setYoursOpened(0);
@@ -355,7 +363,9 @@ export default function PhotoCardGallaryGrid(props) {
                                     }
                                     {photoCard.source_type !== null &&
                                     photoCard.source_type === 'event' &&
-                                        <Tooltip label={photoCard.source_name} color="orange.5" withArrow openDelay={500} radius="sm" fz="sm" opened={cardSourceOpened === photoCard.id}>
+                                        <Tooltip label={photoCard.source_name.length > 19 ?
+                                            `${photoCard.source_name.substring(0,19)}...` : photoCard.source_name} 
+                                            color="orange.5" withArrow openDelay={500} radius="sm" fz="sm" opened={cardSourceOpened === photoCard.id}>
                                             <IconCalendarEvent size="1.5rem" strokeWidth={2} color={'#fd7e14'} onClick={() => {
                                                 if (cardSourceOpened === 0){
                                                     setYoursOpened(0);
@@ -373,7 +383,9 @@ export default function PhotoCardGallaryGrid(props) {
                                     }
                                     {photoCard.source_type !== null &&
                                     photoCard.source_type === 'merch' &&
-                                        <Tooltip label={photoCard.source_name} color="orange.5" withArrow openDelay={500} radius="sm" fz="sm" opened={cardSourceOpened === photoCard.id}>
+                                        <Tooltip label={photoCard.source_name.length > 19 ?
+                                            `${photoCard.source_name.substring(0,19)}...` : photoCard.source_name} 
+                                                 color="orange.5" withArrow openDelay={500} radius="sm" fz="sm" opened={cardSourceOpened === photoCard.id}>
                                             <IconShirt size="1.5rem" strokeWidth={2} color={'#fd7e14'} onClick={() => {
                                                 if (cardSourceOpened === 0){
                                                     setYoursOpened(0);
