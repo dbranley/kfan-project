@@ -123,3 +123,23 @@ export async function getCurrentUser(){
     }   
 
 }
+
+export async function getUserByUsername(username){
+
+    console.log("auth.getUserByUsername()");
+    
+    try{
+        const response = await axios.get(
+            '/api/user?username='+username
+        );
+        console.log("auth.getUserByUsername() - response is: ");
+        console.log(response);
+        return response.data;
+    } catch(error){
+        //should I rethrow this???
+        console.log(error);
+        //do not rethrow in this case, just return empty response
+        throw error;
+    }   
+
+}

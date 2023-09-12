@@ -331,3 +331,4 @@ async def delete_favorites_except_owners(database: Database, photo_card_id: int,
     print(result)
 
     return {"message":"Favorites deleted"}
+

@@ -52,3 +52,10 @@ class FavoriteBase(BaseModel):
 
 class Favorite(FavoriteBase):
     id: int
+
+class FollowBase(BaseModel):
+    follower: int
+    followee: int
+
+class Follow(FollowBase):
+    id: int

@@ -11,7 +11,7 @@ import { Avatar,
 import { Carousel } from "@mantine/carousel";
 import PropTypes from "prop-types";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link  } from "react-router-dom";
 import { SESSION_EXPIRATION_TIME, getCurrentUser } from "../services/auth";
 import { IconHeart, 
          IconTrash, 
@@ -228,7 +228,9 @@ const PhotoCardDetail = (props) => {
           <Group position="left" spacing="xl">
           {/* <Text c="orange" fz="xl">{photoCardQuery.data.group_name}</Text> */}
           <Tooltip label={'@'+photoCardQuery.data.owner_name} color="orange.5" withArrow openDelay={500} radius="sm" fz="sm">
-            <Avatar radius="xl" size="md" color="orange">{photoCardQuery.data.owner_name.charAt(0).toUpperCase()}</Avatar>
+            <Avatar radius="xl" size="md" color="orange"  component={Link} to={`/profile/${photoCardQuery.data.owner_name}`}>
+              {photoCardQuery.data.owner_name.charAt(0).toUpperCase()}
+            </Avatar>
           </Tooltip>        
         {currentUserQuery.status === "success" && 
                 currentUserQuery.data !== null && 

@@ -10,6 +10,7 @@ import AppSiteShell from "./AppSiteShell";
 import PhotoCardsGridPage from "./pages/PhotoCardsGridPage";
 import UploadPhotoCardPage from "./pages/UploadPhotoCardPage";
 import PhotoCardDetailPage from "./pages/PhotoCardDetailPage";
+import ProfilePage from "./pages/ProfilePage";
 
 const router = createHashRouter([
   {
@@ -21,6 +22,7 @@ const router = createHashRouter([
       {path: "my-favorites", element: <PhotoCardsGridPage myCards={false} myFavorites={true}/>},
       {path: "upload", element: <UploadPhotoCardPage/>},
       {path: "card/:photoCardId", element: <PhotoCardDetailPage/>},
+      {path: "profile/:username", element: <ProfilePage/>},
     ],
   },
 ]);
