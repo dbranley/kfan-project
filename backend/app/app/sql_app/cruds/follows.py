@@ -1,7 +1,7 @@
 
 from .. import models, schemas
 from databases import Database 
-from sqlalchemy.sql import select, and_, or_, join
+from sqlalchemy.sql import select, and_, or_, join, func
 from asyncpg.exceptions import UniqueViolationError
 from fastapi import HTTPException, status
 
@@ -122,3 +122,50 @@ async def delete_follow(database: Database, followee: int, follower: int):
     print(result)
 
     return {"message":"Follow deleted"}
+
+async def get_follower_count(database: Database,
+                             followee_user_id: int):
+    
+    print("crud.get_follower_count()")
+
+    stmt = select(func.count()).select_from(models.follows).where(
+        models.follows.c.followee == followee_user_id)
+
+    print("crud.get_follower_count() - about to print query")
+    print(stmt)
+    result = await database.fetch_one(stmt)
+    print("crud.get_follower_count() - after query - result is:")
+    print(result)
+
+    follower_count = 0
+    if result is not None:
+         follower_count = result._mapping['count_1']
+
+    print("crud.get_follower_count() - at end - about to return follower_count:")
+    print(follower_count)
+
+    return follower_count 
+
+async def get_followee_count(database: Database,
+                             follower_user_id: int):
+    
+    print("crud.get_followee_count()")
+
+    stmt = select(func.count()).select_from(models.follows).where(
+        models.follows.c.follower == follower_user_id)
+
+    print("crud.get_followee_count() - about to print query")
+    print(stmt)
+    result = await database.fetch_one(stmt)
+    print("crud.get_followee_count() - after query - result is:")
+    print(result)
+
+    followee_count = 0
+    if result is not None:
+         followee_count = result._mapping['count_1']
+
+    print("crud.get_followee_count() - at end - about to return followee_count:")
+    print(followee_count)
+
+    return followee_count 
+

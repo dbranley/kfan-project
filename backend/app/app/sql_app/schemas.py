@@ -39,6 +39,11 @@ class User(UserBase):
     email: str
     upload: bool
 
+class UserProfile(UserBase):
+    public_card_count: int
+    follower_count: int
+    followee_count: int
+
 class UserPwdUpdate(BaseModel):
     original_password: str
     new_password: str

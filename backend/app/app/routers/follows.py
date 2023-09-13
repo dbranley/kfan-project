@@ -68,7 +68,8 @@ async def create_followee(followee_username: str,
 
 @database.transaction()
 @router.get("/api/followees", tags=["users"], response_model=list[str])
-async def read_followees(follower_username: str, 
+async def read_followees(follower_username: str,
+                         followee_username: str | None = None, 
                          skip: int=0, limit: int=100):
 
     print("follows.read_followees() - at top ")
@@ -78,7 +79,22 @@ async def read_followees(follower_username: str,
     if follower_user is None:
         raise HTTPException(status_code=404, detail="Follower not found")
     
-    followees = await follows.get_followees(database, follower_user_id=follower_user.id, skip=skip, limit=limit)
+
+    #if followee_username provided, it means we need to look for only this followee
+    if followee_username is None:
+        followees = await follows.get_followees(database, follower_user_id=follower_user.id, skip=skip, limit=limit)
+    else:
+        followee_user = await crud.get_user_by_username(database, followee_username)
+        if followee_user is None:
+            raise HTTPException(status_code=404, detail="Followee not found")
+        follow = await follows.get_follow(database, follower_user_id=follower_user.id, followee_user_id=followee_user.id)
+        print("follows.read_followees() - else-block after calling get_follow() - result is :")
+        print(follow)
+        if follow is None:
+            followees = []
+        else:
+            followees = [followee_username] 
+
 
     return followees
 
