@@ -129,17 +129,18 @@ async def create_photo_card(
 async def read_photo_cards(request: Request, 
                            my_cards: bool=False, 
                            my_favorites: bool=False, 
-                           collector_id: int=0,
+                           owner_username: str | None = None,
                            skip: int=0, 
                            limit: int=100):
 
     print("photo_cards.read_photo_cards() - at top - my_cards, my_favorites, collector is:")
     print(my_cards)
     print(my_favorites)
-    print(collector_id)
+    print(owner_username)
     #if user is logged in, then get their user_id to pass to get query
     #-but default to 0, which assumes no user id available
     user_id = 0
+
     try:
 
         token = request.cookies.get("token")
@@ -149,10 +150,23 @@ async def read_photo_cards(request: Request,
         print("photo_cards.read_photo_cards() - after calling  users.get_current_user() - user is:")
         print(user)
         if user is not None:
-            user_id = user.id     
+            user_id = user.id  
     except:
-        #ignore auth exception and just leave user_id as None
+        #ignore auth exception and just leave user_id as 0
         pass
+
+    #if owner name provided, then need to extract their user id and set it to collector_id, else default to 0
+    collector_id = 0    
+    if owner_username is not None:
+        owner_user = await crud.get_user_by_username(database, owner_username)  
+        if owner_user is None:
+            raise HTTPException(status_code=404, detail="Unable to filter by owner name since name not found")
+        else:
+            #if owner and current user are same, then just leave collector_id as 0 since it isn't needed
+            if (owner_user.id != user_id):
+                collector_id = owner_user.id
+
+
 
     if my_cards == True and user_id == 0:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Must login to view just your photo cards")

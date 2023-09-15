@@ -19,8 +19,7 @@ export default function PhotoCardGallaryGrid(props) {
     console.log("PhotoCardGallaryGrid - at top - props.myFavorites is:");
     console.log(props.myFavorites);
 
-    const [collectorId, setCollectorId] = useState(0);
-    const [collectorName, setCollectorName] = useState(null);
+    const [ownerName, setOwnerName] = useState(null);
 
     const [yoursOpened, setYoursOpened] = useState(0);
     const [loginToFavOpened, setLoginToFavOpened] = useState(0);
@@ -37,8 +36,8 @@ export default function PhotoCardGallaryGrid(props) {
     });
 
     const photoCardsQuery = useQuery({
-        queryKey: ["photoCards", props.myCards, props.myFavorites, collectorId],
-        queryFn: () => getPhotoCards(props.myCards, props.myFavorites, collectorId),
+        queryKey: ["photoCards", props.myCards, props.myFavorites, ownerName],
+        queryFn: () => getPhotoCards(props.myCards, props.myFavorites, ownerName),
         // queryFn: () => getPhotoCard(props.photoCardId)
     });
 
@@ -81,8 +80,7 @@ export default function PhotoCardGallaryGrid(props) {
     useEffect(() => {
         console.log("PhotoCardGallaryGrid.useEffect() - at top")
         if (props.myCards === true){
-            setCollectorId(0);
-            setCollectorName(null);
+            setOwnerName(null);
         }        
     }, [props.myCards]);
 
@@ -106,11 +104,10 @@ export default function PhotoCardGallaryGrid(props) {
         removePhotoCardFavoriteMutation.mutate(photoCardId);
     }
 
-    const filterListByOwnerHandler = async(ownerId, ownerName) => {
+    const filterListByOwnerHandler = async(ownerName) => {
         console.log("PhotoCardGallaryGrid.filterListByOwnerHandler() - at top");
         if (props.myCards === false){
-            setCollectorId(ownerId);
-            setCollectorName(ownerName);    
+            setOwnerName(ownerName);    
         }
     }
 
@@ -137,9 +134,9 @@ export default function PhotoCardGallaryGrid(props) {
                     {props.myCards === false && props.myFavorites === true &&<Text size="lg" color="orange.9">My Favorites</Text>}
                     {/* {props.myCards === true && <Badge radius="xl" compact variant="light">My Cards</Badge>}
                     {props.myFavorites === true && <Badge radius="xl" compact variant="light">My Favorites</Badge>} */}
-                    {collectorName !== null && 
-                     <Button variant="light" radius="xl" size="sm" compact rightIcon={<IconCircleX/>} onClick={() => {filterListByOwnerHandler(0, null)}}>
-                        @{collectorName}
+                    {ownerName !== null && 
+                     <Button variant="light" radius="xl" size="sm" compact rightIcon={<IconCircleX/>} onClick={() => {filterListByOwnerHandler(null)}}>
+                        @{ownerName}
                      </Button>
                     }
                 </Group>
@@ -193,7 +190,7 @@ export default function PhotoCardGallaryGrid(props) {
                                      ) : (
                                         <Tooltip label={'@'+photoCard.owner_name} color="orange.5" withArrow openDelay={500} radius="sm" fz="sm">
                                             <Avatar radius="xl" size="1.5rem" color="orange" 
-                                                    onClick={() => {filterListByOwnerHandler(photoCard.user_id, photoCard.owner_name)}} 
+                                                    onClick={() => {filterListByOwnerHandler(photoCard.owner_name)}} 
                                                     style={{cursor:"pointer"}}>
                                                 {photoCard.owner_name.charAt(0).toUpperCase()}
                                             </Avatar>
@@ -263,13 +260,13 @@ export default function PhotoCardGallaryGrid(props) {
                     {props.myCards === false && props.myFavorites === true &&<Text size="lg" color="orange.9">My Favorites</Text>}
                     {/* {props.myCards === true && <Badge radius="xl" compact variant="light">My Cards</Badge>}
                     {props.myFavorites === true && <Badge radius="xl" compact variant="light">My Favorites</Badge>} */}
-                    {collectorName !== null && 
+                    {ownerName !== null && 
                      <Button variant="light" radius="xl" size="sm" compact rightIcon={<IconCircleX/>} onClick={() => {
                         setYoursOpened(0);
                         setLoginToFavOpened(0);
-                        filterListByOwnerHandler(0, null);
+                        filterListByOwnerHandler(null);
                      }}>
-                        @{collectorName}
+                        @{ownerName}
                      </Button>
                     }                    
                 </Group>
@@ -332,7 +329,7 @@ export default function PhotoCardGallaryGrid(props) {
                                                     setYoursOpened(0);
                                                     setLoginToFavOpened(0);
                                                     setCardSourceOpened(0);
-                                                    filterListByOwnerHandler(photoCard.user_id, photoCard.owner_name);
+                                                    filterListByOwnerHandler(photoCard.owner_name);
                                                 }} 
                                                 style={{cursor:"pointer"}}>
                                             {photoCard.owner_name.charAt(0).toUpperCase()}

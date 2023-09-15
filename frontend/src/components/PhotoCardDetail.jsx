@@ -365,13 +365,15 @@ const PhotoCardDetail = (props) => {
           {deleteError != null && <div><Text size="md" c="red" align="left">{deleteError}</Text></div>}
           <Group position="left" spacing="xl">
           {/* <Text c="orange" fz="xl">{photoCardQuery.data.group_name}</Text> */}
-          <Tooltip label={'@'+photoCardQuery.data.owner_name} color="orange.5" withArrow openDelay={500} radius="sm" fz="sm" opened={ownerOpened}>
-            <Avatar radius="xl" size="md" color="orange" onClick={()=> {
-              setLoginToFavOpened(false);
-              setCardSourceOpened(false);
-              setOwnerOpened((o)=>!o);
-              }}>{photoCardQuery.data.owner_name.charAt(0).toUpperCase()}</Avatar>
-          </Tooltip>        
+          {/* <Tooltip label={'@'+photoCardQuery.data.owner_name} color="orange.5" withArrow openDelay={500} radius="sm" fz="sm" opened={ownerOpened}> */}
+            <Avatar radius="xl" size="md" color="orange"   component={Link} to={`/profile/${photoCardQuery.data.owner_name}`} 
+                // onClick={()=> {
+                //   setLoginToFavOpened(false);
+                //   setCardSourceOpened(false);
+                //   setOwnerOpened((o)=>!o);
+                // }}
+              >{photoCardQuery.data.owner_name.charAt(0).toUpperCase()}</Avatar>
+          {/* </Tooltip>         */}
         {currentUserQuery.status === "success" && 
                 currentUserQuery.data !== null && 
                 currentUserQuery.data.id !== 0 ? (

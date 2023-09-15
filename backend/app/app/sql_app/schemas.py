@@ -6,13 +6,13 @@ class PhotoCardBase(BaseModel):
     group_name: str # | None = None -what's this for? from example
     card_name: str
     share: bool
-    user_id: int
     source_type: str | None = None
     source_name: str | None = None
 
 class PhotoCardCreate(PhotoCardBase):
     front_file_name: str 
     back_file_name: str
+    user_id: int
 
 class PhotoCard(PhotoCardBase):
     id: int

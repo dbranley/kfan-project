@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
-import { Avatar, Button, Card, Container, Grid, Group, Image, MediaQuery, Space, Stack, Text, Tooltip } from "@mantine/core";
+import { Avatar, Button, Card, Center, Container, Divider, Grid, Group, Image, Loader, MediaQuery, Space, Stack, Text, Tooltip } from "@mantine/core";
 // import { Heart } from 'tabler-icons-react';
 import { IconHeart, IconCircleX, IconLock, IconLockOpen, IconStar, IconDisc, IconCalendarEvent, IconShirt, IconArrowBigLeft } from "@tabler/icons-react";
 import PropTypes from "prop-types";
@@ -14,6 +14,7 @@ import { getFollowee,
          addFollowee,
          removeFollowee } from "../services/follows";
 
+import { getPhotoCards } from "../services/photo-cards";
 
 export default function Profile(props) {
 
@@ -31,7 +32,6 @@ export default function Profile(props) {
 
     const location = useLocation();
     const navigate = useNavigate();
-
     const queryClient = useQueryClient();
 
     const currentUserQuery = useQuery({
@@ -40,6 +40,8 @@ export default function Profile(props) {
         staleTime: SESSION_EXPIRATION_TIME
     });
 
+
+
     const currentUsername = currentUserQuery.data?.username    
 
     const profileUserQuery = useQuery({
@@ -47,6 +49,12 @@ export default function Profile(props) {
         queryFn: () => getUserByUsername(props.username),
     });
 
+    const photoCardsQuery = useQuery({
+        queryKey: ["photoCards", (currentUsername === props.username), false, props.username],
+        queryFn: () => getPhotoCards((currentUsername === props.username), false, props.username),
+        enabled: !!currentUsername
+        // queryFn: () => getPhotoCard(props.photoCardId)
+    });
 
     const followeeQuery = useQuery({
         queryKey: ["followeeQuery", props.username, currentUsername],
@@ -119,6 +127,7 @@ export default function Profile(props) {
         removeFolloweeMutation.mutate(props.username);
     }  
 
+    //Content for the following buttons
     let followButtonContent = <Text>Not logged in or same user</Text>
     if (profileUserQuery.status === "success" && 
         currentUserQuery.status === "success" && 
@@ -138,10 +147,47 @@ export default function Profile(props) {
         followButtonContent = <Text>Not logged in</Text>
     }
     
-
+    //Content for the photo cards
+    let photoCardsContent = 
+        <Center>
+            <Loader alignment="center"/>
+        </Center>
+    if (photoCardsQuery.status === "error"){
+        photoCardsContent = 
+            <Center>
+                <div>{JSON.stringify(photoCardsQuery.error)}</div>
+            </Center> 
+    }
+    if (photoCardsQuery.status === "success"){
+        photoCardsContent = 
+            <Grid justify="center" align="start">
+                {photoCardsQuery.data.map((photoCard, index) => (
+                    <Grid.Col key={index} span="content" style={{width: 300}} align="left">
+                    <Card radius="md" 
+                        shadow="md"
+                        padding="xs"
+                        key={index} 
+                    >
+                        <Card.Section component={Link} to={`/card/${photoCard.id}`}>
+                            <Image 
+                                src={`/api/photo-cards-${photoCard.share ? 'public' : 'private'}/${photoCard.front_file_name}`}
+                                height={400}
+                                // styles={{
+                                //     height:350,
+                                //     aspectRatio: 16/9
+                                // }}
+                                // fit="cover"
+                            />
+                        </Card.Section>
+                    </Card>
+                    </Grid.Col>
+                ))}
+            </Grid>
+    }
 
     return (
-        <Container style={{ background : '#adb5bd'}} size="xs" >
+        <Container size="xs" >
+        {/* <Container style={{ background : '#adb5bd'}} size="xs" > */}
             <Group position="apart">
                 <Group>
                     <IconArrowBigLeft size="2rem" fill={'#d9480f'} color={'#d9480f'} onClick={() => navigate(-1)}/>
@@ -150,13 +196,17 @@ export default function Profile(props) {
                 <Avatar radius="xl" size="3.0rem" color="orange">{profileUserQuery.data.username.charAt(0).toUpperCase()}</Avatar>
             </Group>
             <Space h="lg"/>
-            <Group position="apart" ml="md" mr="md">
+            <Group position="apart" ml="sm" mr="sm">
                 <Text>{profileUserQuery.data.public_card_count} cards</Text>
                 <Text>{profileUserQuery.data.follower_count} followers</Text>
                 <Text>{profileUserQuery.data.followee_count} following</Text>
             </Group>
             <Space h="lg"/>
             {followButtonContent}
+            <Space h="lg"/>
+            <Divider size="sm" label="Photo Cards" labelPosition="center"/>
+            <Space h="lg"/>
+            {photoCardsContent}
             <Space h="lg"/>
         </Container>
     );

@@ -1,15 +1,18 @@
 import axios from "axios";
 
 
-export async function getPhotoCards(myCards, myFavorites, collectorId){
+export async function getPhotoCards(myCards, myFavorites, ownerUsername){
 
-    console.log("getPhotoCards(myCards, myFavorites, collectorId)");
+    console.log("getPhotoCards(myCards, myFavorites, ownerUsername)");
     console.log(myFavorites)
 
+    let endpoint = '/api/photo-cards?my_cards='+myCards+'&my_favorites='+myFavorites
+    if (ownerUsername != null && ownerUsername.length > 0){
+        endpoint = endpoint+'&owner_username='+ownerUsername;
+    }
+
     try{
-        const response = await axios.get(
-            '/api/photo-cards?my_cards='+myCards+'&my_favorites='+myFavorites+'&collector_id='+collectorId
-        );
+        const response = await axios.get(endpoint);
         console.log("getPhotoCards() - response is: ");
         console.log(response);
         return response.data;
