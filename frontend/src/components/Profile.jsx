@@ -15,6 +15,7 @@ import { getFollowee,
          removeFollowee } from "../services/follows";
 
 import { getPhotoCards } from "../services/photo-cards";
+import PhotoCard from "./PhotoCard";
 
 export default function Profile(props) {
 
@@ -40,13 +41,12 @@ export default function Profile(props) {
         staleTime: SESSION_EXPIRATION_TIME
     });
 
-
-
     const currentUsername = currentUserQuery.data?.username    
 
     const profileUserQuery = useQuery({
         queryKey: ["profileUser", props.username],
         queryFn: () => getUserByUsername(props.username),
+        enabled: !!currentUsername
     });
 
     const photoCardsQuery = useQuery({
@@ -128,11 +128,9 @@ export default function Profile(props) {
     }  
 
     //Content for the following buttons
-    let followButtonContent = <Text>Not logged in or same user</Text>
+    let followButtonContent = null; //<Space h="36px"/> //36px is height of default <Button> - so need this to diplay when not showing button
     if (profileUserQuery.status === "success" && 
-        currentUserQuery.status === "success" && 
-        currentUserQuery.data !== null && 
-        currentUserQuery.data.id !== 0){
+        currentUserQuery.data?.id !== 0){
         
         if (currentUserQuery.data.username != profileUserQuery.data.username){
             if (followeeQuery?.data?.length === 0){
@@ -140,11 +138,7 @@ export default function Profile(props) {
             } else {
                 followButtonContent = <Button onClick={removeFolloweedHandler} variant="light">Following</Button>
             }
-        } else {
-            followButtonContent = <Text>Looking at your own profile</Text>
         }
-    } else {
-        followButtonContent = <Text>Not logged in</Text>
     }
     
     //Content for the photo cards
@@ -160,26 +154,10 @@ export default function Profile(props) {
     }
     if (photoCardsQuery.status === "success"){
         photoCardsContent = 
-            <Grid justify="center" align="start">
+            <Grid justify="center" >
                 {photoCardsQuery.data.map((photoCard, index) => (
                     <Grid.Col key={index} span="content" style={{width: 300}} align="left">
-                    <Card radius="md" 
-                        shadow="md"
-                        padding="xs"
-                        key={index} 
-                    >
-                        <Card.Section component={Link} to={`/card/${photoCard.id}`}>
-                            <Image 
-                                src={`/api/photo-cards-${photoCard.share ? 'public' : 'private'}/${photoCard.front_file_name}`}
-                                height={400}
-                                // styles={{
-                                //     height:350,
-                                //     aspectRatio: 16/9
-                                // }}
-                                // fit="cover"
-                            />
-                        </Card.Section>
-                    </Card>
+                        <PhotoCard photoCard={photoCard} index={index} myCard={currentUsername === props.username}/>
                     </Grid.Col>
                 ))}
             </Grid>
@@ -196,18 +174,17 @@ export default function Profile(props) {
                 <Avatar radius="xl" size="3.0rem" color="orange">{profileUserQuery.data.username.charAt(0).toUpperCase()}</Avatar>
             </Group>
             <Space h="lg"/>
-            <Group position="apart" ml="sm" mr="sm">
+            <Group position="apart" ml="sm" mr="sm" mb="sm">
                 <Text>{profileUserQuery.data.public_card_count} cards</Text>
                 <Text>{profileUserQuery.data.follower_count} followers</Text>
                 <Text>{profileUserQuery.data.followee_count} following</Text>
             </Group>
-            <Space h="lg"/>
+
             {followButtonContent}
-            <Space h="lg"/>
-            <Divider size="sm" label="Photo Cards" labelPosition="center"/>
+            <Divider size="sm" color="orange.4" mt="sm"/>
             <Space h="lg"/>
             {photoCardsContent}
-            <Space h="lg"/>
+            <Space h="xl"/>
         </Container>
     );
 

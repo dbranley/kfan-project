@@ -35,10 +35,13 @@ export default function PhotoCardGallaryGrid(props) {
         staleTime: SESSION_EXPIRATION_TIME
     });
 
+    const currentUsername = currentUserQuery.data?.username
+
     const photoCardsQuery = useQuery({
         queryKey: ["photoCards", props.myCards, props.myFavorites, ownerName],
         queryFn: () => getPhotoCards(props.myCards, props.myFavorites, ownerName),
         // queryFn: () => getPhotoCard(props.photoCardId)
+        enabled: !!currentUsername
     });
 
     const addPhotoCardFavoriteMutation = useMutation({
@@ -179,10 +182,7 @@ export default function PhotoCardGallaryGrid(props) {
                                     )) 
                                 }
                                 {(location.pathname !== '/my-cards' &&  
-                                    ((currentUserQuery.status === "success" && 
-                                     currentUserQuery.data !== null && 
-                                     currentUserQuery.data.id !== 0 &&
-                                     currentUserQuery.data.id === photoCard.user_id) ? (
+                                    ((currentUsername === photoCard.owner_name) ? (
                                         <Tooltip label={"Your card"} color="orange.5" withArrow openDelay={500} radius="sm" fz="sm">
                                             <IconStar size="1.5rem" strokeWidth={2} color={'#fd7e14'} />
                                         </Tooltip>                                         
@@ -305,10 +305,7 @@ export default function PhotoCardGallaryGrid(props) {
                                         )) 
                                     }
                                     {(location.pathname !== '/my-cards' && 
-                                        ((currentUserQuery.status === "success" && 
-                                        currentUserQuery.data !== null && 
-                                        currentUserQuery.data.id !== 0 &&
-                                        currentUserQuery.data.id === photoCard.user_id) ? (
+                                        ((currentUsername === photoCard.owner_name) ? (
                                         <Tooltip label={"Your card"} color="orange.5" withArrow openDelay={500} radius="sm" fz="sm" opened={yoursOpened === photoCard.id}>
                                             <IconStar size="1.5rem" strokeWidth={2} color={'#fd7e14'} onClick={() => {
                                                 if (yoursOpened === 0){
