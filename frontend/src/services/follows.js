@@ -27,6 +27,57 @@ export async function getFollowee(followerUsername, followeeUsername){
 
 }
 
+
+export async function getFollowees(followerUsername){
+
+    console.log("follows.getFollowees()");
+    
+    //if followerUsername is 'unknown' it means no one is logged in, so just return emptry array
+    if (followerUsername === "unknown"){
+        return [];
+    }
+
+    try{
+        const response = await axios.get(
+            '/api/followees?follower_username='+followerUsername
+        );
+        console.log("follows.getFollowees() - response is: ");
+        console.log(response);
+        return response.data;
+    } catch(error){
+        //should I rethrow this???
+        console.log(error);
+        //do not rethrow in this case, just return empty response
+        throw error;
+    }   
+
+}
+
+export async function getFollowers(followeeUsername){
+
+    console.log("follows.getFollowers()");
+    
+    //if followerUsername is 'unknown' it means no one is logged in, so just return emptry array
+    if (followeeUsername === "unknown"){
+        return [];
+    }
+
+    try{
+        const response = await axios.get(
+            '/api/followers?followee_username='+followeeUsername
+        );
+        console.log("follows.getFollowers() - response is: ");
+        console.log(response);
+        return response.data;
+    } catch(error){
+        //should I rethrow this???
+        console.log(error);
+        //do not rethrow in this case, just return empty response
+        throw error;
+    }   
+
+}
+
 export async function addFollowee(followeeUsername){
 
     console.log("addFollowee() - followeeUsername="+followeeUsername+"=");

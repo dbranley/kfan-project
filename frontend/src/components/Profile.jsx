@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
-import { Avatar, Button, Card, Center, Container, Divider, Grid, Group, Image, Loader, MediaQuery, Space, Stack, Text, Tooltip } from "@mantine/core";
+import { Avatar, Button,  Center, Container, Divider, Grid, Group,  Loader,  Modal,  ScrollArea,  Space,  Text,  } from "@mantine/core";
+import { useDisclosure, useMediaQuery } from "@mantine/hooks";
 // import { Heart } from 'tabler-icons-react';
-import { IconHeart, IconCircleX, IconLock, IconLockOpen, IconStar, IconDisc, IconCalendarEvent, IconShirt, IconArrowBigLeft } from "@tabler/icons-react";
+import {  IconArrowBigLeft } from "@tabler/icons-react";
 import PropTypes from "prop-types";
 import { useNavigate, Link, useLocation } from "react-router-dom";
 
@@ -16,6 +17,7 @@ import { getFollowee,
 
 import { getPhotoCards } from "../services/photo-cards";
 import PhotoCard from "./PhotoCard";
+import FollowsList from "./FollowsList";
 
 export default function Profile(props) {
 
@@ -34,6 +36,10 @@ export default function Profile(props) {
     const location = useLocation();
     const navigate = useNavigate();
     const queryClient = useQueryClient();
+
+    //for modal
+    const [opened, { open, close }] = useDisclosure(false);
+    const isMobile = useMediaQuery("(max-width: 50em)");
 
     const currentUserQuery = useQuery({
         queryKey: ["currentUser"],
@@ -67,6 +73,7 @@ export default function Profile(props) {
         onSuccess: () => {
             queryClient.invalidateQueries(["followeeQuery"]);
             queryClient.invalidateQueries(["profileUser"]);
+            queryClient.invalidateQueries(["followersQuery", props.username])
         },
         onError: (error) => {
             console.log("Profile.addFolloweeMutation() - got an error");
@@ -80,6 +87,7 @@ export default function Profile(props) {
         onSuccess: () => {
             queryClient.invalidateQueries(["followeeQuery"]);
             queryClient.invalidateQueries(["profileUser"]);
+            queryClient.invalidateQueries(["followersQuery", props.username])
         },
         onError: (error) => {
             console.log("Profile.removeFolloweeMutation() - got an error");
@@ -164,28 +172,45 @@ export default function Profile(props) {
     }
 
     return (
-        <Container size="xs" >
+        <div>
+            <Modal opened={opened} 
+                   onClose={() =>{
+                    queryClient.invalidateQueries(["profileUser", props.username]);
+                    queryClient.invalidateQueries(["followersQuery", props.username]);
+                    queryClient.invalidateQueries(["followeesQuery", props.username]);
+                    close();
+                   }} 
+                   fullScreen={isMobile} 
+                   withCloseButton={isMobile}
+                   scrollAreaComponent={ScrollArea.Autosize}
+                   radius="md">
+                <FollowsList username={profileUserQuery.data.username} 
+                             followerCount={profileUserQuery.data.follower_count}
+                             followeeCount={profileUserQuery.data.followee_count}/>
+            </Modal>            
+            <Container size="xs" >
         {/* <Container style={{ background : '#adb5bd'}} size="xs" > */}
-            <Group position="apart">
-                <Group>
-                    <IconArrowBigLeft size="2rem" fill={'#d9480f'} color={'#d9480f'} onClick={() => navigate(-1)}/>
-                    <Text size="xl" fw={700} c="orange.9">@{profileUserQuery.data.username}</Text>
-                </Group> 
-                <Avatar radius="xl" size="3.0rem" color="orange">{profileUserQuery.data.username.charAt(0).toUpperCase()}</Avatar>
-            </Group>
-            <Space h="lg"/>
-            <Group position="apart" ml="sm" mr="sm" mb="sm">
-                <Text>{profileUserQuery.data.public_card_count} cards</Text>
-                <Text>{profileUserQuery.data.follower_count} followers</Text>
-                <Text>{profileUserQuery.data.followee_count} following</Text>
-            </Group>
+                <Group position="apart">
+                    <Group>
+                        <IconArrowBigLeft size="2rem" fill={'#d9480f'} color={'#d9480f'} onClick={() => navigate(-1)}/>
+                        <Text size="xl" fw={700} c="orange.9">@{profileUserQuery.data.username}</Text>
+                    </Group> 
+                    <Avatar radius="xl" size="3.0rem" color="orange">{profileUserQuery.data.username.charAt(0).toUpperCase()}</Avatar>
+                </Group>
+                <Space h="lg"/>
+                <Group position="apart" ml="sm" mr="sm" mb="sm">
+                    <Text>{profileUserQuery.data.public_card_count} cards</Text>
+                    <Text onClick={open}>{profileUserQuery.data.follower_count} followers</Text>
+                    <Text onClick={open}>{profileUserQuery.data.followee_count} following</Text>
+                </Group>
 
-            {followButtonContent}
-            <Divider size="sm" color="orange.4" mt="sm"/>
-            <Space h="lg"/>
-            {photoCardsContent}
-            <Space h="xl"/>
-        </Container>
+                {followButtonContent}
+                <Divider size="sm" color="orange.4" mt="sm"/>
+                <Space h="lg"/>
+                {photoCardsContent}
+                <Space h="xl"/>
+            </Container>
+        </div>
     );
 
 }
