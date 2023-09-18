@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { Badge, Center, Container, Loader, Stack, Tabs, Text, Title } from "@mantine/core";
+import { Avatar, Badge, Center, Container, Loader, Stack, Tabs, Text, Title } from "@mantine/core";
 // import { Heart } from 'tabler-icons-react';
 import PropTypes from "prop-types";
 import { useNavigate, Link, useLocation } from "react-router-dom";
@@ -87,21 +87,21 @@ export default function FollowsList(props) {
 
         <Container size="xs">
             <Title size="h2" align="center" color="orange.9">{props.username}</Title>
-            <Tabs orientation="horizontal"  defaultValue="followers" keepMounted={false}>
+            <Tabs orientation="horizontal"  defaultValue={`${props.followerTab ? "followers" : "following"}`} keepMounted={false}>
                 <Tabs.List position="center">
                     <Tabs.Tab value="followers"
-                              rightSection={
-                                <Badge>{props.followerCount}</Badge>
-                              }
+                            //   rightSection={
+                            //     <Avatar radius="xl" size="1.75rem" color="orange"><Text size="sm">{props.followerCount}</Text></Avatar>
+                            //   }
                               >
-                        Followers
+                        <Text size="sm">{props.followerCount} followers</Text>
                     </Tabs.Tab>
                     <Tabs.Tab value="following"
-                              rightSection={
-                                <Badge>{props.followeeCount}</Badge>
-                              }                              
+                            //   rightSection={
+                            //     <Avatar radius="xl" size="1.75rem" color="orange"><Text size="sm">{props.followeeCount}</Text></Avatar>
+                            //   }                              
                               >
-                        Following
+                        <Text size="sm">{props.followeeCount} following</Text>
                     </Tabs.Tab>
                 </Tabs.List>
 
@@ -121,4 +121,5 @@ FollowsList.propTypes = {
     username: PropTypes.string.isRequired,
     followerCount: PropTypes.number.isRequired,
     followeeCount: PropTypes.number.isRequired,
+    followerTab: PropTypes.bool.isRequired,
   };

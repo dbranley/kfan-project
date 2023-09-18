@@ -24,7 +24,9 @@ export default function Profile(props) {
     //doing this will force focus to top of page on 1st render of this detail page
     useEffect(() => {
         window.scrollTo(0,0);
-    }, []);    
+        close();
+        setFollowTab(true);
+    }, [props.username]);    
     
     console.log("Profile - at top - props is:");
     console.log(props);
@@ -37,9 +39,14 @@ export default function Profile(props) {
     const navigate = useNavigate();
     const queryClient = useQueryClient();
 
+    //for underlining follow links on hover
+    const [underlineFollowers, setUnderlineFollowers] = useState(false);
+    const [underlineFollowing, setUnderlineFollowing] = useState(false);
+    const [followTab, setFollowTab] = useState(true);
+
     //for modal
     const [opened, { open, close }] = useDisclosure(false);
-    const isMobile = useMediaQuery("(max-width: 50em)");
+    const isMobile = useMediaQuery("(max-width: 430px)");
 
     const currentUserQuery = useQuery({
         queryKey: ["currentUser"],
@@ -183,10 +190,13 @@ export default function Profile(props) {
                    fullScreen={isMobile} 
                    withCloseButton={isMobile}
                    scrollAreaComponent={ScrollArea.Autosize}
-                   radius="md">
+                   radius="md"
+                   closeButtonProps={{ size: 'lg', align: 'center'}}
+                   >
                 <FollowsList username={profileUserQuery.data.username} 
                              followerCount={profileUserQuery.data.follower_count}
-                             followeeCount={profileUserQuery.data.followee_count}/>
+                             followeeCount={profileUserQuery.data.followee_count}
+                             followerTab={followTab}/>
             </Modal>            
             <Container size="xs" >
         {/* <Container style={{ background : '#adb5bd'}} size="xs" > */}
@@ -200,8 +210,26 @@ export default function Profile(props) {
                 <Space h="lg"/>
                 <Group position="apart" ml="sm" mr="sm" mb="sm">
                     <Text>{profileUserQuery.data.public_card_count} cards</Text>
-                    <Text onClick={open}>{profileUserQuery.data.follower_count} followers</Text>
-                    <Text onClick={open}>{profileUserQuery.data.followee_count} following</Text>
+                    <Text onClick={()=>{
+                            setFollowTab(true);
+                            open();
+                          }} 
+                          style={{cursor:"pointer"}}
+                          td={`${underlineFollowers && !isMobile ? "underline" : ""}`}
+                          onMouseEnter={()=>setUnderlineFollowers(true)}
+                          onMouseLeave={()=>setUnderlineFollowers(false)}>
+                        {profileUserQuery.data.follower_count} followers
+                    </Text>
+                    <Text onClick={()=>{
+                            setFollowTab(false);
+                            open();
+                          }} 
+                          style={{cursor:"pointer"}}
+                          td={`${underlineFollowing && !isMobile ? "underline" : ""}`}
+                          onMouseEnter={()=>setUnderlineFollowing(true)}
+                          onMouseLeave={()=>setUnderlineFollowing(false)}>                    
+                        {profileUserQuery.data.followee_count} following
+                    </Text>
                 </Group>
 
                 {followButtonContent}

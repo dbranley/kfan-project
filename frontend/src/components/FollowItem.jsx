@@ -88,7 +88,11 @@ export default function FollowItem(props) {
 
     //Content for the following buttons
     let followButtonContent = null; //<Space h="36px"/> //36px is height of default <Button> - so need this to diplay when not showing button
-    if (currentUserQuery.data?.id !== 0){
+    if (currentUserQuery.data?.id === 0){
+        
+        followButtonContent = <Button disabled>Login to Follow</Button>
+        
+    } else if (currentUserQuery.data?.id !== 0){
         
         if (currentUsername != props.followUsername){
             if (followeeQuery?.data?.length === 0){
@@ -102,14 +106,14 @@ export default function FollowItem(props) {
 
     //Build content for the 'Follow' item
     const followItemContent = 
-        <Group position="left">
-            <Avatar radius="xl" size="1.5rem" color="orange" 
+        <Group position="left" >
+            <Avatar radius="xl" size="1.5rem" color="orange" component={Link} to={`/profile/${props.followUsername}`}
                     // onClick={() => {filterListByOwnerHandler(photoCard.owner_name)}} 
                     // style={{cursor:"pointer"}}
                     >
                 {props.followUsername.charAt(0).toUpperCase()}
             </Avatar>  
-            <Text>{props.followUsername}</Text> 
+            <Text component={Link} to={`/profile/${props.followUsername}`}>{props.followUsername}</Text> 
 
         </Group>;
 
