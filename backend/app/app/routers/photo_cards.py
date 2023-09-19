@@ -129,12 +129,14 @@ async def create_photo_card(
 async def read_photo_cards(request: Request, 
                            my_cards: bool=False, 
                            my_favorites: bool=False, 
+                           my_followees: bool=False, 
                            owner_username: str | None = None,
                            skip: int=0, 
                            limit: int=100):
 
-    print("photo_cards.read_photo_cards() - at top - my_cards, my_favorites, collector is:")
+    print("photo_cards.read_photo_cards() - at top - my_cards, my_favorites, my_followees, collector is:")
     print(my_cards)
+    print(my_favorites)
     print(my_favorites)
     print(owner_username)
     #if user is logged in, then get their user_id to pass to get query
@@ -177,8 +179,16 @@ async def read_photo_cards(request: Request,
     if my_favorites == True and user_id == 0:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Must login to view your favorite photo cards")
 
+    if my_followees == True and user_id == 0:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Must login to view photo cards of people you follow")
+
+    if my_followees == True and my_favorites == True:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Cannot filter by 'Favorites' and 'Following'")
+
     if my_favorites == True:
         photo_cards = await crud.get_my_favorite_photo_cards(database, my_cards=my_cards, user_id=user_id, collector_id=collector_id, skip=skip, limit=limit)
+    elif my_followees == True:
+        photo_cards = await crud.get_my_followees_photo_cards(database, user_id=user_id, skip=skip, limit=limit)
     else: 
         photo_cards = await crud.get_photo_cards(database, my_cards=my_cards, user_id=user_id, collector_id=collector_id, skip=skip, limit=limit)
     return photo_cards

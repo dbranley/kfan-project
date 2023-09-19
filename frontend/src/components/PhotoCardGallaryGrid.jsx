@@ -38,8 +38,8 @@ export default function PhotoCardGallaryGrid(props) {
     const currentUsername = currentUserQuery.data?.username
 
     const photoCardsQuery = useQuery({
-        queryKey: ["photoCards", props.myCards, props.myFavorites, ownerName],
-        queryFn: () => getPhotoCards(props.myCards, props.myFavorites, ownerName),
+        queryKey: ["photoCards", props.myCards, props.myFavorites, props.myFollowees, ownerName],
+        queryFn: () => getPhotoCards(props.myCards, props.myFavorites, props.myFollowees, ownerName),
         // queryFn: () => getPhotoCard(props.photoCardId)
         enabled: !!currentUsername
     });
@@ -132,9 +132,10 @@ export default function PhotoCardGallaryGrid(props) {
             <MediaQuery smallerThan={430} styles={{ display: "none"}}>
                 <div>
                 <Group align="left">
-                    {props.myCards === false && props.myFavorites === false &&<Text size="lg" color="orange.9">All Photo Cards</Text>}
-                    {props.myCards === true && props.myFavorites === false &&<Text size="lg" color="orange.9">My Photo Cards</Text>}
-                    {props.myCards === false && props.myFavorites === true &&<Text size="lg" color="orange.9">My Favorites</Text>}
+                    {props.myCards === false && props.myFavorites === false && props.myFollowees === false && <Text size="lg" color="orange.9">All Photo Cards</Text>}
+                    {props.myCards === true && props.myFavorites === false && props.myFollowees === false && <Text size="lg" color="orange.9">My Photo Cards</Text>}
+                    {props.myCards === false && props.myFavorites === true && props.myFollowees === false && <Text size="lg" color="orange.9">My Favorites</Text>}
+                    {props.myCards === false && props.myFavorites === false && props.myFollowees === true && <Text size="lg" color="orange.9">Following</Text>}
                     {/* {props.myCards === true && <Badge radius="xl" compact variant="light">My Cards</Badge>}
                     {props.myFavorites === true && <Badge radius="xl" compact variant="light">My Favorites</Badge>} */}
                     {ownerName !== null && 
@@ -255,9 +256,10 @@ export default function PhotoCardGallaryGrid(props) {
             <MediaQuery largerThan={430} styles={{ display: "none"}}>
                 <div>
                 <Group align="left">
-                    {props.myCards === false && props.myFavorites === false &&<Text size="lg" color="orange.9">All Photo Cards</Text>}
-                    {props.myCards === true && props.myFavorites === false &&<Text size="lg" color="orange.9">My Photo Cards</Text>}
-                    {props.myCards === false && props.myFavorites === true &&<Text size="lg" color="orange.9">My Favorites</Text>}
+                    {props.myCards === false && props.myFavorites === false && props.myFollowees === false &&<Text size="lg" color="orange.9">All Photo Cards</Text>}
+                    {props.myCards === true && props.myFavorites === false && props.myFollowees === false &&<Text size="lg" color="orange.9">My Photo Cards</Text>}
+                    {props.myCards === false && props.myFavorites === true && props.myFollowees === false &&<Text size="lg" color="orange.9">My Favorites</Text>}
+                    {props.myCards === false && props.myFavorites === false && props.myFollowees === true &&<Text size="lg" color="orange.9">Following</Text>}
                     {/* {props.myCards === true && <Badge radius="xl" compact variant="light">My Cards</Badge>}
                     {props.myFavorites === true && <Badge radius="xl" compact variant="light">My Favorites</Badge>} */}
                     {ownerName !== null && 
@@ -449,4 +451,5 @@ export default function PhotoCardGallaryGrid(props) {
 PhotoCardGallaryGrid.propTypes = {
     myCards: PropTypes.bool.isRequired,
     myFavorites: PropTypes.bool.isRequired,
+    myFollowees: PropTypes.bool.isRequired
   };

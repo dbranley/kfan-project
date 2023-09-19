@@ -45,6 +45,7 @@ export default function FollowItem(props) {
         mutationFn: addFollowee,
         onSuccess: () => {
             queryClient.invalidateQueries(["followeeQuery", props.followUsername, currentUsername]);
+            queryClient.invalidateQueries("photoCards", false, false, true, null);
         },
         onError: (error) => {
             console.log("FollowItem.addFolloweeMutation() - got an error");
@@ -57,6 +58,7 @@ export default function FollowItem(props) {
         mutationFn: removeFollowee,
         onSuccess: () => {
             queryClient.invalidateQueries(["followeeQuery", props.followUsername, currentUsername]);
+            queryClient.invalidateQueries("photoCards", false, false, true, null);
         },
         onError: (error) => {
             console.log("FollowItem.removeFolloweeMutation() - got an error");

@@ -63,8 +63,8 @@ export default function Profile(props) {
     });
 
     const photoCardsQuery = useQuery({
-        queryKey: ["photoCards", (currentUsername === props.username), false, props.username],
-        queryFn: () => getPhotoCards((currentUsername === props.username), false, props.username),
+        queryKey: ["photoCards", (currentUsername === props.username), false, false, props.username],
+        queryFn: () => getPhotoCards((currentUsername === props.username), false, false, props.username),
         enabled: !!currentUsername
         // queryFn: () => getPhotoCard(props.photoCardId)
     });
@@ -80,7 +80,8 @@ export default function Profile(props) {
         onSuccess: () => {
             queryClient.invalidateQueries(["followeeQuery"]);
             queryClient.invalidateQueries(["profileUser"]);
-            queryClient.invalidateQueries(["followersQuery", props.username])
+            queryClient.invalidateQueries(["followersQuery", props.username]);
+            queryClient.invalidateQueries("photoCards", false, false, true, null);
         },
         onError: (error) => {
             console.log("Profile.addFolloweeMutation() - got an error");
@@ -94,7 +95,8 @@ export default function Profile(props) {
         onSuccess: () => {
             queryClient.invalidateQueries(["followeeQuery"]);
             queryClient.invalidateQueries(["profileUser"]);
-            queryClient.invalidateQueries(["followersQuery", props.username])
+            queryClient.invalidateQueries(["followersQuery", props.username]);
+            queryClient.invalidateQueries("photoCards", false, false, true, null);
         },
         onError: (error) => {
             console.log("Profile.removeFolloweeMutation() - got an error");

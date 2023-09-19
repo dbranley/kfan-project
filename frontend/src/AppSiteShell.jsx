@@ -61,7 +61,7 @@ export default function AppSiteShell() {
           p="sm"
           hiddenBreakpoint="md"
           hidden={!opened}
-          width={{ base: 225 }}
+          width={{ base: 220 }}
         >
           <Navbar.Section grow mt="lg">
             <div>
@@ -88,6 +88,15 @@ export default function AppSiteShell() {
                  fullWidth display={"inline-flex"} size="md" radius={0}
                  onClick={()=>{setOpened(false)}}
                  >My Favorites</Button>}  
+
+                {currentUserQuery.status === "success" && 
+                 currentUserQuery.data !== null && 
+                 currentUserQuery.data.id !== 0 &&                      
+                 <Button component={Link} to="/my-followees" variant="subtle" compact 
+                 leftIcon={<IconHomePlus size="1.3rem"/>} 
+                 fullWidth display={"inline-flex"} size="md" radius={0}
+                 onClick={()=>{setOpened(false)}}
+                 >Following</Button>}  
 
                 {currentUserQuery.status === "success" && 
                  currentUserQuery.data !== null && 

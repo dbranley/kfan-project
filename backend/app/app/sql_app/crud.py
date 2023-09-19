@@ -135,6 +135,33 @@ async def get_photo_cards(database: Database, user_id: int, my_cards: bool, coll
      print(result)     
      return result
 
+async def get_my_followees_photo_cards(database: Database, user_id: int, skip: int=0, limit: int=100):
+     print("crud.get_my_favorite_photo_cards() - at top")
+       
+
+     j_comb = models.photo_cards.join(right=models.users, \
+                      onclause=and_(models.photo_cards.c.user_id == models.users.c.id,\
+                                    models.photo_cards.c.share == True,
+                                    models.photo_cards.c.user_id.in_(
+                                        select(models.follows.c.followee).where(models.follows.c.follower == user_id)
+                                    ))). \
+                      join(right=models.favorites,  \
+                            onclause=and_(models.photo_cards.c.id == models.favorites.c.photo_card_id, \
+                                          models.favorites.c.user_id == user_id), isouter=True)
+     
+     
+     query = select([models.photo_cards, models.users.c.username.label("owner_name"), models.favorites.c.id.label("favorite_id")]).\
+                 select_from(j_comb). \
+                 offset(skip).limit(limit).\
+                 order_by(models.photo_cards.c.id.desc())
+
+     print("crud.get_my_followees_photo_cards() - about to print query")
+     print(query)
+     result = await database.fetch_all(query)
+     print("crud.get_my_followees_photo_cards - after query - result is:")
+     print(result)     
+     return result
+
 async def get_my_favorite_photo_cards(database: Database, user_id: int, my_cards: bool, collector_id: int, skip: int=0, limit: int=100):
      print("crud.get_my_favorite_photo_cards() - at top")
      
@@ -176,6 +203,7 @@ async def get_my_favorite_photo_cards(database: Database, user_id: int, my_cards
      print("crud.get_my_favorite_photo_cards - after query - result is:")
      print(result)     
      return result
+
 
 async def get_photo_card(database: Database,
                          photo_card_id: int,

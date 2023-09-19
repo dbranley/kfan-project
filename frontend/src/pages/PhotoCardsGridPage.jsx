@@ -8,7 +8,7 @@ import PhotoCardGallaryGrid from "../components/PhotoCardGallaryGrid";
 export default function PhotoCardsGridPage(props) {
 
     return (
-        <PhotoCardGallaryGrid myCards={props.myCards} myFavorites={props.myFavorites}/>
+        <PhotoCardGallaryGrid myCards={props.myCards} myFavorites={props.myFavorites} myFollowees={props.myFollowees}/>
     );
 
 }
@@ -16,4 +16,5 @@ export default function PhotoCardsGridPage(props) {
 PhotoCardsGridPage.propTypes = {
     myCards: PropTypes.bool.isRequired,
     myFavorites: PropTypes.bool.isRequired,
+    myFollowees: PropTypes.bool.isRequired, 
   };
