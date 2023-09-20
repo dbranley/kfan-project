@@ -87,7 +87,7 @@ export default function AppSiteShell() {
                  leftIcon={<IconHomePlus size="1.3rem"/>} 
                  fullWidth display={"inline-flex"} size="md" radius={0}
                  onClick={()=>{setOpened(false)}}
-                 >My Favorites</Button>}  
+                 >Favorites</Button>}  
 
                 {currentUserQuery.status === "success" && 
                  currentUserQuery.data !== null && 
