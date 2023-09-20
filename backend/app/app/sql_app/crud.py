@@ -1,7 +1,7 @@
 
 from . import models, schemas
 from databases import Database 
-from sqlalchemy.sql import select, and_, or_, join
+from sqlalchemy.sql import select, and_, or_, join, func, table
 from asyncpg.exceptions import UniqueViolationError
 from fastapi import HTTPException, status
 
@@ -135,6 +135,33 @@ async def get_photo_cards(database: Database, user_id: int, my_cards: bool, coll
      print(result)     
      return result
 
+async def get_my_followees_photo_cards(database: Database, user_id: int, skip: int=0, limit: int=100):
+     print("crud.get_my_favorite_photo_cards() - at top")
+       
+
+     j_comb = models.photo_cards.join(right=models.users, \
+                      onclause=and_(models.photo_cards.c.user_id == models.users.c.id,\
+                                    models.photo_cards.c.share == True,
+                                    models.photo_cards.c.user_id.in_(
+                                        select(models.follows.c.followee).where(models.follows.c.follower == user_id)
+                                    ))). \
+                      join(right=models.favorites,  \
+                            onclause=and_(models.photo_cards.c.id == models.favorites.c.photo_card_id, \
+                                          models.favorites.c.user_id == user_id), isouter=True)
+     
+     
+     query = select([models.photo_cards, models.users.c.username.label("owner_name"), models.favorites.c.id.label("favorite_id")]).\
+                 select_from(j_comb). \
+                 offset(skip).limit(limit).\
+                 order_by(models.photo_cards.c.id.desc())
+
+     print("crud.get_my_followees_photo_cards() - about to print query")
+     print(query)
+     result = await database.fetch_all(query)
+     print("crud.get_my_followees_photo_cards - after query - result is:")
+     print(result)     
+     return result
+
 async def get_my_favorite_photo_cards(database: Database, user_id: int, my_cards: bool, collector_id: int, skip: int=0, limit: int=100):
      print("crud.get_my_favorite_photo_cards() - at top")
      
@@ -176,6 +203,7 @@ async def get_my_favorite_photo_cards(database: Database, user_id: int, my_cards
      print("crud.get_my_favorite_photo_cards - after query - result is:")
      print(result)     
      return result
+
 
 async def get_photo_card(database: Database,
                          photo_card_id: int,
@@ -228,6 +256,30 @@ async def is_photo_card_shared(database: Database,
     #     card_is_private = row._mapping['is_private']
 
     return card_is_shared 
+
+async def get_count_photo_card_shared(database: Database,
+                                      user_id: int):
+    print("crud.get_count_photo_card_shared()")
+
+    stmt = select(func.count()).select_from(models.photo_cards).where(
+        models.photo_cards.c.user_id == user_id,
+        models.photo_cards.c.share == True
+    )
+
+    print("crud.get_count_photo_card_shared() - about to print query")
+    print(stmt)
+    result = await database.fetch_one(stmt)
+    print("crud.get_count_photo_card_shared() - after query - result is:")
+    print(result)
+
+    card_count = 0
+    if result is not None:
+         card_count = result._mapping['count_1']
+
+    print("crud.get_count_photo_card_shared() - at end - about to return card_count:")
+    print(card_count)
+
+    return card_count 
 
 async def delete_photo_card(database: Database, photo_card_id: int, user_id: int):
     print("crud.delete_photo_card()")
@@ -331,3 +383,4 @@ async def delete_favorites_except_owners(database: Database, photo_card_id: int,
     print(result)
 
     return {"message":"Favorites deleted"}
+

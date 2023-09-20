@@ -11,7 +11,7 @@ import { Avatar,
 import { Carousel } from "@mantine/carousel";
 import PropTypes from "prop-types";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link  } from "react-router-dom";
 import { SESSION_EXPIRATION_TIME, getCurrentUser } from "../services/auth";
 import { IconHeart, 
          IconTrash, 
@@ -44,17 +44,20 @@ const PhotoCardDetail = (props) => {
     window.scrollTo(0,0);
   }, []);
 
-  const photoCardQuery = useQuery({
-    queryKey: ["photoCards", props.photoCardId],
-    queryFn: () => getPhotoCard(props.photoCardId),
-  });
-
   const queryClient = useQueryClient();
 
   const currentUserQuery = useQuery({
     queryKey: ["currentUser"],
     queryFn: getCurrentUser,
     staleTime: SESSION_EXPIRATION_TIME
+  });
+
+  const currentUsername = currentUserQuery.data?.username
+
+  const photoCardQuery = useQuery({
+    queryKey: ["photoCards", props.photoCardId],
+    queryFn: () => getPhotoCard(props.photoCardId),
+    enabled: !!currentUsername
   });
 
   const deletePhotoCardMutation = useMutation({
@@ -228,7 +231,9 @@ const PhotoCardDetail = (props) => {
           <Group position="left" spacing="xl">
           {/* <Text c="orange" fz="xl">{photoCardQuery.data.group_name}</Text> */}
           <Tooltip label={'@'+photoCardQuery.data.owner_name} color="orange.5" withArrow openDelay={500} radius="sm" fz="sm">
-            <Avatar radius="xl" size="md" color="orange">{photoCardQuery.data.owner_name.charAt(0).toUpperCase()}</Avatar>
+            <Avatar radius="xl" size="md" color="orange"  component={Link} to={`/profile/${photoCardQuery.data.owner_name}`}>
+              {photoCardQuery.data.owner_name.charAt(0).toUpperCase()}
+            </Avatar>
           </Tooltip>        
         {currentUserQuery.status === "success" && 
                 currentUserQuery.data !== null && 
@@ -249,10 +254,7 @@ const PhotoCardDetail = (props) => {
                   </Tooltip>
                 )
         }
-        {currentUserQuery.status === "success" && 
-                currentUserQuery.data !== null && 
-                currentUserQuery.data.id !== 0 &&
-                currentUserQuery.data.id === photoCardQuery.data.user_id &&
+        {currentUsername === photoCardQuery.data.owner_name && 
                 ((photoCardQuery.data.share &&
                   <IconLockOpen color={'#fd7e14'} size="2rem" onClick={()=>{
                     updatePhotoCardHandler(photoCardQuery.data.id, false);
@@ -262,13 +264,10 @@ const PhotoCardDetail = (props) => {
                     updatePhotoCardHandler(photoCardQuery.data.id, true);
                   }}/>
                 ))    
-                }
-        {currentUserQuery.status === "success" && 
-                currentUserQuery.data !== null && 
-                currentUserQuery.data.id !== 0 &&
-                currentUserQuery.data.id === photoCardQuery.data.user_id &&  
+        }
+        {currentUsername === photoCardQuery.data.owner_name && 
                   <IconTrash onClick={deletePhotoCardHandler} size="2rem" color={'#fd7e14'}/>
-                }              
+        }              
         </Group>
         </Container>   
         </div>     
@@ -363,13 +362,15 @@ const PhotoCardDetail = (props) => {
           {deleteError != null && <div><Text size="md" c="red" align="left">{deleteError}</Text></div>}
           <Group position="left" spacing="xl">
           {/* <Text c="orange" fz="xl">{photoCardQuery.data.group_name}</Text> */}
-          <Tooltip label={'@'+photoCardQuery.data.owner_name} color="orange.5" withArrow openDelay={500} radius="sm" fz="sm" opened={ownerOpened}>
-            <Avatar radius="xl" size="md" color="orange" onClick={()=> {
-              setLoginToFavOpened(false);
-              setCardSourceOpened(false);
-              setOwnerOpened((o)=>!o);
-              }}>{photoCardQuery.data.owner_name.charAt(0).toUpperCase()}</Avatar>
-          </Tooltip>        
+          {/* <Tooltip label={'@'+photoCardQuery.data.owner_name} color="orange.5" withArrow openDelay={500} radius="sm" fz="sm" opened={ownerOpened}> */}
+            <Avatar radius="xl" size="md" color="orange"   component={Link} to={`/profile/${photoCardQuery.data.owner_name}`} 
+                // onClick={()=> {
+                //   setLoginToFavOpened(false);
+                //   setCardSourceOpened(false);
+                //   setOwnerOpened((o)=>!o);
+                // }}
+              >{photoCardQuery.data.owner_name.charAt(0).toUpperCase()}</Avatar>
+          {/* </Tooltip>         */}
         {currentUserQuery.status === "success" && 
                 currentUserQuery.data !== null && 
                 currentUserQuery.data.id !== 0 ? (
@@ -397,10 +398,7 @@ const PhotoCardDetail = (props) => {
                   </Tooltip>
                 )
         }
-        {currentUserQuery.status === "success" && 
-                currentUserQuery.data !== null && 
-                currentUserQuery.data.id !== 0 &&
-                currentUserQuery.data.id === photoCardQuery.data.user_id &&
+        {currentUsername === photoCardQuery.data.owner_name && 
                 ((photoCardQuery.data.share &&
                   <IconLockOpen color={'#fd7e14'} size="2rem" onClick={()=>{
                     setOwnerOpened(false);
@@ -415,10 +413,7 @@ const PhotoCardDetail = (props) => {
                   }}/>
                 ))    
                 }
-        {currentUserQuery.status === "success" && 
-                currentUserQuery.data !== null && 
-                currentUserQuery.data.id !== 0 &&
-                currentUserQuery.data.id === photoCardQuery.data.user_id &&  
+        {currentUsername === photoCardQuery.data.owner_name && 
                   <IconTrash onClick={deletePhotoCardHandler} size="2rem" color={'#fd7e14'}/>
                 }              
         </Group>

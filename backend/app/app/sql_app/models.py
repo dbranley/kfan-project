@@ -41,19 +41,11 @@ favorites = sqlalchemy.Table(
     UniqueConstraint("user_id", "photo_card_id", name="fav_uix_1"),
 )
 
-# class PhotoCard(Base):
-#     __tablename__ = "photo_cards"
-
-#     id = Column(Integer, primary_key=True, index=True)
-#     front_file_name = Column(String, unique=True)
-#     back_file_name = Column(String, unique=True)
-#     group_name = Column(String)
-#     member_name = Column(String)
-#     is_private = Column(Boolean, default=True)
-
-# class User(Base):
-#     __tablename__ = "users"
-#     id = Column(Integer, primary_key=True, index=True)
-#     username = Column(String, unique=True, nullable=False)
-#     password = Column(String, nullable=False)
-
+follows = sqlalchemy.Table(
+    "follows",
+    metadata,
+    sqlalchemy.Column("id", sqlalchemy.Integer, primary_key=True, index=True),
+    sqlalchemy.Column("follower", sqlalchemy.Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False),
+    sqlalchemy.Column("followee", sqlalchemy.Integer, ForeignKey("users.id", ondelete="CASCADE"), nullable=False),
+    UniqueConstraint("follower", "followee", name="fol_uix_1"),
+)

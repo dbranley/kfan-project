@@ -7,6 +7,7 @@ from jose import JWTError, jwt
 from pydantic import BaseModel
 
 from app.sql_app import crud, schemas
+from app.sql_app.cruds import follows
 from app.sql_app.database import database
 from app.utils import validate_email
 
@@ -174,6 +175,36 @@ async def read_user(user_id: int):
     if db_user is None:
         raise HTTPException(status_code=404, detail="User not found")
     return db_user
+
+@database.transaction()
+@router.get("/api/user", tags=["users"], response_model=schemas.UserProfile)
+async def read_user_by_username(username: str):
+    print("main.read_user_by_username() - about to call crud.get_user()")
+    db_user = await crud.get_user_by_username(database, username)
+    if db_user is None:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    #get card count
+    card_count = await crud.get_count_photo_card_shared(database, db_user.id)
+    print("main.read_user_by_username() - card_count is:")
+    print(card_count)
+
+    #get follower count
+    follower_count = await follows.get_follower_count(database, db_user.id)
+    print("main.read_user_by_username() - follower_count is:")
+    print(follower_count)
+
+    #get followee count
+    followee_count = await follows.get_followee_count(database, db_user.id)
+    print("main.read_user_by_username() - followee_count is:")
+    print(followee_count)
+
+    profile = schemas.UserProfile(username=username,
+                                  public_card_count=card_count,
+                                  follower_count=follower_count,
+                                  followee_count=followee_count)
+    return profile
+
 
 @router.post("/api/user/password", tags=["users"])
 async def update_password(user_update: schemas.UserPwdUpdate, 

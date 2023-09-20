@@ -1,8 +1,8 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Avatar, Button, Container, Group, Menu, Modal, Space, Text } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, Link } from "react-router-dom";
 
 import AuthForm from "./AuthForm";
 import UpdatePasswordForm from "./UpdatePasswordForm";
@@ -18,6 +18,8 @@ export default function AuthButton() {
 
   const [successChangeOpened, { open: successChangeOpen, close: successChangeClose }] =
     useDisclosure(false);
+
+  const [menuOpened, setMenuOpened] = useState(false);
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -97,12 +99,15 @@ export default function AuthButton() {
   } else if (currentUserQuery.status === "success" && currentUserQuery.data !== null && currentUserQuery.data.id !== 0) {
     console.log("AuthButton - in if-block where about to create logout button");
     content = (
-      <Menu trigger="hover" openDelay={100}>
+      <Menu opened={menuOpened} onChange={setMenuOpened} openDelay={100}>
         <Menu.Target>
           <Avatar data-testid="profile-avatar-id" radius="xl" size="sm" variant="filled" color="orange" style={{cursor:"pointer"}} />
         </Menu.Target>
         <Menu.Dropdown>
           <Menu.Label>@{currentUserQuery.data.username}</Menu.Label>
+          <Menu.Item  onClick={()=>{
+            navigate("/profile/"+currentUserQuery.data.username);
+          }} >Profile</Menu.Item>
           <Menu.Item onClick={()=>{
             console.log("AuthButton - clicked Settings menu item");
             openSettings();
