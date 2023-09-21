@@ -7,6 +7,7 @@ import { Avatar,
          MediaQuery, 
          Space, 
          Text, 
+         TextInput, 
          Tooltip } from "@mantine/core";
 import { Carousel } from "@mantine/carousel";
 import PropTypes from "prop-types";
@@ -20,7 +21,8 @@ import { IconHeart,
          IconArrowBigLeft,
          IconDisc,
          IconCalendarEvent,
-         IconShirt } from "@tabler/icons-react";
+         IconShirt,
+         IconPencil } from "@tabler/icons-react";
 
 import { getPhotoCard, 
          deletePhotoCard, 
@@ -29,6 +31,7 @@ import { getPhotoCard,
          removePhotoCardFavorite} from "../services/photo-cards";
 
 import { extractMessageFromRestError } from "../utils";
+import InlineTextEdit from "./InlineTextEdit";
 
 const PhotoCardDetail = (props) => {
 
@@ -36,6 +39,7 @@ const PhotoCardDetail = (props) => {
   const [ownerOpened, setOwnerOpened] = useState(false);
   const [loginToFavOpened, setLoginToFavOpened] = useState(false);
   const [cardSourceOpened, setCardSourceOpened] = useState(false);
+  const [editingCardName, setEditingCardName] = useState(false);
 
   const navigate = useNavigate();
 
@@ -116,10 +120,10 @@ const PhotoCardDetail = (props) => {
     deletePhotoCardMutation.mutate(photoCardQuery.data.id);
   }
 
-  const updatePhotoCardHandler = async(photoCardId, share) => {
-    console.log("PhotoCardDetails - updatePhotoCardHandler() - share is:");
+  const updatePhotoCardShareHandler = async(photoCardId, share) => {
+    console.log("PhotoCardDetails - updatePhotoCardShareHandler() - share is:");
     console.log(share);
-    console.log("PhotoCardDetails - updatePhotoCardHandler() - about to call update mutation")
+    console.log("PhotoCardDetails - updatePhotoCardShareHandler() - about to call update mutation")
     updatePhotoCardMutation.mutate({
       id : photoCardId,
       share : share 
@@ -150,6 +154,50 @@ const PhotoCardDetail = (props) => {
     removePhotoCardFavoriteMutation.mutate(photoCardId);
   }
 
+  let deleteErrorContent = null;
+  if (deleteError !== null){
+    deleteErrorContent = <div><Text size="md" c="red" align="left">{deleteError}</Text></div>;
+  } 
+
+  let cardNameContentLarge = 
+      <Text size="xl" fw={700} c="brown">{photoCardQuery.data.card_name}</Text>;      
+  let cardNameContentSmall = 
+      <Text size="xl" fw={700} c="brown">{photoCardQuery.data.card_name.length > 24 ?
+            `${photoCardQuery.data.card_name.substring(0,24)}...` : photoCardQuery.data.card_name}</Text>
+  
+  if (currentUsername === photoCardQuery.data.owner_name){
+    cardNameContentLarge =
+      <InlineTextEdit text={photoCardQuery.data.card_name} size="xl" fontWeight={700} color="brown"/>;
+    cardNameContentSmall = 
+      <InlineTextEdit text={photoCardQuery.data.card_name} size="xl" fontWeight={700} color="brown"/>;
+  } 
+    // if (editingCardName){
+    //   cardNameContentLarge = (
+    //     <Group>  
+    //       <TextInput size="xl" fw={700} c="brown" value={photoCardQuery.data.card_name} onBlur={()=>setEditingCardName(false)}/> 
+    //       <IconPencil strokeWidth={2} color="brown"/>
+    //     </Group>
+    //   );
+
+    // } else {
+    //   cardNameContentLarge = (
+    //     <Group>  
+    //       <Text size="xl" fw={700} c="brown" onClick={()=>setEditingCardName(true)}>{photoCardQuery.data.card_name}</Text> 
+    //       <IconPencil strokeWidth={2} color="brown"/>
+    //     </Group>
+    //   );
+  
+    // }
+    
+    // cardNameContentSmall = 
+    //   <Group>
+    //     <Text size="xl" fw={700} c="brown">{photoCardQuery.data.card_name.length > 24 ?
+    //         `${photoCardQuery.data.card_name.substring(0,24)}...` : photoCardQuery.data.card_name}</Text>
+    //     <IconPencil strokeWidth={2} color="brown"/>
+    //   </Group>
+    //}            
+  
+
   return (
     <Container px={0}>
       {/* <Group>
@@ -161,7 +209,9 @@ const PhotoCardDetail = (props) => {
         <div>
           <Group>
             <IconArrowBigLeft size="2rem" fill={'#d9480f'} color={'#d9480f'} onClick={() => navigate(-1)}/>
-            <Text size="xl" fw={700} c="brown">{photoCardQuery.data.card_name}</Text>
+            {cardNameContentLarge}
+            {/* <Text size="xl" fw={700} c="brown">{photoCardQuery.data.card_name}</Text>
+            <IconPencil strokeWidth={2} color="brown"/> */}
           </Group>          
         <Carousel draggable={false} withControls={false} slideGap="xs" slideSize="50%" withIndicators={false} align="start" mt="xs">
                   {/* styles={{ control: {
@@ -226,8 +276,8 @@ const PhotoCardDetail = (props) => {
               <Space h="md"/>
             </div>
           }
-
-          {deleteError != null && <div><Text size="md" c="red" align="left">{deleteError}</Text></div>}
+          {deleteErrorContent}
+          {/* {deleteError != null && <div><Text size="md" c="red" align="left">{deleteError}</Text></div>} */}
           <Group position="left" spacing="xl">
           {/* <Text c="orange" fz="xl">{photoCardQuery.data.group_name}</Text> */}
           <Tooltip label={'@'+photoCardQuery.data.owner_name} color="orange.5" withArrow openDelay={500} radius="sm" fz="sm">
@@ -257,11 +307,11 @@ const PhotoCardDetail = (props) => {
         {currentUsername === photoCardQuery.data.owner_name && 
                 ((photoCardQuery.data.share &&
                   <IconLockOpen color={'#fd7e14'} size="2rem" onClick={()=>{
-                    updatePhotoCardHandler(photoCardQuery.data.id, false);
+                    updatePhotoCardShareHandler(photoCardQuery.data.id, false);
                   }}/>
                 ) || (
                   <IconLock color={'#fd7e14'} size="2rem" onClick={()=>{
-                    updatePhotoCardHandler(photoCardQuery.data.id, true);
+                    updatePhotoCardShareHandler(photoCardQuery.data.id, true);
                   }}/>
                 ))    
         }
@@ -277,8 +327,9 @@ const PhotoCardDetail = (props) => {
         <div>
           <Group>
             <IconArrowBigLeft size="2rem" fill={'#d9480f'} color={'#d9480f'} onClick={() => navigate(-1)}/>
-            <Text size="xl" fw={700} c="brown">{photoCardQuery.data.card_name.length > 24 ?
-                                        `${photoCardQuery.data.card_name.substring(0,24)}...` : photoCardQuery.data.card_name}</Text>
+            {cardNameContentSmall}
+            {/* <Text size="xl" fw={700} c="brown">{photoCardQuery.data.card_name.length > 24 ?
+                                        `${photoCardQuery.data.card_name.substring(0,24)}...` : photoCardQuery.data.card_name}</Text> */}
           </Group>          
           <Carousel withIndicators dragFree mt="xs" controlSize={30} slideGap="xs" 
                 styles={{ control: {
@@ -359,7 +410,8 @@ const PhotoCardDetail = (props) => {
             </div>
           }
 
-          {deleteError != null && <div><Text size="md" c="red" align="left">{deleteError}</Text></div>}
+          {deleteErrorContent}
+          {/* {deleteError != null && <div><Text size="md" c="red" align="left">{deleteError}</Text></div>} */}
           <Group position="left" spacing="xl">
           {/* <Text c="orange" fz="xl">{photoCardQuery.data.group_name}</Text> */}
           {/* <Tooltip label={'@'+photoCardQuery.data.owner_name} color="orange.5" withArrow openDelay={500} radius="sm" fz="sm" opened={ownerOpened}> */}
@@ -403,13 +455,13 @@ const PhotoCardDetail = (props) => {
                   <IconLockOpen color={'#fd7e14'} size="2rem" onClick={()=>{
                     setOwnerOpened(false);
                     setCardSourceOpened(false);
-                    updatePhotoCardHandler(photoCardQuery.data.id, false);
+                    updatePhotoCardShareHandler(photoCardQuery.data.id, false);
                   }}/>
                 ) || (
                   <IconLock color={'#fd7e14'} size="2rem" onClick={()=>{
                     setOwnerOpened(false);
                     setCardSourceOpened(false);
-                    updatePhotoCardHandler(photoCardQuery.data.id, true);
+                    updatePhotoCardShareHandler(photoCardQuery.data.id, true);
                   }}/>
                 ))    
                 }

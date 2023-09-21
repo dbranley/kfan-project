@@ -223,9 +223,13 @@ async def read_photo_cards(id: int,
 
 @router.put("/api/photo-cards/{id}", tags=["photo_cards"])
 async def update_photo_card(id: int,
-                            share: bool,
-                            request: Request):
-    print("photo_cards.update_photo_card() - at top - id="+str(id)+"=, share="+str(share)+"=")
+                            request: Request,
+                            group_name: str | None = None,
+                            card_name: str | None = None,
+                            source_type: str | None = None,
+                            source_name: str | None = None,
+                            share: bool | None = None):
+    print("photo_cards.update_photo_card() - at top - id="+str(id)+"=")
 
     transaction = await database.transaction()
     try:
@@ -251,17 +255,53 @@ async def update_photo_card(id: int,
         if photo_card.user_id != user.id:
             raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Only owner of photo can update it")
 
+        #now make sure all the arguments passed in are NOT null - something needs to be requested to change
+        if (group_name is None and 
+            card_name is None and
+            source_type is None and
+            source_name is None and
+            share is None):
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="All inputs are null, so no change being requested") 
+
         #make sure state of 'share' is actually changing
-        if photo_card.share == share:
-            print("photo_cards.update_photo_card() - 'share' value not changing")
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Photo card already has 'share' set to given value")
+        # if photo_card.share == share:
+        #     print("photo_cards.update_photo_card() - 'share' value not changing")
+        #     raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Photo card already has 'share' set to given value")
         
-        #if changing to 'not share', then delete any favorites that might exist - but not the owner's favorite
-        if share is False:
-            resp = await crud.delete_favorites_except_owners(database=database, photo_card_id=id, user_id=user.id)
+        if (group_name is not None):
+            photo_card.group_name = group_name
+        
+        if (card_name is not None):
+            photo_card.card_name = card_name
+        
+        if (share is not None):
+            photo_card.share = share
+            #if changing to 'not share', then delete any favorites that might exist - but not the owner's favorite
+            if share is False:
+                resp = await crud.delete_favorites_except_owners(database=database, photo_card_id=id, user_id=user.id)
+
+        if (source_type is not None):
+            if (source_type != 'album' and source_type != 'event' and source_type != 'merch' and source_type != 'other'):
+                print("photo_cards.update_photo_card() - source_type invalid")
+                raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="source_type is not valid")
+            if (source_name is not None):
+                photo_card.source_type = source_type
+                photo_card.source_name = source_name
+            else:
+                print("photo_cards.update_photo_card() - valid source_type but no source_name")
+                raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="source_type provided without source_name")         
+        elif (source_name is not None):
+            print("photo_cards.update_photo_card() - source_name provided but no source_type")
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="source_name provided without source_type")
 
         #now update 'share' in the photo_card
-        resp = await crud.update_photo_card(database=database, photo_card_id=id, share=share)
+        resp = await crud.update_photo_card(database=database, 
+                                            photo_card_id=id, 
+                                            group_name=photo_card.group_name,
+                                            card_name=photo_card.card_name,
+                                            source_type=photo_card.source_type,
+                                            source_name=photo_card.source_name,
+                                            share=photo_card.share)
 
 
     except HTTPException as httpex:
