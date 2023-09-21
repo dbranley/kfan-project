@@ -174,7 +174,7 @@ export default function Profile(props) {
             <Grid justify="center" >
                 {photoCardsQuery.data.map((photoCard, index) => (
                     <Grid.Col key={index} span="content" style={{width: 300}} align="left">
-                        <PhotoCard photoCard={photoCard} index={index} myCard={currentUsername === props.username}/>
+                        <PhotoCard photoCard={photoCard} index={index} myCard={currentUsername === props.username} cardHeight="400"/>
                     </Grid.Col>
                 ))}
             </Grid>

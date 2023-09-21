@@ -1,0 +1,149 @@
+import React, { useState } from "react";
+import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
+import { Avatar, Button,  Container, Group,  Space,  Text,  } from "@mantine/core";
+import { useMediaQuery } from "@mantine/hooks";
+// import { Heart } from 'tabler-icons-react';
+import {  IconArrowBigLeft } from "@tabler/icons-react";
+import PropTypes from "prop-types";
+import { useNavigate, Link, useLocation } from "react-router-dom";
+
+import { SESSION_EXPIRATION_TIME, 
+         getCurrentUser, 
+         getUserByUsername } from "../services/auth";
+
+import { getFollowee,
+         addFollowee,
+         removeFollowee } from "../services/follows";
+
+export default function ProfileHoverCard(props) {
+
+   
+    console.log("Profile - at top - props is:");
+    console.log(props);
+    console.log("Profile - at top - props.username is:");
+    console.log(props.username);
+
+    // const [profileUserId, setProfileUserId] = useState(0);
+
+    const location = useLocation();
+    const navigate = useNavigate();
+    const queryClient = useQueryClient();
+
+    //for modal
+    const isMobile = useMediaQuery("(max-width: 430px)");
+
+    const currentUserQuery = useQuery({
+        queryKey: ["currentUser"],
+        queryFn: getCurrentUser,
+        staleTime: SESSION_EXPIRATION_TIME
+    });
+
+    const currentUsername = currentUserQuery.data?.username    
+
+    const profileUserQuery = useQuery({
+        queryKey: ["profileUser", props.username],
+        queryFn: () => getUserByUsername(props.username),
+        enabled: !!currentUsername
+    });
+
+    const followeeQuery = useQuery({
+        queryKey: ["followeeQuery", props.username, currentUsername],
+        queryFn: () => getFollowee(currentUsername, props.username),
+        enabled: !!currentUsername
+    });
+
+    const addFolloweeMutation = useMutation({
+        mutationFn: addFollowee,
+        onSuccess: () => {
+            queryClient.invalidateQueries(["followeeQuery"]);
+            queryClient.invalidateQueries(["profileUser"]);
+            queryClient.invalidateQueries(["followersQuery", props.username]);
+            queryClient.invalidateQueries("photoCards", false, false, true, null);
+        },
+        onError: (error) => {
+            console.log("Profile.addFolloweeMutation() - got an error");
+            console.log(error);
+            //TODO - do something here!!
+        }
+      });
+
+    const removeFolloweeMutation = useMutation({
+        mutationFn: removeFollowee,
+        onSuccess: () => {
+            queryClient.invalidateQueries(["followeeQuery"]);
+            queryClient.invalidateQueries(["profileUser"]);
+            queryClient.invalidateQueries(["followersQuery", props.username]);
+            queryClient.invalidateQueries("photoCards", false, false, true, null);
+        },
+        onError: (error) => {
+            console.log("Profile.removeFolloweeMutation() - got an error");
+            console.log(error);
+            //TODO - do something here!!
+        }
+      });
+
+    console.log("Profile - about to print profileUserQuery.status")
+    console.log(profileUserQuery.status)
+
+    if (profileUserQuery.status === "loading"){
+        return <div>Loading...</div>
+    }
+
+    if (profileUserQuery.status === "error"){
+        return <div>{JSON.stringify(profileUserQuery.error)}</div>
+    }
+
+    console.log("Profile - location is: ")
+    console.log(location);
+
+    const addFolloweedHandler = async() => {
+        console.log("Profile.addFolloweedHandler() - at top")
+        addFolloweeMutation.mutate(props.username);
+    }    
+
+    const removeFolloweedHandler = async() => {
+        console.log("Profile.removeFolloweedHandler() - at top")
+        removeFolloweeMutation.mutate(props.username);
+    }  
+
+    //Content for the following buttons
+    let followButtonContent = null; //<Space h="36px"/> //36px is height of default <Button> - so need this to diplay when not showing button
+    if (profileUserQuery.status === "success" && 
+        currentUserQuery.data?.id !== 0){
+        
+        if (currentUserQuery.data.username != profileUserQuery.data.username){
+            if (followeeQuery?.data?.length === 0){
+                followButtonContent = <Button fullWidth onClick={addFolloweedHandler} mt="xs" size="compact-md">Follow</Button>
+            } else {
+                followButtonContent = <Button fullWidth onClick={removeFolloweedHandler} variant="light" mt="xs" size="compact-md">Following</Button>
+            }
+        }
+    }
+    
+
+    return (
+            <Container pl="0px" pr="0px" pb="0px" pt="0px" >
+        {/* <Container style={{ background : '#adb5bd'}} size="xs" > */}
+                <Container pl="0px" pr="0px" pb="0px" pt="0px"
+                           style={{cursor:"pointer"}} onClick={()=>{
+                                navigate("/profile/"+props.username);}}>
+                    <Group position="apart">
+                        <Text size="xl" fw={600} c="orange.9">@{profileUserQuery.data.username}</Text>
+                        <Avatar radius="xl" size="2.0rem" color="orange">{profileUserQuery.data.username.charAt(0).toUpperCase()}</Avatar>
+                    </Group>
+                    <Group position="apart">
+                        <Text>{profileUserQuery.data.public_card_count} cards</Text>
+                        <Text>{profileUserQuery.data.follower_count} followers</Text>
+                        {/* <Text>{profileUserQuery.data.followee_count} following</Text> */}
+                    </Group>
+                </Container>
+
+                {followButtonContent}
+            </Container>
+    );
+
+}
+
+ProfileHoverCard.propTypes = {
+    username: PropTypes.string.isRequired,
+  };

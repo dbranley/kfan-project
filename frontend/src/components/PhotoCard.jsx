@@ -2,6 +2,7 @@ import React from "react";
 import { Avatar, 
          Card, 
          Group, 
+         HoverCard, 
          Image, 
          Stack, 
          Text, 
@@ -19,8 +20,10 @@ import { IconCalendarEvent,
          IconStar } from "@tabler/icons-react";
 
 import { SESSION_EXPIRATION_TIME, getCurrentUser } from "../services/auth";
-import { addPhotoCardFavorite, 
+import { addPhotoCardFavorite,
+         updatePhotoCard, 
          removePhotoCardFavorite } from "../services/photo-cards";
+import ProfileHoverCard from "./ProfileHoverCard";
 
 export default function PhotoCard(props) {
 
@@ -65,6 +68,18 @@ export default function PhotoCard(props) {
         }
     });
 
+    const updatePhotoCardMutation = useMutation({
+        mutationFn: updatePhotoCard,
+        onSuccess: () => {
+          queryClient.invalidateQueries(["photoCards"]);
+        },
+        onError: (error) => {
+          console.log("PhotoCard.updatePhotoCardMutation() - got an error: ");
+          console.log(error);
+          //put on screen!
+        }
+    }); 
+
     const addFavoritePhotoCardHandler = async(photoCardId) => {
         console.log("PhotoCard.addFavoritePhotoCardHandler() - at top")
         console.log(photoCardId);
@@ -77,18 +92,28 @@ export default function PhotoCard(props) {
         removePhotoCardFavoriteMutation.mutate(photoCardId);
     }
 
+    const updatePhotoCardHandler = async(photoCardId, share) => {
+        console.log("PhotoCard.updatePhotoCardHandler() - share is:");
+        console.log(share);
+        console.log("PhotoCard.updatePhotoCardHandler() - about to call update mutation")
+        updatePhotoCardMutation.mutate({
+          id : photoCardId,
+          share : share 
+        }); 
+    };
+
     //Build content for card owner information
     let cardOwnerContent = '';
     if (location.pathname === '/my-cards') {
         if (props.photoCard.share){
             cardOwnerContent = 
                 <Tooltip label="Click to unshare card" color="orange.5" withArrow openDelay={500} radius="sm" fz="sm">
-                    <IconLockOpen color={'#fd7e14'} size="1.5rem"  />
+                    <IconLockOpen color={'#fd7e14'} size="1.5rem" onClick={()=>updatePhotoCardHandler(props.photoCard.id, false)} />
                 </Tooltip>              
         } else {
             cardOwnerContent = 
                 <Tooltip label="Click to share card" color="orange.5" withArrow openDelay={500} radius="sm" fz="sm">
-                    <IconLock color={'#fd7e14'} size="1.5rem" />
+                    <IconLock color={'#fd7e14'} size="1.5rem" onClick={()=>updatePhotoCardHandler(props.photoCard.id, true)} />
                 </Tooltip>            
         }
     } else {
@@ -99,7 +124,8 @@ export default function PhotoCard(props) {
                     <IconStar size="1.5rem" strokeWidth={2} color={'#fd7e14'} />
                 </Tooltip>             
         } else {
-            cardOwnerContent = 
+            if (location.pathname.startsWith("/profile") ){
+                cardOwnerContent = 
                 <Tooltip label={'@'+props.photoCard.owner_name} color="orange.5" withArrow openDelay={500} radius="sm" fz="sm">
                     <Avatar radius="xl" size="1.5rem" color="orange" 
                             // onClick={() => {filterListByOwnerHandler(photoCard.owner_name)}} 
@@ -108,6 +134,32 @@ export default function PhotoCard(props) {
                         {props.photoCard.owner_name.charAt(0).toUpperCase()}
                     </Avatar>
                 </Tooltip>               
+            } else {
+                //if not on profile page, then display HoverCard with profile info
+                cardOwnerContent = 
+                <Group align="center">
+                    <HoverCard shadow="md" wi 
+                               openDelay={400} 
+                               closeDelay={200} 
+                               withinPortal="false" 
+                               radius="md"
+                               >
+                        <HoverCard.Target>
+                            <Avatar radius="xl" size="1.5rem" color="orange" 
+                                    component={Link} to={`/profile/${props.photoCard.owner_name}`}>
+                                {props.photoCard.owner_name.charAt(0).toUpperCase()}
+                            </Avatar>
+                        </HoverCard.Target>
+                        <HoverCard.Dropdown >
+                            <ProfileHoverCard username={props.photoCard.owner_name}/>
+                        </HoverCard.Dropdown>
+                    </HoverCard>
+                </Group>
+
+                // <Tooltip label={'@'+props.photoCard.owner_name} color="orange.5" withArrow openDelay={500} radius="sm" fz="sm">
+                // </Tooltip>               
+
+            }
         }
     } 
 
@@ -175,7 +227,7 @@ export default function PhotoCard(props) {
             <Card.Section component={Link} to={`/card/${props.photoCard.id}`}>
                 <Image 
                     src={`/api/photo-cards-${props.photoCard.share ? 'public' : 'private'}/${props.photoCard.front_file_name}`}
-                    height={400}
+                    height={props.cardHeight}
                     // styles={{
                     //     height:350,
                     //     aspectRatio: 16/9
@@ -203,4 +255,5 @@ PhotoCard.propTypes = {
     photoCard: PropTypes.object.isRequired,
     index: PropTypes.number.isRequired,
     myCard: PropTypes.bool.isRequired,
+    cardHeight: PropTypes.number.isRequired,
   };
