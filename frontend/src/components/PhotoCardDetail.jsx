@@ -130,17 +130,27 @@ const PhotoCardDetail = (props) => {
     }); //, share);
   };
 
-  if (photoCardQuery.status === "loading") {
-    return <div>Loading...</div>;
-  }
+  const updatePhotoCardNameHandler = async(newPhotoCardName) => {
+    console.log("PhotoCardDetail.updatePhotoCardNameHandler() - at top");
+    console.log(newPhotoCardName);
+    console.log("PhotoCardDetail.updatePhotoCardNameHandler() - about to call update mutation");
+    
+    updatePhotoCardMutation.mutate({
+      id : props.photoCardId,
+      cardName : newPhotoCardName 
+    });
+  };  
 
-  if (photoCardQuery.status === "error") {
-    return <div>{JSON.stringify(photoCardQuery.error)}</div>;
-  }
-
-  console.log("PhotoCardDetail - photoCardQuery.data is: ");
-  console.log(photoCardQuery.data);
-
+  const updatePhotoCardGroupNameHandler = async(newPhotoCardGroupName) => {
+    console.log("PhotoCardDetail.updatePhotoCardGroupNameHandler() - at top");
+    console.log(newPhotoCardGroupName);
+    console.log("PhotoCardDetail.updatePhotoCardGroupNameHandler() - about to call update mutation");
+    
+    updatePhotoCardMutation.mutate({
+      id : props.photoCardId,
+      groupName : newPhotoCardGroupName 
+    });
+  };  
 
   const addFavoritePhotoCardHandler = async(photoCardId) => {
     console.log("PhotoCardDetail.addFavoritePhotoCardHandler() - at top")
@@ -154,6 +164,17 @@ const PhotoCardDetail = (props) => {
     removePhotoCardFavoriteMutation.mutate(photoCardId);
   }
 
+  if (photoCardQuery.status === "loading") {
+    return <div>Loading...</div>;
+  }
+
+  if (photoCardQuery.status === "error") {
+    return <div>{JSON.stringify(photoCardQuery.error)}</div>;
+  }
+
+  console.log("PhotoCardDetail - photoCardQuery.data is: ");
+  console.log(photoCardQuery.data);
+
   let deleteErrorContent = null;
   if (deleteError !== null){
     deleteErrorContent = <div><Text size="md" c="red" align="left">{deleteError}</Text></div>;
@@ -165,11 +186,38 @@ const PhotoCardDetail = (props) => {
       <Text size="xl" fw={700} c="brown">{photoCardQuery.data.card_name.length > 24 ?
             `${photoCardQuery.data.card_name.substring(0,24)}...` : photoCardQuery.data.card_name}</Text>
   
+  let groupNameContentLarge =
+    <Text c="orange" fz="xl">{photoCardQuery.data.group_name}</Text>;
+  let groupNameContentSmall = 
+    <Text c="orange" fz="xl">{photoCardQuery.data.group_name}</Text>;
+  
+    
   if (currentUsername === photoCardQuery.data.owner_name){
     cardNameContentLarge =
-      <InlineTextEdit text={photoCardQuery.data.card_name} size="xl" fontWeight={700} color="brown"/>;
+      <InlineTextEdit text={photoCardQuery.data.card_name} 
+                      size="xl" 
+                      fontWeight={700} 
+                      color="brown"
+                      onChange={updatePhotoCardNameHandler}/>;
     cardNameContentSmall = 
-      <InlineTextEdit text={photoCardQuery.data.card_name} size="xl" fontWeight={700} color="brown"/>;
+      <InlineTextEdit text={photoCardQuery.data.card_name} 
+                      size="xl" 
+                      fontWeight={700} 
+                      color="brown"
+                      onChange={updatePhotoCardNameHandler}/>;
+
+    groupNameContentLarge =
+      <InlineTextEdit text={photoCardQuery.data.group_name} 
+                      size="xl" 
+                      fontWeight={700} 
+                      color="orange"
+                      onChange={updatePhotoCardGroupNameHandler}/>;
+    groupNameContentSmall = 
+      <InlineTextEdit text={photoCardQuery.data.group_name} 
+                      size="xl" 
+                      fontWeight={700} 
+                      color="orange"
+                      onChange={updatePhotoCardGroupNameHandler}/>;                      
   } 
     // if (editingCardName){
     //   cardNameContentLarge = (
@@ -208,7 +256,9 @@ const PhotoCardDetail = (props) => {
       <MediaQuery smallerThan={430} styles={{ display: "none"}}>
         <div>
           <Group>
-            <IconArrowBigLeft size="2rem" fill={'#d9480f'} color={'#d9480f'} onClick={() => navigate(-1)}/>
+            <IconArrowBigLeft size="2rem" fill={'#d9480f'} color={'#d9480f'} 
+                              style={{cursor:"pointer"}}
+                              onClick={() => navigate(-1)}/>
             {cardNameContentLarge}
             {/* <Text size="xl" fw={700} c="brown">{photoCardQuery.data.card_name}</Text>
             <IconPencil strokeWidth={2} color="brown"/> */}
@@ -238,7 +288,8 @@ const PhotoCardDetail = (props) => {
           </Carousel.Slide>
         </Carousel>
         <Container fluid ml="0rem" mt="0.5rem">
-          <Text c="orange" fz="xl">{photoCardQuery.data.group_name}</Text>
+          {groupNameContentLarge}
+          {/* <Text c="orange" fz="xl">{photoCardQuery.data.group_name}</Text> */}
           <Space h="md"/>
           {photoCardQuery.data.source_type !== null &&
            photoCardQuery.data.source_type === 'album' &&
@@ -356,7 +407,8 @@ const PhotoCardDetail = (props) => {
             </Carousel.Slide>
           </Carousel>
           <Container fluid ml="0rem" mt="0.5rem">
-          <Text c="orange" fz="xl">{photoCardQuery.data.group_name}</Text>
+          {groupNameContentSmall}
+          {/* <Text c="orange" fz="xl">{photoCardQuery.data.group_name}</Text> */}
           {/* <Space h="xs"/> */}
           {photoCardQuery.data.source_type !== null &&
            photoCardQuery.data.source_type === 'album' &&

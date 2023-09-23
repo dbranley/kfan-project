@@ -204,7 +204,9 @@ export default function Profile(props) {
         {/* <Container style={{ background : '#adb5bd'}} size="xs" > */}
                 <Group position="apart">
                     <Group>
-                        <IconArrowBigLeft size="2rem" fill={'#d9480f'} color={'#d9480f'} onClick={() => navigate(-1)}/>
+                        <IconArrowBigLeft size="2rem" fill={'#d9480f'} color={'#d9480f'} 
+                                          style={{cursor:"pointer"}}
+                                          onClick={() => navigate(-1)}/>
                         <Text size="xl" fw={700} c="orange.9">@{profileUserQuery.data.username}</Text>
                     </Group> 
                     <Avatar radius="xl" size="3.0rem" color="orange">{profileUserQuery.data.username.charAt(0).toUpperCase()}</Avatar>
