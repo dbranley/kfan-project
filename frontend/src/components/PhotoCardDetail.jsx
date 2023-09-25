@@ -152,6 +152,17 @@ const PhotoCardDetail = (props) => {
     });
   };  
 
+  const updatePhotoCardSourceNameHandler = async(newPhotoCardSourceName) => {
+    console.log("PhotoCardDetail.updatePhotoCardSourceNameHandler() - at top");
+    console.log(newPhotoCardSourceName);
+    console.log("PhotoCardDetail.updatePhotoCardSourceNameHandler() - about to call update mutation");
+    
+    updatePhotoCardMutation.mutate({
+      id : props.photoCardId,
+      sourceName : newPhotoCardSourceName 
+    });
+  };  
+
   const addFavoritePhotoCardHandler = async(photoCardId) => {
     console.log("PhotoCardDetail.addFavoritePhotoCardHandler() - at top")
     console.log(photoCardId);
@@ -184,13 +195,21 @@ const PhotoCardDetail = (props) => {
       <Text size="xl" fw={700} c="brown">{photoCardQuery.data.card_name}</Text>;      
   let cardNameContentSmall = 
       <Text size="xl" fw={700} c="brown">{photoCardQuery.data.card_name.length > 24 ?
-            `${photoCardQuery.data.card_name.substring(0,24)}...` : photoCardQuery.data.card_name}</Text>
+          `${photoCardQuery.data.card_name.substring(0,24)}...` : photoCardQuery.data.card_name}</Text>
   
   let groupNameContentLarge =
     <Text c="orange" fz="xl">{photoCardQuery.data.group_name}</Text>;
   let groupNameContentSmall = 
-    <Text c="orange" fz="xl">{photoCardQuery.data.group_name}</Text>;
+    <Text c="orange" fz="xl">{photoCardQuery.data.group_name.length > 27 ?
+        `${photoCardQuery.data.group_name.substring(0,27)}...` : photoCardQuery.data.group_name}</Text>;
   
+  let cardSourceNameContentLarge = 
+    <Text c="orange" fz="xl">{photoCardQuery.data.source_name}</Text>;
+  let cardSourceNameContentSmall = 
+    <Text c="orange" fz="xl">{('source_name' in photoCardQuery.data && 
+                               photoCardQuery.data.source_name !== null && 
+                               photoCardQuery.data.source_name.length > 27) ?
+        `${photoCardQuery.data.source_name.substring(0,27)}...` : photoCardQuery.data.source_name }</Text>
     
   if (currentUsername === photoCardQuery.data.owner_name){
     cardNameContentLarge =
@@ -204,21 +223,37 @@ const PhotoCardDetail = (props) => {
                       size="xl" 
                       fontWeight={700} 
                       color="brown"
+                      maxDisplayLength={22}
                       onChange={updatePhotoCardNameHandler}/>;
 
     groupNameContentLarge =
       <InlineTextEdit text={photoCardQuery.data.group_name} 
                       size="xl" 
-                      fontWeight={700} 
+                      fontWeight={0} 
                       color="orange"
                       onChange={updatePhotoCardGroupNameHandler}/>;
     groupNameContentSmall = 
       <InlineTextEdit text={photoCardQuery.data.group_name} 
                       size="xl" 
-                      fontWeight={700} 
+                      fontWeight={0} 
                       color="orange"
+                      maxDisplayLength={27}
                       onChange={updatePhotoCardGroupNameHandler}/>;                      
-  } 
+ 
+    cardSourceNameContentLarge =
+      <InlineTextEdit text={photoCardQuery.data.source_name} 
+                      size="xl" 
+                      fontWeight={0} 
+                      color="orange"
+                      onChange={updatePhotoCardSourceNameHandler}/>;
+    cardSourceNameContentSmall = 
+      <InlineTextEdit text={photoCardQuery.data.source_name} 
+                      size="xl" 
+                      fontWeight={0} 
+                      color="orange"
+                      maxDisplayLength={22}
+                      onChange={updatePhotoCardSourceNameHandler}/>;                        
+ } 
     // if (editingCardName){
     //   cardNameContentLarge = (
     //     <Group>  
@@ -298,7 +333,8 @@ const PhotoCardDetail = (props) => {
                 <Tooltip label="From an album!" color="orange.5" withArrow openDelay={500} radius="sm" fz="sm">
                   <IconDisc size="2rem" strokeWidth={2} color={'#fd7e14'}/>
                 </Tooltip>
-                <Text c="orange" fz="xl">{photoCardQuery.data.source_name}</Text>
+                {cardSourceNameContentLarge}
+                {/* <Text c="orange" fz="xl">{photoCardQuery.data.source_name}</Text> */}
               </Group>
               <Space h="md"/>
             </div>
@@ -310,7 +346,8 @@ const PhotoCardDetail = (props) => {
                 <Tooltip label="From an event!" color="orange.5" withArrow openDelay={500} radius="sm" fz="sm">
                   <IconCalendarEvent size="2rem" strokeWidth={2} color={'#fd7e14'}/>
                 </Tooltip>
-                <Text c="orange" fz="xl">{photoCardQuery.data.source_name}</Text>
+                {cardSourceNameContentLarge}
+                {/* <Text c="orange" fz="xl">{photoCardQuery.data.source_name}</Text> */}
               </Group>
               <Space h="md"/>
             </div>
@@ -322,7 +359,8 @@ const PhotoCardDetail = (props) => {
                 <Tooltip label="From some merch!" color="orange.5" withArrow openDelay={500} radius="sm" fz="sm">
                   <IconShirt size="2rem" strokeWidth={2} color={'#fd7e14'}/>
                 </Tooltip>
-                <Text c="orange" fz="xl">{photoCardQuery.data.source_name}</Text>
+                {cardSourceNameContentLarge}
+                {/* <Text c="orange" fz="xl">{photoCardQuery.data.source_name}</Text> */}
               </Group>
               <Space h="md"/>
             </div>
@@ -421,8 +459,9 @@ const PhotoCardDetail = (props) => {
                     setCardSourceOpened((o)=>!o);
                   }}/>
                 </Tooltip>
-                <Text c="orange" fz="xl">{photoCardQuery.data.source_name.length > 27 ?
-                                        `${photoCardQuery.data.source_name.substring(0,27)}...` : photoCardQuery.data.source_name }</Text>
+                {cardSourceNameContentSmall}
+                {/* <Text c="orange" fz="xl">{photoCardQuery.data.source_name.length > 27 ?
+                                        `${photoCardQuery.data.source_name.substring(0,27)}...` : photoCardQuery.data.source_name }</Text> */}
               </Group>
               <Space h="xs"/>
             </div>
@@ -438,8 +477,9 @@ const PhotoCardDetail = (props) => {
                     setCardSourceOpened((o)=>!o);
                   }}/>
                 </Tooltip>
-                <Text c="orange" fz="xl">{photoCardQuery.data.source_name.length > 27 ?
-                                        `${photoCardQuery.data.source_name.substring(0,27)}...` : photoCardQuery.data.source_name }</Text>
+                {cardSourceNameContentSmall}
+                {/* <Text c="orange" fz="xl">{photoCardQuery.data.source_name.length > 27 ?
+                                        `${photoCardQuery.data.source_name.substring(0,27)}...` : photoCardQuery.data.source_name }</Text> */}
               </Group>
               <Space h="xs"/>
             </div>
@@ -455,8 +495,9 @@ const PhotoCardDetail = (props) => {
                     setCardSourceOpened((o)=>!o);
                   }}/>
                 </Tooltip>
-                <Text c="orange" fz="xl">{photoCardQuery.data.source_name.length > 27 ?
-                                        `${photoCardQuery.data.source_name.substring(0,27)}...` : photoCardQuery.data.source_name }</Text>
+                {cardSourceNameContentSmall}
+                {/* <Text c="orange" fz="xl">{photoCardQuery.data.source_name.length > 27 ?
+                                        `${photoCardQuery.data.source_name.substring(0,27)}...` : photoCardQuery.data.source_name }</Text> */}
               </Group>
               <Space h="xs"/>
             </div>

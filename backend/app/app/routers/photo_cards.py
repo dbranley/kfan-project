@@ -42,7 +42,7 @@ async def create_photo_card(
 
         if (users.user_authorized_to_upload(user) == False): 
             print("photo_cards.create_photo_card() - user is not authorized to upload photos")
-            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)       
+            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Not approved to upload photo cards")       
         
         #validate source_type and source_name - if they are present
         if (source_type is not None):
@@ -280,19 +280,24 @@ async def update_photo_card(id: int,
             if share is False:
                 resp = await crud.delete_favorites_except_owners(database=database, photo_card_id=id, user_id=user.id)
 
+        #Ok to have just source_type without source_name, and vice versa, but only if the other is already set to something
+        #In other words, not valid to have in DB a type and no name or name with no type
         if (source_type is not None):
             if (source_type != 'album' and source_type != 'event' and source_type != 'merch' and source_type != 'other'):
                 print("photo_cards.update_photo_card() - source_type invalid")
                 raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="source_type is not valid")
-            if (source_name is not None):
-                photo_card.source_type = source_type
-                photo_card.source_name = source_name
-            else:
+            if (source_name is None and photo_card.source_name is None):
                 print("photo_cards.update_photo_card() - valid source_type but no source_name")
-                raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="source_type provided without source_name")         
-        elif (source_name is not None):
-            print("photo_cards.update_photo_card() - source_name provided but no source_type")
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="source_name provided without source_type")
+                raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="source_type provided without source_name")  
+            else:               
+                photo_card.source_type = source_type
+
+        if (source_name is not None):
+            if (source_type is None and photo_card.source_type is None):
+                print("photo_cards.update_photo_card() - source_name provided but no source_type")
+                raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="source_name provided without source_type") 
+            else:
+                photo_card.source_name = source_name
 
         #now update 'share' in the photo_card
         resp = await crud.update_photo_card(database=database, 

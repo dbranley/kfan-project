@@ -1,15 +1,9 @@
 import React, { useState } from "react";
-import { Avatar, 
-         Button,
-         Center, 
-         Group, 
-         Loader, 
+import { Group, 
          Text,
          TextInput, } from "@mantine/core";
-import { useFocusTrap, useMediaQuery } from "@mantine/hooks";
+import { useFocusTrap } from "@mantine/hooks";
 import PropTypes from "prop-types";
-import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
-import { Link, useLocation } from "react-router-dom";
 import { IconCircleCheck, IconCircleX, IconPencil } from "@tabler/icons-react";
 
 
@@ -23,16 +17,30 @@ export default function InlineTextEdit(props) {
     const [value, setValue] = useState(props.text);
     const [editing, setEditing] = useState(false);
 
+    let cancelIconColorProp = "#d9480f";
+    if ('cancelIconColor' in props){
+        cancelIconColorProp = props.cancelIconColor;    
+    }
+    let okIconColorProp = "#5c940d";
+    if ('okIconColor' in props){
+        okIconColorProp = props.okIconColor;    
+    }
 
-    //Content for the Edit field
+    let displayText = props.text;
+    if ('maxDisplayLength' in props){
+        if (props.text.length > props.maxDisplayLength){
+            displayText = props.text.substring(0,props.maxDisplayLength) + "...";
+        }
+    }
 
+    //content for Edit field
     let editFieldContent = 
         <Group>
             <Text size={props.size} 
-                // fw={props.fontWeight} 
+                fw={props.fontWeight} 
                 c={props.color} 
                 style={{cursor:"pointer"}}
-                onClick={()=>setEditing(true)}>{props.text}</Text>    
+                onClick={()=>setEditing(true)}>{displayText}</Text>    
             <IconPencil strokeWidth={2} 
                         color={props.color} 
                         style={{cursor:"pointer"}}
@@ -45,25 +53,21 @@ export default function InlineTextEdit(props) {
     if (editing){
         editFieldContent = 
         <Group>
-            <TextInput size={props.size} 
-                    // fw={props.fontWeight} 
-                    color={props.color} 
+            <TextInput size="sm" 
+                    color={props.color}
+                    left="0px"
                     value={value} 
                     ref={focusTrapRef}
                     data-autofocus
-                    onEscap={()=>console.log("Escape pressed!")}
                     onChange={(event)=>setValue(event.currentTarget.value)}
-                    // onBlur={()=>setEditing(false)}
                     />
-            <IconCircleX color="red" 
-                        //  size={props.size}
+            <IconCircleX color={cancelIconColorProp}
                          style={{cursor:"pointer"}}
                          onClick={()=>{
                             setValue(props.text)
                             setEditing(false);
                          }}/>
-            <IconCircleCheck color="green" 
-                            //  size={props.size}
+            <IconCircleCheck color={okIconColorProp} 
                              style={{cursor:"pointer"}}
                              onClick={()=>{
                                 props.onChange(value);
@@ -87,4 +91,7 @@ InlineTextEdit.propTypes = {
     fontWeight: PropTypes.number.isRequired,
     color: PropTypes.string.isRequired,
     onChange: PropTypes.object.isRequired,
+    cancelIconColor: PropTypes.string,
+    okIconColor: PropTypes.string, 
+    maxDisplayLength: PropTypes.number,
 };

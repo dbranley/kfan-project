@@ -3,5 +3,6 @@
     "python.testing.pytestEnabled": true,
     "testing.showAllMessages": false,
     "python.testing.cwd": "backend/app",
-    "python.testing.autoTestDiscoverOnSaveEnabled": false
+    "python.testing.autoTestDiscoverOnSaveEnabled": false,
+    "python.terminal.activateEnvironment": false
 }
