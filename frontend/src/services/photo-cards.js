@@ -117,6 +117,50 @@ export async function deletePhotoCard(photoCardId){
 //    share: boolean from event
 export async function updatePhotoCard(photoCardData){
 
+    console.log("updatePhotoCard() - photoCardData is:");
+    console.log(photoCardData);
+
+    let endpoint = '/api/photo-cards/'+photoCardData.id;
+
+    if (photoCardData.groupName !== undefined && photoCardData.groupName !== null){
+        endpoint = endpoint + '?group_name='+photoCardData.groupName;
+    }
+
+    if (photoCardData.cardName !== undefined && photoCardData.cardName !== null){
+        endpoint = endpoint + '?card_name='+photoCardData.cardName;
+    }
+
+    if (photoCardData.share !== undefined && photoCardData.share !== null){
+        endpoint = endpoint + '?share='+photoCardData.share;
+    }
+
+    if (photoCardData.sourceType !== undefined && photoCardData.sourceType !== null){
+        endpoint = endpoint + '?source_type='+photoCardData.sourceType;
+    }
+
+    if (photoCardData.sourceName !== undefined && photoCardData.sourceName !== null){
+        endpoint = endpoint + '?source_name='+photoCardData.sourceName;
+    }
+
+
+    try{
+        const response = await axios.put(
+            endpoint
+        );
+
+        const status = response.status;
+        console.log("updatePhotoCard() - at end - response.status is: ");
+        console.log(status);
+        return response;
+    } catch(error){
+        console.log("updatePhotoCard() - got exception");
+        console.log(error);
+        throw error;
+    }
+}
+
+export async function updatePhotoCardOrig(photoCardData){
+
     console.log("updatePhotoCard() - photoCardData="+photoCardData.id+"=, share="+photoCardData.share+"=");
 
     try{

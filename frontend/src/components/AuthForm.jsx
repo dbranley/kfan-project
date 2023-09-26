@@ -17,7 +17,7 @@ import { IconAt, IconLock, IconUser } from "@tabler/icons-react";
 
 import { login, register } from "../services/auth";
 // import AuthContext from "../store/auth-context";
-import { validateEmail } from "../utils";
+import { validateEmail, extractMessageFromRestError } from "../utils";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 // import classes from "./UploadForm.module.css";
@@ -43,7 +43,7 @@ const AuthForm = (props) => {
     onError: (error) => {
       console.log("AuthForm.loginMutation() - got error during login");
       console.log(error);
-      setError("Login failed with '" + error.message + "'");
+      setError("Login failed with '" + extractMessageFromRestError(error) + "'");
     }
   });  
 

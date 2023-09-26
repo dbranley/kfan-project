@@ -1,6 +1,6 @@
 import axios from "axios";
 
-export const SESSION_EXPIRATION_TIME = 900000;
+export const SESSION_EXPIRATION_TIME = 300000;
 
 // registerUserData object is:
 //   username

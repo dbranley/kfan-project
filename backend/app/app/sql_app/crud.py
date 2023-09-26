@@ -80,6 +80,27 @@ async def create_photo_card(database: Database,
 
 async def update_photo_card(database: Database, 
                             photo_card_id: int,
+                            group_name: str,
+                            card_name: str,
+                            source_type: str,
+                            source_name: str,
+                            share: bool):
+    print("crud.update_photo_card()")
+
+    query = models.photo_cards.update().where(models.photo_cards.c.id == photo_card_id) \
+                                       .values(group_name=group_name,
+                                               card_name=card_name,
+                                               share=share,
+                                               source_type=source_type,
+                                               source_name=source_name)
+
+   
+    result = await database.execute(query)
+
+    return {"message":"Photo Card updated"}
+
+async def update_photo_card_orig(database: Database, 
+                            photo_card_id: int,
                             share: bool):
     print("crud.update_photo_card()")
 

@@ -100,7 +100,8 @@ export default function AppSiteShell() {
 
                 {currentUserQuery.status === "success" && 
                  currentUserQuery.data !== null && 
-                 currentUserQuery.data.id !== 0 &&   
+                 currentUserQuery.data.id !== 0 &&
+                 currentUserQuery.data.upload &&    
                  <Button component={Link} to="/upload" variant="subtle" compact 
                  leftIcon={<IconBookUpload size="1.3rem"/>} 
                  fullWidth display={"inline-flex"} size="md" radius={0}
