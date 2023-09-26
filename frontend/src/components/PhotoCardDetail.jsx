@@ -194,8 +194,8 @@ const PhotoCardDetail = (props) => {
   let cardNameContentLarge = 
       <Text size="xl" fw={700} c="brown">{photoCardQuery.data.card_name}</Text>;      
   let cardNameContentSmall = 
-      <Text size="xl" fw={700} c="brown">{photoCardQuery.data.card_name.length > 24 ?
-          `${photoCardQuery.data.card_name.substring(0,24)}...` : photoCardQuery.data.card_name}</Text>
+      <Text size="xl" fw={700} c="brown">{photoCardQuery.data.card_name.length > 22 ?
+          `${photoCardQuery.data.card_name.substring(0,22)}...` : photoCardQuery.data.card_name}</Text>
   
   let groupNameContentLarge =
     <Text c="orange" fz="xl">{photoCardQuery.data.group_name}</Text>;
@@ -208,8 +208,8 @@ const PhotoCardDetail = (props) => {
   let cardSourceNameContentSmall = 
     <Text c="orange" fz="xl">{('source_name' in photoCardQuery.data && 
                                photoCardQuery.data.source_name !== null && 
-                               photoCardQuery.data.source_name.length > 27) ?
-        `${photoCardQuery.data.source_name.substring(0,27)}...` : photoCardQuery.data.source_name }</Text>
+                               photoCardQuery.data.source_name.length > 22) ?
+        `${photoCardQuery.data.source_name.substring(0,22)}...` : photoCardQuery.data.source_name }</Text>
     
   if (currentUsername === photoCardQuery.data.owner_name){
     cardNameContentLarge =
@@ -223,7 +223,7 @@ const PhotoCardDetail = (props) => {
                       size="xl" 
                       fontWeight={700} 
                       color="brown"
-                      maxDisplayLength={22}
+                      maxDisplayLength={20}
                       onChange={updatePhotoCardNameHandler}/>;
 
     groupNameContentLarge =
@@ -237,7 +237,7 @@ const PhotoCardDetail = (props) => {
                       size="xl" 
                       fontWeight={0} 
                       color="orange"
-                      maxDisplayLength={27}
+                      maxDisplayLength={24}
                       onChange={updatePhotoCardGroupNameHandler}/>;                      
  
     cardSourceNameContentLarge =
@@ -251,7 +251,7 @@ const PhotoCardDetail = (props) => {
                       size="xl" 
                       fontWeight={0} 
                       color="orange"
-                      maxDisplayLength={22}
+                      maxDisplayLength={20}
                       onChange={updatePhotoCardSourceNameHandler}/>;                        
  } 
     // if (editingCardName){
