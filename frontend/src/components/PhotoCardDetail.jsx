@@ -253,41 +253,10 @@ const PhotoCardDetail = (props) => {
                       color="orange"
                       maxDisplayLength={20}
                       onChange={updatePhotoCardSourceNameHandler}/>;                        
- } 
-    // if (editingCardName){
-    //   cardNameContentLarge = (
-    //     <Group>  
-    //       <TextInput size="xl" fw={700} c="brown" value={photoCardQuery.data.card_name} onBlur={()=>setEditingCardName(false)}/> 
-    //       <IconPencil strokeWidth={2} color="brown"/>
-    //     </Group>
-    //   );
-
-    // } else {
-    //   cardNameContentLarge = (
-    //     <Group>  
-    //       <Text size="xl" fw={700} c="brown" onClick={()=>setEditingCardName(true)}>{photoCardQuery.data.card_name}</Text> 
-    //       <IconPencil strokeWidth={2} color="brown"/>
-    //     </Group>
-    //   );
-  
-    // }
-    
-    // cardNameContentSmall = 
-    //   <Group>
-    //     <Text size="xl" fw={700} c="brown">{photoCardQuery.data.card_name.length > 24 ?
-    //         `${photoCardQuery.data.card_name.substring(0,24)}...` : photoCardQuery.data.card_name}</Text>
-    //     <IconPencil strokeWidth={2} color="brown"/>
-    //   </Group>
-    //}            
-  
+  } 
 
   return (
     <Container px={0}>
-      {/* <Group>
-        <IconArrowBigLeft size="2rem" fill={'#d9480f'} color={'#d9480f'} onClick={() => navigate(-1)}/>
-        <Text size="xl" fw={700} c="brown">{photoCardQuery.data.card_name}</Text>
-      </Group> */}
-      {/* <Divider my="sm"/> */}
       <MediaQuery smallerThan={430} styles={{ display: "none"}}>
         <div>
           <Group>
@@ -444,14 +413,14 @@ const PhotoCardDetail = (props) => {
               />
             </Carousel.Slide>
           </Carousel>
-          <Container fluid ml="0rem" mt="0.5rem">
+          <Container fluid px={0} ml="0rem" mt="0.5rem">
           {groupNameContentSmall}
           {/* <Text c="orange" fz="xl">{photoCardQuery.data.group_name}</Text> */}
           {/* <Space h="xs"/> */}
           {photoCardQuery.data.source_type !== null &&
            photoCardQuery.data.source_type === 'album' &&
             <div>
-              <Group spacing={4}>
+              <Group spacing="xs">
                 <Tooltip label="From an album!" color="orange.5" withArrow openDelay={500} radius="sm" fz="sm" opened={cardSourceOpened}>
                   <IconDisc size="2rem" strokeWidth={2} color={'#fd7e14'} onClick={()=>{
                     setOwnerOpened(false);
@@ -469,7 +438,7 @@ const PhotoCardDetail = (props) => {
           {photoCardQuery.data.source_type !== null &&
            photoCardQuery.data.source_type === 'event' &&
             <div>
-              <Group>
+              <Group spacing="xs">
                 <Tooltip label="From an event!" color="orange.5" withArrow openDelay={500} radius="sm" fz="sm" opened={cardSourceOpened}>
                   <IconCalendarEvent size="2rem" strokeWidth={2} color={'#fd7e14'} onClick={()=>{
                     setOwnerOpened(false);
@@ -487,7 +456,7 @@ const PhotoCardDetail = (props) => {
           {photoCardQuery.data.source_type !== null &&
            photoCardQuery.data.source_type === 'merch' &&
             <div>
-              <Group>
+              <Group spacing="xs">
                 <Tooltip label="From some merch!" color="orange.5" withArrow openDelay={500} radius="sm" fz="sm" opened={cardSourceOpened}>
                   <IconShirt size="2rem" strokeWidth={2} color={'#fd7e14'} onClick={()=>{
                     setOwnerOpened(false);

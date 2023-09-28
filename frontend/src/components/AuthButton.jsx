@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Avatar, Button, Container, Group, Menu, Modal, Space, Text } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useLocation, useNavigate, Link } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 import AuthForm from "./AuthForm";
 import UpdatePasswordForm from "./UpdatePasswordForm";
@@ -48,12 +48,14 @@ export default function AuthButton() {
   });
 
   useEffect(() => {
+    console.log("AuthButton() - useEffect() - at top"); 
     if (currentUserQuery.status === "success" && currentUserQuery.data !== null && currentUserQuery.data.id === 0){
       if (location.pathname !== "/"){
         console.log("AuthButton - useEffect() query status - not logged in and pathname not / so call navigate()");
         navigate("/");
       }
-    }
+    } 
+
   }, [currentUserQuery.data]);
 
   console.log("AuthButton() - settingsOpened:");
