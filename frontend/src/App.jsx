@@ -30,6 +30,7 @@ const router = createHashRouter([
 
 function App() {
 
+  console.log("App - at top - width="+window.innerWidth+"=, height="+window.innerHeight+"=");
   const [colorScheme, setColorScheme] = useLocalStorage({
     key: "mantine-color-scheme",
     defaultValue: "light",

@@ -177,11 +177,11 @@ export default function PhotoCardGalleryGrid(props) {
                 <Space h="md"/>
                 <Grid data-testid={`${props.myCards ? "photo-card-grid-center-mine-id" : "photo-card-grid-center-public-id"}`} justify="center" align="start">
                     {photoCardsQuery.data.map((photoCard, index) => (
-                        <Grid.Col key={index} span="content" style={{width: 200}} align="left">
+                        <Grid.Col key={index} span="content" style={{width: 300}} align="left">
                             <PhotoCard photoCard={photoCard} 
                                        index={index} 
                                        myCard={currentUsername === photoCard.owner_name} 
-                                       cardHeight={260}/>                            
+                                       cardHeight={400}/>                            
                         </Grid.Col>
 
                     ))}

@@ -18,9 +18,6 @@ import { IconHome, IconHomePlus, IconBookUpload } from "@tabler/icons-react";
 
 import LightAndDarkModeButton from "./components/LightAndDarkModeButton";
 import AuthButton from "./components/AuthButton";
-import UploadPhotoCardPage from "./pages/UploadPhotoCardPage";
-import PhotoCardDetailPage from "./pages/PhotoCardDetailPage";
-import PhotoCardsGridPage from "./pages/PhotoCardsGridPage";
 import { useQuery } from "@tanstack/react-query";
 import { SESSION_EXPIRATION_TIME, getCurrentUser } from "./services/auth";
 
@@ -62,8 +59,9 @@ export default function AppSiteShell() {
           hiddenBreakpoint="md"
           hidden={!opened}
           width={{ base: 220 }}
+          onBlur={()=>(setOpened(false))}
         >
-          <Navbar.Section grow mt="lg">
+          <Navbar.Section grow mt="lg" >
             <div>
                 <Button component={Link} to="/" variant="subtle" compact
                         leftIcon={<IconHome size="1.3rem"/>} 
@@ -113,10 +111,11 @@ export default function AppSiteShell() {
       }
       header={
         <Header data-testid="default-header-id"  height={{ base: 55 }} p="md"
-        sx={(theme) => ({
-          // backgroundColor: theme.colorScheme === 'dark' ? theme.colors.dark[6] : theme.colors.orange[0],
-          color: theme.colorScheme === 'dark' ? theme.colors.gray[4] : theme.colors.gray[9],
-        })}
+                sx={(theme) => ({
+                  // backgroundColor: theme.colorScheme === 'dark' ? theme.colors.dark[6] : theme.colors.orange[0],
+                  color: theme.colorScheme === 'dark' ? theme.colors.gray[4] : theme.colors.gray[9],
+                })}
+                // onClick={()=>{setOpened(false)}}
         >
           <div style={{ display: "flex", justifyContent: "space-between" }}>
             <Group>
@@ -129,22 +128,18 @@ export default function AppSiteShell() {
                   mr="xl"
                 />
               </MediaQuery>
-              <Image width={122} height={31} src="/public/logo-darkorange.svg" component={Link} to="/"/>
-              {/* <MediaQuery largerThan="sm" styles={{ display: "none" }}>
-                  <Text align="left" size="xl">K-Pop Collection</Text>
-              </MediaQuery>   */}
+              <Image width={122} height={31} 
+                     src="/public/logo-darkorange.svg" 
+                     component={Link} 
+                     to="/"
+                     onClick={()=>(setOpened(false))}
+                     />
               <MediaQuery smallerThan="xs" styles={{ display: "none" }}>
-                  <Text align="left" size="xl">Your K-POP Collection</Text>
+                  <Text align="left" size="xl" onClick={()=>(setOpened(false))}>Your K-POP Collection</Text>
               </MediaQuery>  
-              {/* <MediaQuery largerThan="md">
-                <Image width={122} height={31} src="./public/logo-darkorange.svg" />
-                <Text align="left" size="xl">Your K-Pop Collection</Text>
-              </MediaQuery>                             */}
-              {/* <Image width={122} height={31} src="./public/logo-darkorange.svg" />
-              <Text align="left" size="xl">Your K-Pop Collection</Text> */}
             </Group>
             
-            <Group>
+            <Group onClick={()=>(setOpened(false))}>
                 <AuthButton/>
                 <LightAndDarkModeButton />
             </Group>
@@ -152,7 +147,7 @@ export default function AppSiteShell() {
         </Header>
       }
     >
-      <div><Outlet/></div>
+      <div onClick={()=>(setOpened(false))}><Outlet/></div>
         {/* <Routes>
             <Route path="/" element={<PhotoCardsGridPage myCards={false}/>}/>
             <Route path="/my-cards" element={<PhotoCardsGridPage myCards={true}/>}/>

@@ -19,7 +19,7 @@ import { getPhotoCards } from "../services/photo-cards";
 import PhotoCard from "./PhotoCard";
 import FollowsList from "./FollowsList";
 
-export default function Profile(props) {
+export default function ProfileBackup(props) {
 
     //doing this will force focus to top of page on 1st render of this detail page
     useEffect(() => {
@@ -170,8 +170,7 @@ export default function Profile(props) {
             </Center> 
     }
     if (photoCardsQuery.status === "success"){
-        if (isMobile){
-            photoCardsContent = 
+        photoCardsContent = 
             <Grid justify="center" >
                 {photoCardsQuery.data.map((photoCard, index) => (
                     <Grid.Col key={index} span="content" style={{width: 300}} align="left">
@@ -179,16 +178,6 @@ export default function Profile(props) {
                     </Grid.Col>
                 ))}
             </Grid>
-        } else {
-            photoCardsContent = 
-            <Grid justify="left" >
-                {photoCardsQuery.data.map((photoCard, index) => (
-                    <Grid.Col key={index} span="content" style={{width: 200}} align="left">
-                        <PhotoCard photoCard={photoCard} index={index} myCard={currentUsername === props.username} cardHeight="260"/>
-                    </Grid.Col>
-                ))}
-            </Grid>
-        }
     }
 
     return (
@@ -248,16 +237,16 @@ export default function Profile(props) {
                 </Group>
 
                 {followButtonContent}
+                <Divider size="sm" color="orange.4" mt="sm"/>
+                <Space h="lg"/>
+                {photoCardsContent}
+                <Space h="xl"/>
             </Container>
-            <Divider size="sm" color="orange.4" mt="sm"/>
-            <Space h="lg"/>
-            {photoCardsContent}
-            <Space h="xl"/>
         </div>
     );
 
 }
 
-Profile.propTypes = {
+ProfileBackup.propTypes = {
     username: PropTypes.string.isRequired,
   };
