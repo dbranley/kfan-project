@@ -1,6 +1,8 @@
 import React from "react";
 import { Avatar, 
          Card, 
+         Container, 
+         Flex, 
          Group, 
          HoverCard, 
          Image, 
@@ -198,21 +200,21 @@ export default function PhotoCard(props) {
             <Tooltip label="Login to set favorites!" color="orange.5" withArrow openDelay={500} 
                      radius="sm" fz="sm"
                      events={{hover: true, touch: true}}>
-                <IconHeart size="1.5rem" strokeWidth={2} color={'#868e96'}/>
+                <IconHeart mr={0} size="1.5rem" strokeWidth={2} color={'#868e96'}/>
             </Tooltip>        
     } else if (currentUserQuery.data?.id !== 0) {
         if (props.photoCard.favorite_id === null){
             heartContent =
             <Tooltip label="Click to set as favorite" color="orange.5" withArrow openDelay={500} 
                      radius="sm" fz="sm">
-                <IconHeart size="1.5rem" strokeWidth={2} color={'#868e96'}
+                <IconHeart mr={0} size="1.5rem" strokeWidth={2} color={'#868e96'}
                            onClick={()=>addFavoritePhotoCardHandler(props.photoCard.id)}/>
             </Tooltip>        
         } else if (props.photoCard.favorite_id !== null){
             heartContent = 
             <Tooltip label="Click to remove favorite" color="orange.5" withArrow openDelay={500} 
                      radius="sm" fz="sm">
-                <IconHeart size="1.5rem" strokeWidth={2} color={'#fd7e14'} fill={'#fd7e14'}
+                <IconHeart mr={0} size="1.5rem" strokeWidth={2} color={'#fd7e14'} fill={'#fd7e14'}
                            onClick={()=>removeFavoritePhotoCardHandler(props.photoCard.id)}/>
             </Tooltip>     
         }   
@@ -242,7 +244,10 @@ export default function PhotoCard(props) {
                 <Group position="right">
                     {cardOwnerContent}
                     {cardSourceContent}
-                    {heartContent}
+                    <Flex gap="0.15rem" justify="flex-start" align="center">
+                        {heartContent}
+                        <Text mt={6} size="xs" color="dimmed">{props.photoCard.favorite_cnt}</Text>
+                    </Flex>
                 </Group>              
             </Stack>
         </Card>        
