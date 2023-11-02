@@ -191,51 +191,6 @@ async def get_photo_cards(database: Database, user_id: int, my_cards: bool, coll
      print(result)     
      return result
 
-async def get_photo_cards_orig(database: Database, user_id: int, my_cards: bool, collector_id: int, skip: int=0, limit: int=100):
-     print("crud.get_photo_cards() - at top")
-     
-
-     if my_cards:
-        j_comb = models.photo_cards.join(right=models.users, \
-                      onclause=and_(models.photo_cards.c.user_id == models.users.c.id,\
-                                    models.photo_cards.c.user_id == user_id)). \
-                      join(right=models.favorites,  \
-                            onclause=and_(models.photo_cards.c.id == models.favorites.c.photo_card_id, \
-                                    models.favorites.c.user_id == user_id), isouter=True)        
-     
-     #collector_id == 0 means 'NO' filter on owner of the card
-     elif collector_id == 0:
-        j_comb = models.photo_cards.join(right=models.users, \
-                      onclause=and_(models.photo_cards.c.user_id == models.users.c.id,\
-                          or_(models.photo_cards.c.share == True, models.photo_cards.c.user_id == user_id))). \
-                      join(right=models.favorites,  \
-                            onclause=and_(models.photo_cards.c.id == models.favorites.c.photo_card_id, \
-                                    models.favorites.c.user_id == user_id), isouter=True)
-
-    
-     #collector_id != 0 means we need to filter on owner of the card
-     else: 
-        j_comb = models.photo_cards.join(right=models.users, \
-                      onclause=and_(models.photo_cards.c.user_id == models.users.c.id, \
-                                    models.photo_cards.c.user_id == collector_id, \
-                          or_(models.photo_cards.c.share == True, models.photo_cards.c.user_id == user_id))). \
-                      join(right=models.favorites,  \
-                            onclause=and_(models.photo_cards.c.id == models.favorites.c.photo_card_id, \
-                                    models.favorites.c.user_id == user_id), isouter=True)
-                
-     query = select([models.photo_cards, models.users.c.username.label("owner_name"), models.favorites.c.id.label("favorite_id")]).\
-                select_from(j_comb). \
-                offset(skip).limit(limit).\
-                order_by(models.photo_cards.c.id.desc())
-
-     print("crud.get_photo_cards() - about to print query")
-     print(query)
-     result = await database.fetch_all(query)
-     print("crud.get_photo_cards() - after query - result is:")
-     print(result)     
-     return result
-
-
 async def get_my_followees_photo_cards(database: Database, user_id: int, skip: int=0, limit: int=100):
      print("crud.get_my_favorite_photo_cards() - at top")
        
@@ -258,28 +213,11 @@ async def get_my_followees_photo_cards(database: Database, user_id: int, skip: i
         LEFT OUTER JOIN favorites ON photo_cards.id = favorites.photo_card_id AND favorites.user_id = :user_id 
         ORDER BY photo_cards.id DESC LIMIT :param_1 OFFSET :param_2       
        """
-    #  j_comb = models.photo_cards.join(right=models.users, \
-    #                   onclause=and_(models.photo_cards.c.user_id == models.users.c.id,\
-    #                                 models.photo_cards.c.share == True,
-    #                                 models.photo_cards.c.user_id.in_(
-    #                                     select(models.follows.c.followee).where(models.follows.c.follower == user_id)
-    #                                 ))). \
-    #                   join(right=models.favorites,  \
-    #                         onclause=and_(models.photo_cards.c.id == models.favorites.c.photo_card_id, \
-    #                                       models.favorites.c.user_id == user_id), isouter=True)
      
      print("crud.get_my_followees_photo_cards() - about to print the statement")
      print(s)    
      result = await database.fetch_all(query=s, values={"user_id": user_id, "param_1": limit, "param_2":skip})
      
-    #  query = select([models.photo_cards, models.users.c.username.label("owner_name"), models.favorites.c.id.label("favorite_id")]).\
-    #              select_from(j_comb). \
-    #              offset(skip).limit(limit).\
-    #              order_by(models.photo_cards.c.id.desc())
-
-    #  print("crud.get_my_followees_photo_cards() - about to print query")
-    #  print(query)
-    #  result = await database.fetch_all(query)
      print("crud.get_my_followees_photo_cards - after query - result is:")
      print(result)     
      return result
@@ -428,27 +366,6 @@ async def get_photo_card(database: Database,
     # print("crud.get_photo_card() - about to print query")
     # print(query)
     # result = await database.fetch_one(query)
-    print("crud.get_photo_card() - after query - result is:")
-    print(result)
-    return result
-
-async def get_photo_card_orig(database: Database,
-                         photo_card_id: int,
-                         user_id: int=0):
-    print("crud.get_photo_card() - at top -- new implementation")
-    # query = models.photo_cards.select().where(models.photo_cards.c.id == photo_card_id)
-    j = models.photo_cards.join(right=models.users, \
-                    onclause=and_(models.photo_cards.c.user_id == models.users.c.id,\
-                                models.photo_cards.c.id == photo_card_id)). \
-                    join(right=models.favorites,  \
-                        onclause=and_(models.photo_cards.c.id == models.favorites.c.photo_card_id, \
-                                models.favorites.c.user_id == user_id), isouter=True)     
-   
-    query = select([models.photo_cards, models.users.c.username.label("owner_name"), models.favorites.c.id.label("favorite_id")]).\
-                select_from(j)
-    print("crud.get_photo_card() - about to print query")
-    print(query)
-    result = await database.fetch_one(query)
     print("crud.get_photo_card() - after query - result is:")
     print(result)
     return result
