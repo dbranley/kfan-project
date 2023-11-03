@@ -1,7 +1,7 @@
 
 from . import models, schemas
 from databases import Database 
-from sqlalchemy.sql import select, and_, or_, join, func, table
+from sqlalchemy.sql import select, and_, or_, text, join, func, table
 from asyncpg.exceptions import UniqueViolationError
 from fastapi import HTTPException, status
 
@@ -115,43 +115,78 @@ async def update_photo_card_orig(database: Database,
 async def get_photo_cards(database: Database, user_id: int, my_cards: bool, collector_id: int, skip: int=0, limit: int=100):
      print("crud.get_photo_cards() - at top")
      
+     params = {
+         "user_id": user_id,
+         "param_1": limit,
+         "param_2": skip
+     }
 
      if my_cards:
-        j_comb = models.photo_cards.join(right=models.users, \
-                      onclause=and_(models.photo_cards.c.user_id == models.users.c.id,\
-                                    models.photo_cards.c.user_id == user_id)). \
-                      join(right=models.favorites,  \
-                            onclause=and_(models.photo_cards.c.id == models.favorites.c.photo_card_id, \
-                                    models.favorites.c.user_id == user_id), isouter=True)        
+        s = """
+            SELECT photo_cards.id, 
+                photo_cards.front_file_name, 
+                photo_cards.back_file_name, 
+                photo_cards.group_name, 
+                photo_cards.card_name, 
+                photo_cards.share, 
+                photo_cards.source_type, 
+                photo_cards.source_name, 
+                photo_cards.user_id, 
+                users.username AS owner_name, 
+                favorites.id AS favorite_id,
+                (SELECT count(id) from favorites where photo_card_id = photo_cards.id) AS favorite_cnt  
+            FROM photo_cards JOIN users ON photo_cards.user_id = users.id AND photo_cards.user_id = :user_id 
+            LEFT OUTER JOIN favorites ON photo_cards.id = favorites.photo_card_id AND favorites.user_id = :user_id 
+            ORDER BY photo_cards.id DESC LIMIT :param_1 OFFSET :param_2
+            """       
      
      #collector_id == 0 means 'NO' filter on owner of the card
      elif collector_id == 0:
-        j_comb = models.photo_cards.join(right=models.users, \
-                      onclause=and_(models.photo_cards.c.user_id == models.users.c.id,\
-                          or_(models.photo_cards.c.share == True, models.photo_cards.c.user_id == user_id))). \
-                      join(right=models.favorites,  \
-                            onclause=and_(models.photo_cards.c.id == models.favorites.c.photo_card_id, \
-                                    models.favorites.c.user_id == user_id), isouter=True)
-
+        s = """
+            SELECT photo_cards.id, 
+                photo_cards.front_file_name, 
+                photo_cards.back_file_name, 
+                photo_cards.group_name, 
+                photo_cards.card_name, 
+                photo_cards.share, 
+                photo_cards.source_type, 
+                photo_cards.source_name, 
+                photo_cards.user_id, 
+                users.username AS owner_name, 
+                favorites.id AS favorite_id,
+                (SELECT count(id) from favorites where photo_card_id = photo_cards.id) AS favorite_cnt 
+            FROM photo_cards JOIN users ON photo_cards.user_id = users.id 
+                AND (photo_cards.share = true OR photo_cards.user_id = :user_id) 
+            LEFT OUTER JOIN favorites ON photo_cards.id = favorites.photo_card_id AND favorites.user_id = :user_id 
+            ORDER BY photo_cards.id DESC LIMIT :param_1 OFFSET :param_2
+            """
     
      #collector_id != 0 means we need to filter on owner of the card
      else: 
-        j_comb = models.photo_cards.join(right=models.users, \
-                      onclause=and_(models.photo_cards.c.user_id == models.users.c.id, \
-                                    models.photo_cards.c.user_id == collector_id, \
-                          or_(models.photo_cards.c.share == True, models.photo_cards.c.user_id == user_id))). \
-                      join(right=models.favorites,  \
-                            onclause=and_(models.photo_cards.c.id == models.favorites.c.photo_card_id, \
-                                    models.favorites.c.user_id == user_id), isouter=True)
-                
-     query = select([models.photo_cards, models.users.c.username.label("owner_name"), models.favorites.c.id.label("favorite_id")]).\
-                select_from(j_comb). \
-                offset(skip).limit(limit).\
-                order_by(models.photo_cards.c.id.desc())
+        params['collector_id'] = collector_id
 
-     print("crud.get_photo_cards() - about to print query")
-     print(query)
-     result = await database.fetch_all(query)
+        s = """
+            SELECT photo_cards.id, 
+                photo_cards.front_file_name, 
+                photo_cards.back_file_name, 
+                photo_cards.group_name, 
+                photo_cards.card_name, 
+                photo_cards.share, 
+                photo_cards.source_type, 
+                photo_cards.source_name, 
+                photo_cards.user_id, 
+                users.username AS owner_name, 
+                favorites.id AS favorite_id,
+                (SELECT count(id) from favorites where photo_card_id = photo_cards.id) AS favorite_cnt 
+            FROM photo_cards JOIN users ON photo_cards.user_id = users.id AND photo_cards.user_id = :collector_id 
+                AND (photo_cards.share = true OR photo_cards.user_id = :user_id) 
+            LEFT OUTER JOIN favorites ON photo_cards.id = favorites.photo_card_id AND favorites.user_id = :user_id 
+            ORDER BY photo_cards.id DESC LIMIT :param_1 OFFSET :param_2
+            """
+     print("crud.get_photo_cards() - about to print the statement")
+     print(s)    
+     result = await database.fetch_all(query=s, values=params)
+
      print("crud.get_photo_cards() - after query - result is:")
      print(result)     
      return result
@@ -159,26 +194,30 @@ async def get_photo_cards(database: Database, user_id: int, my_cards: bool, coll
 async def get_my_followees_photo_cards(database: Database, user_id: int, skip: int=0, limit: int=100):
      print("crud.get_my_favorite_photo_cards() - at top")
        
-
-     j_comb = models.photo_cards.join(right=models.users, \
-                      onclause=and_(models.photo_cards.c.user_id == models.users.c.id,\
-                                    models.photo_cards.c.share == True,
-                                    models.photo_cards.c.user_id.in_(
-                                        select(models.follows.c.followee).where(models.follows.c.follower == user_id)
-                                    ))). \
-                      join(right=models.favorites,  \
-                            onclause=and_(models.photo_cards.c.id == models.favorites.c.photo_card_id, \
-                                          models.favorites.c.user_id == user_id), isouter=True)
+     s="""
+        SELECT photo_cards.id, 
+            photo_cards.front_file_name, 
+            photo_cards.back_file_name, 
+            photo_cards.group_name, 
+            photo_cards.card_name, 
+            photo_cards.share, 
+            photo_cards.source_type, 
+            photo_cards.source_name, 
+            photo_cards.user_id, 
+            users.username AS owner_name, 
+            favorites.id AS favorite_id,
+            (SELECT count(id) from favorites where photo_card_id = photo_cards.id) AS favorite_cnt 
+        FROM photo_cards JOIN users ON photo_cards.user_id = users.id 
+         AND photo_cards.share = true 
+         AND photo_cards.user_id IN (SELECT follows.followee FROM follows WHERE follows.follower = :user_id) 
+        LEFT OUTER JOIN favorites ON photo_cards.id = favorites.photo_card_id AND favorites.user_id = :user_id 
+        ORDER BY photo_cards.id DESC LIMIT :param_1 OFFSET :param_2       
+       """
      
+     print("crud.get_my_followees_photo_cards() - about to print the statement")
+     print(s)    
+     result = await database.fetch_all(query=s, values={"user_id": user_id, "param_1": limit, "param_2":skip})
      
-     query = select([models.photo_cards, models.users.c.username.label("owner_name"), models.favorites.c.id.label("favorite_id")]).\
-                 select_from(j_comb). \
-                 offset(skip).limit(limit).\
-                 order_by(models.photo_cards.c.id.desc())
-
-     print("crud.get_my_followees_photo_cards() - about to print query")
-     print(query)
-     result = await database.fetch_all(query)
      print("crud.get_my_followees_photo_cards - after query - result is:")
      print(result)     
      return result
@@ -186,7 +225,30 @@ async def get_my_followees_photo_cards(database: Database, user_id: int, skip: i
 async def get_my_favorite_photo_cards(database: Database, user_id: int, my_cards: bool, collector_id: int, skip: int=0, limit: int=100):
      print("crud.get_my_favorite_photo_cards() - at top")
      
+     params = {
+        "user_id": user_id,
+        "param_1": limit,
+        "param_2": skip
+     }
      if my_cards:
+        s = """
+            SELECT photo_cards.id, 
+                photo_cards.front_file_name, 
+                photo_cards.back_file_name, 
+                photo_cards.group_name, 
+                photo_cards.card_name, 
+                photo_cards.share, 
+                photo_cards.source_type, 
+                photo_cards.source_name, 
+                photo_cards.user_id, 
+                users.username AS owner_name, 
+                favorites.id AS favorite_id,
+                (SELECT count(id) from favorites where photo_card_id = photo_cards.id) AS favorite_cnt  
+            FROM photo_cards JOIN users ON photo_cards.user_id = users.id 
+            AND photo_cards.user_id = :user_id 
+            JOIN favorites ON photo_cards.id = favorites.photo_card_id AND favorites.user_id = :user_id 
+            ORDER BY photo_cards.id DESC LIMIT :param_1 OFFSET :param_2
+            """
         j_comb = models.photo_cards.join(right=models.users, \
                       onclause=and_(models.photo_cards.c.user_id == models.users.c.id,\
                                     models.photo_cards.c.user_id == user_id)). \
@@ -196,6 +258,24 @@ async def get_my_favorite_photo_cards(database: Database, user_id: int, my_cards
 
      #collector_id == 0 means 'NO' filter on owner of the card
      elif collector_id == 0:
+        s = """
+            SELECT photo_cards.id, 
+                photo_cards.front_file_name, 
+                photo_cards.back_file_name, 
+                photo_cards.group_name, 
+                photo_cards.card_name, 
+                photo_cards.share, 
+                photo_cards.source_type, 
+                photo_cards.source_name, 
+                photo_cards.user_id, 
+                users.username AS owner_name, 
+                favorites.id AS favorite_id,
+                (SELECT count(id) from favorites where photo_card_id = photo_cards.id) AS favorite_cnt 
+            FROM photo_cards JOIN users ON photo_cards.user_id = users.id 
+            AND (photo_cards.share = true OR photo_cards.user_id = :user_id) 
+            JOIN favorites ON photo_cards.id = favorites.photo_card_id AND favorites.user_id = :user_id 
+            ORDER BY photo_cards.id DESC LIMIT :param_1 OFFSET :param_2
+            """
         j_comb = models.photo_cards.join(right=models.users, \
                       onclause=and_(models.photo_cards.c.user_id == models.users.c.id,\
                           or_(models.photo_cards.c.share == True, models.photo_cards.c.user_id == user_id))). \
@@ -205,6 +285,26 @@ async def get_my_favorite_photo_cards(database: Database, user_id: int, my_cards
      
      #collector_id != 0 means we need to filter on owner of the card
      else: 
+        s = """
+            SELECT photo_cards.id, 
+                photo_cards.front_file_name, 
+                photo_cards.back_file_name, 
+                photo_cards.group_name, 
+                photo_cards.card_name, 
+                photo_cards.share, 
+                photo_cards.source_type, 
+                photo_cards.source_name, 
+                photo_cards.user_id, 
+                users.username AS owner_name, 
+                favorites.id AS favorite_id,
+                (SELECT count(id) from favorites where photo_card_id = photo_cards.id) AS favorite_cnt 
+            FROM photo_cards JOIN users ON photo_cards.user_id = users.id 
+            AND photo_cards.user_id = :collector_id
+            AND (photo_cards.share = true OR photo_cards.user_id = :user_id) 
+            JOIN favorites ON photo_cards.id = favorites.photo_card_id AND favorites.user_id = :user_id 
+            ORDER BY photo_cards.id DESC LIMIT :param_1 OFFSET :param_2
+            """
+        params['collector_id'] = collector_id
         j_comb = models.photo_cards.join(right=models.users, \
                       onclause=and_(models.photo_cards.c.user_id == models.users.c.id,\
                                     models.photo_cards.c.user_id == collector_id, \
@@ -213,14 +313,17 @@ async def get_my_favorite_photo_cards(database: Database, user_id: int, my_cards
                             onclause=and_(models.photo_cards.c.id == models.favorites.c.photo_card_id, \
                                     models.favorites.c.user_id == user_id)) 
      
-     query = select([models.photo_cards, models.users.c.username.label("owner_name"), models.favorites.c.id.label("favorite_id")]).\
-                 select_from(j_comb). \
-                 offset(skip).limit(limit).\
-                 order_by(models.photo_cards.c.id.desc())
+     print("crud.get_my_favorite_photo_cards() - about to print the statement")
+     print(s)    
+     result = await database.fetch_all(query=s, values=params)     
+    #  query = select([models.photo_cards, models.users.c.username.label("owner_name"), models.favorites.c.id.label("favorite_id")]).\
+    #              select_from(j_comb). \
+    #              offset(skip).limit(limit).\
+    #              order_by(models.photo_cards.c.id.desc())
 
-     print("crud.get_my_favorite_photo_cards() - about to print query")
-     print(query)
-     result = await database.fetch_all(query)
+    #  print("crud.get_my_favorite_photo_cards() - about to print query")
+    #  print(query)
+    #  result = await database.fetch_all(query)
      print("crud.get_my_favorite_photo_cards - after query - result is:")
      print(result)     
      return result
@@ -231,18 +334,38 @@ async def get_photo_card(database: Database,
                          user_id: int=0):
     print("crud.get_photo_card() - at top -- new implementation")
     # query = models.photo_cards.select().where(models.photo_cards.c.id == photo_card_id)
-    j = models.photo_cards.join(right=models.users, \
-                    onclause=and_(models.photo_cards.c.user_id == models.users.c.id,\
-                                models.photo_cards.c.id == photo_card_id)). \
-                    join(right=models.favorites,  \
-                        onclause=and_(models.photo_cards.c.id == models.favorites.c.photo_card_id, \
-                                models.favorites.c.user_id == user_id), isouter=True)     
+
+    s = """SELECT photo_cards.id, 
+       photo_cards.front_file_name, 
+       photo_cards.back_file_name, 
+       photo_cards.group_name, 
+       photo_cards.card_name, 
+       photo_cards.share, 
+       photo_cards.source_type, 
+       photo_cards.source_name, 
+       photo_cards.user_id, 
+       users.username AS owner_name, 
+       favorites.id AS favorite_id, 
+       (SELECT count(id) from favorites where photo_card_id = :card_id) AS favorite_cnt 
+    FROM photo_cards JOIN users ON photo_cards.user_id = users.id AND photo_cards.id = :card_id  
+    LEFT OUTER JOIN favorites ON photo_cards.id = favorites.photo_card_id AND favorites.user_id = :user_id
+    """
+    print("crud.get_photo_card() - about to print the statement")
+    print(s)    
+    result = await database.fetch_one(query=s, values={"card_id": photo_card_id, "user_id": user_id})
+
+    # j = models.photo_cards.join(right=models.users, \
+    #                 onclause=and_(models.photo_cards.c.user_id == models.users.c.id,\
+    #                             models.photo_cards.c.id == photo_card_id)). \
+    #                 join(right=models.favorites,  \
+    #                     onclause=and_(models.photo_cards.c.id == models.favorites.c.photo_card_id, \
+    #                             models.favorites.c.user_id == user_id), isouter=True)     
    
-    query = select([models.photo_cards, models.users.c.username.label("owner_name"), models.favorites.c.id.label("favorite_id")]).\
-                select_from(j)
-    print("crud.get_photo_card() - about to print query")
-    print(query)
-    result = await database.fetch_one(query)
+    # query = select([models.photo_cards, models.users.c.username.label("owner_name"), models.favorites.c.id.label("favorite_id")]).\
+    #             select_from(j)
+    # print("crud.get_photo_card() - about to print query")
+    # print(query)
+    # result = await database.fetch_one(query)
     print("crud.get_photo_card() - after query - result is:")
     print(result)
     return result

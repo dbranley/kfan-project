@@ -1,6 +1,8 @@
 import React from "react";
 import { Avatar, 
          Card, 
+         Container, 
+         Flex, 
          Group, 
          HoverCard, 
          Image, 
@@ -242,7 +244,10 @@ export default function PhotoCard(props) {
                 <Group position="right">
                     {cardOwnerContent}
                     {cardSourceContent}
-                    {heartContent}
+                    <Flex gap="0.15rem" justify="flex-start" align="flex-end">
+                        {heartContent}
+                        <Text mt={6} size="xs" color="dimmed">{props.photoCard.favorite_cnt}</Text>
+                    </Flex>
                 </Group>              
             </Stack>
         </Card>        

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Avatar, 
          Container, 
          Divider, 
+         Flex, 
          Group, 
          Image, 
          MediaQuery, 
@@ -343,23 +344,33 @@ const PhotoCardDetail = (props) => {
               {photoCardQuery.data.owner_name.charAt(0).toUpperCase()}
             </Avatar>
           </Tooltip>        
+        {/* TODO: Move heart content to a separate variable so I can just replace that with logic below*/}
         {currentUserQuery.status === "success" && 
                 currentUserQuery.data !== null && 
                 currentUserQuery.data.id !== 0 ? (
                   photoCardQuery.data.favorite_id === null ? (
-                    <IconHeart onClick={()=>{
-                      addFavoritePhotoCardHandler(photoCardQuery.data.id);
-                    }} style={{cursor:"pointer"}} size="2rem" strokeWidth={1} color={'#868e96'}/>
+                    <Flex gap="0.15rem" justify="flex-start" align="flex-end">
+                      <IconHeart onClick={()=>{
+                        addFavoritePhotoCardHandler(photoCardQuery.data.id);
+                      }} style={{cursor:"pointer"}} size="2rem" strokeWidth={1} color={'#868e96'}/>
+                      <Text size="xs" color="dimmed">{photoCardQuery.data.favorite_cnt}</Text>
+                    </Flex>
                   ) : (
-                    <IconHeart onClick={()=>{
-                      removeFavoritePhotoCardHandler(photoCardQuery.data.id);
-                    }} style={{cursor:"pointer"}} size="2rem" strokeWidth={3} color={'#fd7e14'} fill={'#fd7e14'}/>
+                    <Flex gap="0.15rem" justify="flex-start" align="flex-end">
+                      <IconHeart onClick={()=>{
+                        removeFavoritePhotoCardHandler(photoCardQuery.data.id);
+                      }} style={{cursor:"pointer"}} size="2rem" strokeWidth={3} color={'#fd7e14'} fill={'#fd7e14'}/>
+                      <Text  size="xs" color="dimmed">{photoCardQuery.data.favorite_cnt}</Text>
+                    </Flex>
                   )                                    
 
                 ) : (
-                  <Tooltip label="Login to set favorites!" color="orange.5" withArrow openDelay={500} radius="sm" fz="sm">
-                    <IconHeart ml={10} size="2rem" strokeWidth={1} color={'#868e96'} />
-                  </Tooltip>
+                  <Flex gap="0.15rem" justify="flex-start" align="flex-end">
+                    <Tooltip label="Login to set favorites!" color="orange.5" withArrow openDelay={500} radius="sm" fz="sm">
+                      <IconHeart ml={10} size="2rem" strokeWidth={1} color={'#868e96'} />
+                    </Tooltip>
+                    <Text size="xs" color="dimmed">{photoCardQuery.data.favorite_cnt}</Text>
+                  </Flex>
                 )
         }
         {currentUsername === photoCardQuery.data.owner_name && 
@@ -489,27 +500,36 @@ const PhotoCardDetail = (props) => {
                 currentUserQuery.data !== null && 
                 currentUserQuery.data.id !== 0 ? (
                   photoCardQuery.data.favorite_id === null ? (
-                    <IconHeart onClick={()=>{
-                      setOwnerOpened(false);
-                      setCardSourceOpened(false);
-                      addFavoritePhotoCardHandler(photoCardQuery.data.id);
-                    }} style={{cursor:"pointer"}} size="2rem" strokeWidth={1} color={'#868e96'}/>
+                    <Flex gap="0.15rem" justify="flex-start" align="flex-end">
+                      <IconHeart onClick={()=>{
+                        setOwnerOpened(false);
+                        setCardSourceOpened(false);
+                        addFavoritePhotoCardHandler(photoCardQuery.data.id);
+                      }} style={{cursor:"pointer"}} size="2rem" strokeWidth={1} color={'#868e96'}/>
+                      <Text size="xs" color="dimmed">{photoCardQuery.data.favorite_cnt}</Text>
+                    </Flex>
                   ) : (
-                    <IconHeart onClick={()=>{
-                      setOwnerOpened(false);
-                      setCardSourceOpened(false);
-                      removeFavoritePhotoCardHandler(photoCardQuery.data.id);
-                    }} style={{cursor:"pointer"}} size="2rem" strokeWidth={3} color={'#fd7e14'} fill={'#fd7e14'}/>
+                    <Flex gap="0.15rem" justify="flex-start" align="flex-end">
+                      <IconHeart onClick={()=>{
+                        setOwnerOpened(false);
+                        setCardSourceOpened(false);
+                        removeFavoritePhotoCardHandler(photoCardQuery.data.id);
+                      }} style={{cursor:"pointer"}} size="2rem" strokeWidth={3} color={'#fd7e14'} fill={'#fd7e14'}/>
+                      <Text size="xs" color="dimmed">{photoCardQuery.data.favorite_cnt}</Text>
+                    </Flex>
                   )                                    
 
                 ) : (
-                  <Tooltip label="Login to set favorites!" color="orange.5" withArrow openDelay={500} radius="sm" fz="sm" opened={loginToFavOpened}>
-                    <IconHeart ml={10} size="2rem" strokeWidth={1} color={'#868e96'} onClick={()=> {
-                        setOwnerOpened(false);
-                        setCardSourceOpened(false);
-                        setLoginToFavOpened((o)=>!o);
-                        }}/>
-                  </Tooltip>
+                  <Flex gap="0.15rem" justify="flex-start" align="flex-end">
+                    <Tooltip label="Login to set favorites!" color="orange.5" withArrow openDelay={500} radius="sm" fz="sm" opened={loginToFavOpened}>
+                      <IconHeart ml={10} size="2rem" strokeWidth={1} color={'#868e96'} onClick={()=> {
+                          setOwnerOpened(false);
+                          setCardSourceOpened(false);
+                          setLoginToFavOpened((o)=>!o);
+                          }}/>
+                    </Tooltip>
+                    <Text size="xs" color="dimmed">{photoCardQuery.data.favorite_cnt}</Text>
+                  </Flex>
                 )
         }
         {currentUsername === photoCardQuery.data.owner_name && 
