@@ -1,14 +1,19 @@
 import '@mantine/core/styles.css';
-import { Button, MantineProvider } from '@mantine/core';
-import './App.css'
+import { MantineProvider, createTheme } from '@mantine/core';
+
+import AppSiteShell from './AppSiteShell';
+
+const theme = createTheme({
+  primaryColor: 'orange',
+
+});
 
 function App() {
 
   return (
-    <MantineProvider>
-      <div>
-        <Button>Hello World</Button>
-      </div>
+    <MantineProvider theme={theme}
+                     defaultColorScheme='light'>
+      <AppSiteShell/>
     </MantineProvider>
   )
 }
