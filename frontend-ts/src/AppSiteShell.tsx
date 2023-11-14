@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { AppShell, Burger, Button, Group, Image, Text, useComputedColorScheme, useMantineTheme } from '@mantine/core';
 import LightAndDarkModeButton from "./components/LightAndDarkModeButton";
 import { IconHomePlus } from "@tabler/icons-react";
+import AuthButton from "./components/AuthButton";
 
 export default function AppSiteShell() {
 
@@ -47,6 +48,7 @@ export default function AppSiteShell() {
                 </Group>
 
                 <Group onClick={() => (setOpened(false))}>
+                    <AuthButton />
                     <LightAndDarkModeButton />
 
                 </Group>
