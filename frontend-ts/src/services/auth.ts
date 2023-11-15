@@ -1,5 +1,7 @@
 import axios from "axios";
 
+import { User } from "../models/user"; 
+
 export const SESSION_EXPIRATION_TIME = 300000;
 
 
@@ -30,12 +32,37 @@ export async function login(loginUserData: { username: string; password: string 
 
 }
 
+export async function logout(){
+
+    console.log("auth.logout()");
+
+    try{
+        console.log("auth.logout() - about to use axios to post to 'logout'");
+        const response = await axios.post(
+            '/api/logout',
+            {},
+            {
+              withCredentials: true,
+              // headers: {'Access-Control-Allow-Origin': 'same-origin'}
+            }
+        );
+        if (response.status != 200){
+            throw new Error('Request failed - status code='+response.status+'=, status text='+response.statusText+'=');
+        }
+        // const data = await response.data;
+
+    } catch(error){
+        console.log(error);
+        throw(error);
+    }
+}
+
 export async function getCurrentUser(){
 
     console.log("auth.getCurrentUser()");
     
     try{
-        const response = await axios.get(
+        const response = await axios.get<User>(
             '/api/session'
         );
         console.log("auth.getCurrentUser() - response is: ");
