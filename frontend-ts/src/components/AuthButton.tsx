@@ -11,6 +11,8 @@ export default function AuthButton() {
 
     const [opened, { open, close }] = useDisclosure(false);
     const [menuOpened, setMenuOpened] = useState(false);
+    const [registerSuccessOpened, { open: registerSuccessOpen, close: registerSuccessClose }] =
+    useDisclosure(false);
 
     const navigate = useNavigate();
     const location = useLocation();
@@ -77,17 +79,48 @@ export default function AuthButton() {
             </Menu>
         );
     
+    } else if (registerSuccessOpened && opened){
+        console.log("AuthButton - registration was successful, show success message");
+        content = (
+            <div>
+            <Modal size="auto" xOffset={-100} opened={opened} onClose={close} title="Authentication" >
+              <Container >
+                <Text ta="center">New user successfully created</Text>
+                <Group justify="space-between" mt="md">
+                  <Button onClick={() => {
+                      close();
+                      registerSuccessClose();
+                    }}
+                  >
+                    Close
+                  </Button>
+                  <Button onClick={() => {
+                      registerSuccessClose();
+                      open();
+                    }}
+                  >
+                    Login
+                  </Button>
+                </Group>
+              </Container>
+            </Modal>
+            <Button size="xs" onClick={open}>
+              Login
+            </Button>        
+          </div>
+    
+        );
     } else if (currentUserQuery.status === "success" && currentUserQuery.data !== null && currentUserQuery.data.id === 0){
         console.log("AuthButton - about to create login button");
         content = (
-            <div>
+            <>
                 <Modal size="auto" xOffset={-100} opened={opened} onClose={close} title="Authentication">
-                    <AuthForm onLogin={close}/>
+                    <AuthForm onLogin={close} onRegister={registerSuccessOpen}/>
                 </Modal>
                 <Button data-testid="login-button-id" size="xs" onClick={open}>
                     Login
                 </Button>
-            </div>
+            </>
         );
     }
 

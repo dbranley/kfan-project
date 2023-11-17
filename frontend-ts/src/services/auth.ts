@@ -1,9 +1,13 @@
 import axios from "axios";
 
-import { User } from "../models/user"; 
-
 export const SESSION_EXPIRATION_TIME = 300000;
 
+export type User = {
+    username: string,
+    id: number,
+    email: string,
+    upload: boolean
+}
 
 // loginUserData object is:
 //   username
@@ -57,6 +61,28 @@ export async function logout(){
     }
 }
 
+export async function register(registerUserData: { username: string; email: string, password: string }){
+
+    try{
+        const response = await axios.post<User>(
+            '/api/register',
+            {
+                username: registerUserData.username,
+                email: registerUserData.email,
+                password: registerUserData.password
+            }
+        );
+        if (response.status != 200){
+            throw new Error('Request failed - status code='+response.status+'=, status text='+response.statusText+'=');
+        }
+        const data = response.data;
+        return data;
+
+    } catch(error){
+        console.log(error);
+        throw(error);
+    }
+}
 export async function getCurrentUser(){
 
     console.log("auth.getCurrentUser()");

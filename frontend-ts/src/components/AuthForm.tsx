@@ -14,10 +14,10 @@ import { IconAt, IconLock, IconUser } from "@tabler/icons-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { AxiosError } from "axios";
 
-import { login } from "../services/auth";
-import { extractMessageFromRestError } from "../utils";
+import { login, register } from "../services/auth";
+import { extractMessageFromRestError, validateEmail } from "../utils";
 
-const AuthForm: React.FC<{onLogin: () => void}> = (props) => {
+const AuthForm: React.FC<{onLogin: () => void, onRegister: () => void}> = (props) => {
 
     const [error, setError] = useState<string | null>(null);
     const [showLogin, setShowLogin] = useState(true);
@@ -42,6 +42,19 @@ const AuthForm: React.FC<{onLogin: () => void}> = (props) => {
         }
     });
 
+    const registerUserMutation = useMutation({
+        mutationFn: register,
+        onSuccess: () => {
+            props.onRegister();
+        },
+        onError: (error: Error | AxiosError) => {
+            console.log("AuthForm.registerUserMutation() - got an error: ");
+            console.log(error);
+            setError("Register new user failed with '"+extractMessageFromRestError(error)+"'");
+        }
+    
+    });
+
     const loginForm = useForm({
         initialValues: {
           username: "",
@@ -53,6 +66,24 @@ const AuthForm: React.FC<{onLogin: () => void}> = (props) => {
           password: (value) => (value.length < 2 ? "Password required" : null),
           // termsOfService: (value) => (value === false ? "Must accept terms" : null),
         },
+    });
+
+    const registerForm = useForm({
+        initialValues: {
+          username: "",
+          email: "",
+          password: "",
+          confirmPassword: "",
+          termsOfService: false
+        },
+        validate: {
+          username: (value) => (value.length < 2 ? "Username required" : null),
+          email: (value) => (validateEmail(value) === false ? "Valid email required" : null),
+          password: (value) => (value.length < 2 ? "Password required" : null),
+          confirmPassword: (value, values) => (value !== values.password ? "Passwords do not match" : null),
+          termsOfService: (value) => (value === false ? "Must accept terms" : null),
+        }
+    
     });
 
     const loginSubmitHandler = async (event: React.FormEvent) => {
@@ -73,6 +104,26 @@ const AuthForm: React.FC<{onLogin: () => void}> = (props) => {
           password: enteredPasswordValue
         });        
     };
+
+    const registerSubmitHandler = async (event: React.FormEvent) => {
+        console.log("AuthForm.registerSubmitHandler()");
+        event.preventDefault();
+        setError(null);
+        
+        const validation = registerForm.validate();
+        console.log("AuthForm.registerSubmitHandler()");
+        console.log(validation);
+        if (validation.hasErrors){
+          return;
+        }
+    
+        registerUserMutation.mutate({
+          username: registerForm.values.username.toLowerCase(),
+          email: registerForm.values.email,
+          password: registerForm.values.password
+        });
+    
+      };
 
     let content = <></>;
 
@@ -106,15 +157,73 @@ const AuthForm: React.FC<{onLogin: () => void}> = (props) => {
                         onMouseLeave={() => {
                             setUnderlined("");
                         }}
-                        // onClick={() => {
-                        //     setShowLogin(false);
-                        // }}
+                        onClick={() => {
+                            setShowLogin(false);
+                        }}
                     >
                         Don&apos;t have an account? Register
                     </Text>
                     <Button type="submit">Login</Button>
                 </Group>
           </form>    
+        );
+    } else {
+        content = (
+          <form onSubmit={registerSubmitHandler} ref={focusTrapRegisterRef}>
+            <TextInput
+              withAsterisk
+              label="Username"
+              placeholder="Your username"
+              leftSection={<IconUser size="1.1rem" />}
+              {...registerForm.getInputProps("username")}
+            />
+            <TextInput
+              withAsterisk
+              label="Email"
+              placeholder="Your email"
+              leftSection={<IconAt size="1.1rem" />}
+              {...registerForm.getInputProps("email")}
+            />
+            <PasswordInput
+              withAsterisk
+              label="Password"
+              placeholder="Password"
+              leftSection={<IconLock size="1.1rem" />}
+              {...registerForm.getInputProps("password")}
+            />
+            <PasswordInput
+              withAsterisk
+              label="Confirm Password"
+              placeholder="Confirm password"
+              leftSection={<IconLock size="1.1rem" />}
+              {...registerForm.getInputProps("confirmPassword")}
+            />
+            <Checkbox
+              mt="md"
+              label="I agree to sell my privacy"
+              {...registerForm.getInputProps("termsOfService", { type: "checkbox" })}
+            />
+            <Group justify="space-between" mt="md" gap="sm">
+              <Text
+                style={{ cursor: "pointer" }}
+                color="gray"
+                size="sm"
+                td={underlined}
+                onMouseEnter={() => {
+                  setUnderlined("underline");
+                }}
+                onMouseLeave={() => {
+                  setUnderlined("");
+                }}
+                onClick={() => {
+                  setShowLogin(true);
+                }}
+              >
+                Have an account? Login
+              </Text>
+              <Button type="submit">Register</Button>
+            </Group>
+          </form>
         );
     }
 

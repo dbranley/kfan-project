@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 
-import { AppShell, Burger, Button, Group, Image, Text, useComputedColorScheme, useMantineTheme } from '@mantine/core';
+import { AppShell, Burger, Button, Flex, Group, Image, Text, useComputedColorScheme, useMantineTheme } from '@mantine/core';
 import LightAndDarkModeButton from "./components/LightAndDarkModeButton";
 import { IconHomePlus } from "@tabler/icons-react";
 import AuthButton from "./components/AuthButton";
@@ -32,26 +32,25 @@ export default function AppSiteShell() {
         >
             <AppShell.Header p="sm">
                 <Group justify="space-between">
-                <Group>
-                    <Burger opened={opened} 
-                            onClick={() => setOpened((o) => !o)} 
-                            hiddenFrom="sm" 
-                            size="sm"
-                            color={theme.colors.gray[6]}/>
-                    <Image width={122} height={31}
-                           src="/public/logo-darkorange.svg"
-                           onClick={()=>(setOpened(false))}
-                           />
-                    <Text visibleFrom="xs"
-                          size="xl"
-                          onClick={() => (setOpened(false))}>Your K-POP Collection</Text>
-                </Group>
+                    <Group>
+                        <Burger opened={opened} 
+                                onClick={() => setOpened((o) => !o)} 
+                                hiddenFrom="sm" 
+                                size="sm"
+                                color={theme.colors.gray[6]}/>
+                        <Image width={122} height={31}
+                            src="/public/logo-darkorange.svg"
+                            onClick={()=>(setOpened(false))}
+                            />
+                        <Text visibleFrom="xs"
+                            size="xl"
+                            onClick={() => (setOpened(false))}>Your K-POP Collection</Text>
+                    </Group>
 
-                <Group onClick={() => (setOpened(false))}>
-                    <AuthButton />
-                    <LightAndDarkModeButton />
-
-                </Group>
+                    <Flex onClick={() => (setOpened(false))} justify="flex-end" align="center" gap="xs">
+                        <AuthButton />
+                        <LightAndDarkModeButton />
+                    </Flex>
 
                 </Group>
 
@@ -61,7 +60,7 @@ export default function AppSiteShell() {
                         size="md"
                         radius="xs"
                         display={"flex"}
-                        leftSection={<IconHomePlus size="1.3rem"/>} //fullWidth
+                        leftSection={<IconHomePlus size={21}/>} //fullWidth
                         onClick={() => (setOpened(false))}
                     >All Photo Cards</Button>
             </AppShell.Navbar>

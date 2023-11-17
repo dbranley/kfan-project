@@ -15,14 +15,16 @@ function LightAndDarkModeButton() {
     const dark = colorScheme === 'dark';
 
     return (
-        <div>
+        
             <ActionIcon variant="outline"
-                        color={dark ? 'yellow' : 'dark'}
+                        color={dark ? 'yellow' : 'black'}
                         onClick={() => toggleColorScheme()}
-                        title="Toggle color scheme">
-                            {dark ? <IconSun size="1.1rem"/> : <IconMoonStars size="1.1rem"/>}
+                        title="Toggle color scheme" size="md"
+                        >
+                            {dark ? <IconSun style={{ width: '100%', height: '90%'}} stroke={1} /> : 
+                                    <IconMoonStars style={{ width: '100%', height: '90%'}} stroke={1} />}
             </ActionIcon>
-        </div>
+        
     );
 }
 
