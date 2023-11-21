@@ -6,12 +6,16 @@ import { useLocation, useNavigate } from "react-router-dom";
 
 import { getCurrentUser, SESSION_EXPIRATION_TIME, logout } from "../services/auth";
 import AuthForm from './AuthForm';
+import UpdatePasswordForm from './UpdatePasswordForm';
 
 export default function AuthButton() {
 
     const [opened, { open, close }] = useDisclosure(false);
     const [menuOpened, setMenuOpened] = useState(false);
     const [registerSuccessOpened, { open: registerSuccessOpen, close: registerSuccessClose }] =
+    useDisclosure(false);
+    const [settingsOpened, { open: openSettings, close: closeSettings }] = useDisclosure(false);
+    const [pwdChangeSuccessOpened, { open: pwdChangeSuccessOpen, close: pwdChangeSuccessClose }] =
     useDisclosure(false);
 
     const navigate = useNavigate();
@@ -59,7 +63,40 @@ export default function AuthButton() {
 
     //building out this if-block incrementally as I port code over from reg react
 
-    if (currentUserQuery.status === "success" && currentUserQuery.data !== null && currentUserQuery.data.id !== 0) {
+    if (!pwdChangeSuccessOpened && settingsOpened) {
+        console.log("AuthButton - in else-if-block for settings modal to be displayed");
+        content = (
+          <div>
+            <Modal size="auto" xOffset={-100} opened={settingsOpened} onClose={closeSettings} title="Change Password">
+              <UpdatePasswordForm onPasswordChange={pwdChangeSuccessOpen} />
+            </Modal>   
+            <Avatar data-testid="profile-avatar-id" radius="xl" size="sm" variant="filled" color="orange" style={{cursor:"pointer"}} />       
+          </div>
+        ); 
+    } else if (pwdChangeSuccessOpened && settingsOpened) {
+        console.log("AuthButton - in else-if-block for password change success");
+        content = (
+          <div>
+            <Modal size="auto" xOffset={-100} opened={settingsOpened} onClose={closeSettings} title="Change Password" >
+              <Container >
+                <Text ta="center">Password successfully changed</Text>
+                <Space h="sm"/>
+                <Group justify="center">
+                  <Button onClick={() => {
+                        closeSettings();
+                        pwdChangeSuccessClose();
+                      }}
+                  >
+                    Close
+                  </Button>
+                </Group>
+              </Container>
+            </Modal>
+            <Avatar data-testid="profile-avatar-id" radius="xl" size="sm" variant="filled" color="orange" style={{cursor:"pointer"}} />
+          </div>
+        );        
+
+    } else if (currentUserQuery.status === "success" && currentUserQuery.data !== null && currentUserQuery.data.id !== 0) {
         console.log("AuthButton - seems like someone is logged in, so show avatar");
 
         content = (
@@ -70,7 +107,10 @@ export default function AuthButton() {
                 <Menu.Dropdown>
                     <Menu.Label>@{currentUserQuery.data.username}</Menu.Label>
                     <Menu.Item>Profile</Menu.Item>
-                    <Menu.Item>Settings</Menu.Item>
+                    <Menu.Item onClick={()=>{
+                        console.log("AuthButton - clicked Settings menu item");
+                        openSettings();
+                    }}>Settings</Menu.Item>
                     <Menu.Item data-testid="logout-button-id" size="xs" onClick={()=>{
                         logoutMutation.mutate();
                         navigate("/");

@@ -83,6 +83,29 @@ export async function register(registerUserData: { username: string; email: stri
         throw(error);
     }
 }
+
+export async function changePassword(changePasswordData: { originalPassword: string, newPassword: string }){
+    
+    try{
+        const response = await axios.post<string>(
+            '/api/user/password',
+            {
+                original_password: changePasswordData.originalPassword,
+                new_password: changePasswordData.newPassword,
+            }
+        );
+        if (response.status != 200){
+            throw new Error('Request failed - status code='+response.status+'=, status text='+response.statusText+'=');
+        }
+        const data = await response.data;
+        return data; //response is just a message saying 'User updated'
+
+    } catch(error){
+        console.log(error);
+        throw(error);
+    }
+}
+
 export async function getCurrentUser(){
 
     console.log("auth.getCurrentUser()");
