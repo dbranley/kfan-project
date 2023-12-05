@@ -3,6 +3,8 @@ import React, { useState } from "react";
 import { AppShell, Burger, Button, Flex, Group, Image, Text, useComputedColorScheme, useMantineTheme } from '@mantine/core';
 import LightAndDarkModeButton from "./components/LightAndDarkModeButton";
 import { IconHomePlus } from "@tabler/icons-react";
+import { Link, Outlet } from "react-router-dom";
+
 import AuthButton from "./components/AuthButton";
 
 export default function AppSiteShell() {
@@ -57,14 +59,19 @@ export default function AppSiteShell() {
             </AppShell.Header>
             <AppShell.Navbar p="sm" onBlur={()=>(setOpened(false))}>
                 <Button variant="subtle"
-                        size="md"
+                        size="compact-md"
+                        fullWidth
                         radius="xs"
                         display={"flex"}
                         leftSection={<IconHomePlus size={21}/>} //fullWidth
+                        component={Link}
+                        to="/"
                         onClick={() => (setOpened(false))}
                     >All Photo Cards</Button>
             </AppShell.Navbar>
-            <AppShell.Main>Main</AppShell.Main>
+            <AppShell.Main>
+                <div onClick={()=>(setOpened(false))}><Outlet/></div>
+            </AppShell.Main>
         </AppShell>
     );
 

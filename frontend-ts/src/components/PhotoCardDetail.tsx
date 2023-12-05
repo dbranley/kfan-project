@@ -4,7 +4,6 @@ import { Avatar,
          Flex, 
          Group, 
          Image, 
-         MediaQuery, 
          Space, 
          Text,  
          Tooltip } from "@mantine/core";
@@ -21,9 +20,10 @@ import { IconHeart,
          IconCalendarEvent,
          IconShirt } from "@tabler/icons-react";
 
-import { getPhotoCard } from "../services/photo-cards";
+import { addPhotoCardFavorite, deletePhotoCard, getPhotoCard, removePhotoCardFavorite, updatePhotoCard } from "../services/photo-cards";
 import { extractMessageFromRestError } from "../utils";
 import InlineTextEdit from "./InlineTextEdit";
+import { useMediaQuery } from "@mantine/hooks";
 
 const PhotoCardDetail: React.FC<{photoCardId: number}> = (props) => {
 
@@ -32,6 +32,8 @@ const PhotoCardDetail: React.FC<{photoCardId: number}> = (props) => {
     const [cardSourceOpened, setCardSourceOpened] = useState(false);
 
     const navigate = useNavigate();
+    //1em = 16px, so 28.125em = 450px
+    const desktop = useMediaQuery('(min-width: 28.125em)');
 
     //doing this will force focus to top of page on 1st render of this detail page
     useEffect(() => {
@@ -54,22 +56,72 @@ const PhotoCardDetail: React.FC<{photoCardId: number}> = (props) => {
         enabled: !!currentUsername
       });
 
-    //put mutations and handlers here...
-    //put mutations and handlers here...
-    //put mutations and handlers here...
-    const deletePhotoCardHandler = async () => {
+    //mutations here...
+    const updatePhotoCardMutation = useMutation({
+        mutationFn: updatePhotoCard,
+        onSuccess: () => {
+          setDeleteError(null);
+          queryClient.invalidateQueries({ queryKey: ["photoCards"]});
+        },
+        onError: (error) => {
+          console.log("PhotoCardDetails - updatePhotoCardMutation() - got an error: ");
+          console.log(error);
+          setDeleteError("Update failed with '"+extractMessageFromRestError(error)+"'");
+        }
+    });
+
+    const deletePhotoCardMutation = useMutation({
+        mutationFn: deletePhotoCard,
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["photoCards"]})
+            navigate('/');
+        },
+        onError: (error) => {
+            console.log("PhotoCardDetails - deletePhotoCardMutation() - got an error: ");
+            console.log(error);
+            setDeleteError("Delete failed with '"+extractMessageFromRestError(error)+"'");
+        }
+  
+    });
+
+    const addPhotoCardFavoriteMutation = useMutation({
+        mutationFn: addPhotoCardFavorite,
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["photoCards"]});
+        },
+        onError: (error) => {
+            console.log("PhotoCardDetail.addPhotoCardFavoriteMutation() - got an error");
+            console.log(error);
+            //TODO - do something here!!
+        }
+    });
+
+    const removePhotoCardFavoriteMutation = useMutation({
+        mutationFn: removePhotoCardFavorite,
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ["photoCards"]});
+        },
+        onError: (error) => {
+            console.log("PhotoCardDetail.removePhotoCardFavoriteMutation() - got an error");
+            console.log(error);
+            //TODO - do something here!!
+        }
+    }); 
+
+    //handlers here...
+    const deletePhotoCardHandler = async (photoCardId: number) => {
         console.log("PhotoCardDetails - deletePhotoCardHandler() - about to call delete mutation");
-        // deletePhotoCardMutation.mutate(photoCardQuery.data.id);
+        deletePhotoCardMutation.mutate(photoCardId);
     };
 
     const updatePhotoCardShareHandler = async(photoCardId: number, share: boolean) => {
         console.log("PhotoCardDetails - updatePhotoCardShareHandler() - share is:");
         console.log(share);
         console.log("PhotoCardDetails - updatePhotoCardShareHandler() - about to call update mutation")
-        // updatePhotoCardMutation.mutate({
-        //   id : photoCardId,
-        //   share : share 
-        // }); //, share);
+        updatePhotoCardMutation.mutate({
+          id : photoCardId,
+          share : share 
+        }); //, share);
     };      
 
     const updatePhotoCardNameHandler = async(newPhotoCardName: string) => {
@@ -77,10 +129,10 @@ const PhotoCardDetail: React.FC<{photoCardId: number}> = (props) => {
         console.log(newPhotoCardName);
         console.log("PhotoCardDetail.updatePhotoCardNameHandler() - about to call update mutation");
         
-        // updatePhotoCardMutation.mutate({
-        //   id : props.photoCardId,
-        //   cardName : newPhotoCardName 
-        // });
+        updatePhotoCardMutation.mutate({
+          id : props.photoCardId,
+          cardName : newPhotoCardName 
+        });
     };    
 
     const updatePhotoCardGroupNameHandler = async(newPhotoCardGroupName: string) => {
@@ -88,10 +140,10 @@ const PhotoCardDetail: React.FC<{photoCardId: number}> = (props) => {
         console.log(newPhotoCardGroupName);
         console.log("PhotoCardDetail.updatePhotoCardGroupNameHandler() - about to call update mutation");
         
-        // updatePhotoCardMutation.mutate({
-        //   id : props.photoCardId,
-        //   groupName : newPhotoCardGroupName 
-        // });
+        updatePhotoCardMutation.mutate({
+          id : props.photoCardId,
+          groupName : newPhotoCardGroupName 
+        });
     };
 
     const updatePhotoCardSourceNameHandler = async(newPhotoCardSourceName: string) => {
@@ -99,22 +151,22 @@ const PhotoCardDetail: React.FC<{photoCardId: number}> = (props) => {
         console.log(newPhotoCardSourceName);
         console.log("PhotoCardDetail.updatePhotoCardSourceNameHandler() - about to call update mutation");
         
-        // updatePhotoCardMutation.mutate({
-        //   id : props.photoCardId,
-        //   sourceName : newPhotoCardSourceName 
-        // });
+        updatePhotoCardMutation.mutate({
+          id : props.photoCardId,
+          sourceName : newPhotoCardSourceName 
+        });
     };
 
     const addFavoritePhotoCardHandler = async(photoCardId: number) => {
         console.log("PhotoCardDetail.addFavoritePhotoCardHandler() - at top")
         console.log(photoCardId);
-        // addPhotoCardFavoriteMutation.mutate(photoCardId);
+        addPhotoCardFavoriteMutation.mutate(photoCardId);
     };
     
     const removeFavoritePhotoCardHandler = async(photoCardId: number) => {
         console.log("PhotoCardDetail.removeFavoritePhotoCardHandler() - at top")
         console.log(photoCardId);
-        // removePhotoCardFavoriteMutation.mutate(photoCardId);
+        removePhotoCardFavoriteMutation.mutate(photoCardId);
     };    
 
     if (photoCardQuery.status === "pending") {
@@ -201,7 +253,7 @@ const PhotoCardDetail: React.FC<{photoCardId: number}> = (props) => {
     return (
 
         <Container px={0}>
-            <MediaQuery smallerThan={430} styles={{ display: "none"}}>
+            {desktop && 
                 <>
                     <Group>
                         <IconArrowBigLeft size="2rem" 
@@ -212,10 +264,6 @@ const PhotoCardDetail: React.FC<{photoCardId: number}> = (props) => {
                         {cardNameContentLarge}
                     </Group>          
                     <Carousel draggable={false} withControls={false} slideGap="xs" slideSize="50%" withIndicators={false} align="start" mt="xs">
-                        {/* styles={{ control: {
-                                    '&[data-inactive]': {opacity : 0, cursor: 'default',}
-                                        }
-                            }}> */}
                         <Carousel.Slide>
                             <Image
                                 src={`/api/photo-cards-${
@@ -323,13 +371,13 @@ const PhotoCardDetail: React.FC<{photoCardId: number}> = (props) => {
                                 ))    
                             }
                             {currentUsername === photoCardQuery.data.owner_name && 
-                                <IconTrash onClick={deletePhotoCardHandler} size="2rem" color={'#fd7e14'}/>
+                                <IconTrash onClick={() => deletePhotoCardHandler(photoCardQuery.data.id)} size="2rem" color={'#fd7e14'}/>
                             }              
                         </Group>
                     </Container>   
                 </>     
-            </MediaQuery>
-            <MediaQuery largerThan={430} styles={{ display: "none"}}>
+            }
+            {!desktop && 
                 <>
                     <Group>
                         <IconArrowBigLeft size="2rem" 
@@ -338,12 +386,7 @@ const PhotoCardDetail: React.FC<{photoCardId: number}> = (props) => {
                                           onClick={() => navigate(-1)}/>
                         {cardNameContentSmall}
                     </Group>          
-                    <Carousel withIndicators dragFree mt="xs" controlSize={30} slideGap="xs" 
-                        // styles={{ control: {
-                        //     '&[data-inactive]': {opacity : 0, cursor: 'default',}
-                        //         }
-                        //     }}
-                    >
+                    <Carousel withIndicators mt="xs" controlSize={30} slideGap="xs">
                         <Carousel.Slide>
                             <Image
                                 src={`/api/photo-cards-${
@@ -468,12 +511,12 @@ const PhotoCardDetail: React.FC<{photoCardId: number}> = (props) => {
                                 ))    
                             }
                             {currentUsername === photoCardQuery.data.owner_name && 
-                                <IconTrash onClick={deletePhotoCardHandler} size="2rem" color={'#fd7e14'}/>
+                                <IconTrash onClick={() => deletePhotoCardHandler(photoCardQuery.data.id)} size="2rem" color={'#fd7e14'}/>
                             }              
                         </Group>
                     </Container>
                 </>
-            </MediaQuery>      
+            }
         </Container>        
     );
 

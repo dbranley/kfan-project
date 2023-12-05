@@ -43,20 +43,20 @@ export default function AuthButton() {
         }
     });
 
-    useEffect(() =>{
-        console.log("AuthButton() - useEffect() - at top");
-        if (currentUserQuery.status === "success" && currentUserQuery.data !== null && currentUserQuery.data.id === 0){
-            console.log("AuthButton() - useEffect() - no one logged in now...");
-            console.log(currentUserQuery.data);
-            console.log("AuthButton - useEffect() - location.pathname is:");
-            console.log(location.pathname);            
-            if (location.pathname !== "/"){
-                console.log("AuthButton - useEffect() - about to call navigate()");
-                navigate("/");
-            }
-        }
+    // useEffect(() =>{
+    //     console.log("AuthButton() - useEffect() - at top");
+    //     if (currentUserQuery.status === "success" && currentUserQuery.data !== null && currentUserQuery.data.id === 0){
+    //         console.log("AuthButton() - useEffect() - no one logged in now...");
+    //         console.log(currentUserQuery.data);
+    //         console.log("AuthButton - useEffect() - location.pathname is:");
+    //         console.log(location.pathname);            
+    //         if (location.pathname !== "/"){
+    //             console.log("AuthButton - useEffect() - about to call navigate()");
+    //             navigate("/");
+    //         }
+    //     }
 
-    });
+    // }, [currentUserQuery.status, currentUserQuery.data, location.pathname, navigate]);
     // }, [currentUserQuery.data]);
 
     let content = <></>

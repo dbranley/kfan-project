@@ -1,5 +1,6 @@
 import axios from "axios";
 
+//PhotoCard data returned by API
 type PhotoCard = {
     group_name: string,
     card_name: string,
@@ -12,6 +13,14 @@ type PhotoCard = {
     owner_name: string,
     favorite_cnt: number,
     favorite_id: number 
+}
+
+type PhotoCardUpdate = {
+    id: number,
+    groupName?: string,
+    cardName?: string,
+    share?: boolean,
+    sourceName?: string,
 }
 
 // export type PhotoCard = {
@@ -59,6 +68,108 @@ export async function getPhotoCard(id: number){
         //should I rethrow this???
         console.log(error);
         throw error;
-    }   
+    }       
 
+}
+
+export async function updatePhotoCard(photoCardData: PhotoCardUpdate){
+
+    console.log("updatePhotoCard() - photoCardData is:");
+    console.log(photoCardData);
+
+    let endpoint = '/api/photo-cards/'+photoCardData.id;
+
+    if (photoCardData.groupName !== undefined && photoCardData.groupName !== null){
+        endpoint = endpoint + '?group_name='+photoCardData.groupName;
+    }
+
+    if (photoCardData.cardName !== undefined && photoCardData.cardName !== null){
+        endpoint = endpoint + '?card_name='+photoCardData.cardName;
+    }
+
+    if (photoCardData.share !== undefined && photoCardData.share !== null){
+        endpoint = endpoint + '?share='+photoCardData.share;
+    }
+
+    if (photoCardData.sourceName !== undefined && photoCardData.sourceName !== null){
+        endpoint = endpoint + '?source_name='+photoCardData.sourceName;
+    }
+
+    try{
+        const response = await axios.put(
+            endpoint
+        );
+
+        const status = response.status;
+        console.log("updatePhotoCard() - at end - response.status is: ");
+        console.log(status);
+        return response;
+    } catch(error){
+        console.log("updatePhotoCard() - got exception");
+        console.log(error);
+        throw error;
+    }
+}
+
+export async function deletePhotoCard(photoCardId: number){
+
+    console.log("deletePhotoCard() - photoCardData="+photoCardId+"=");
+    console.log(photoCardId);
+
+    try{
+        const response = await axios.delete(
+            '/api/photo-cards/'+photoCardId,
+        );
+
+        const status = response.status;
+        console.log("deletePhotoCard() - at end - response.status is: ");
+        console.log(status);
+        return response;
+    } catch(error){
+        console.log("deletePhotoCard() - got exception");
+        console.log(error);
+        throw error;
+    }
+}
+
+export async function addPhotoCardFavorite(photoCardId: number){
+
+    console.log("addPhotoCardFavorite() - photoCardData="+photoCardId+"=");
+    console.log(photoCardId);
+
+    try{
+        const response = await axios.post(
+            '/api/favorites?photo_card_id='+photoCardId,
+        );
+
+        const status = response.status;
+        console.log("addPhotoCardFavorite() - at end - response.status is: ");
+        console.log(status);
+        return response;
+    } catch(error){
+        console.log("addPhotoCardFavorite() - got exception");
+        console.log(error);
+        throw error;
+    }
+}
+
+export async function removePhotoCardFavorite(photoCardId: number){
+
+    console.log("removePhotoCardFavorite() - photoCardData="+photoCardId+"=");
+    console.log(photoCardId);
+
+    try{
+        const response = await axios.delete(
+            '/api/favorites?photo_card_id='+photoCardId,
+        );
+
+        const status = response.status;
+        console.log("removePhotoCardFavorite() - at end - response.status is: ");
+        console.log(status);
+        return response;
+    } catch(error){
+        console.log("removePhotoCardFavorite() - got exception");
+        console.log(error);
+        throw error;
+    }
 }
