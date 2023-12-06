@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
-import { Avatar, Button, Card, Grid, Group, Image, MediaQuery, Space, Stack, Text, Tooltip } from "@mantine/core";
+import {  Button, Grid, Group, MediaQuery, Space, Text } from "@mantine/core";
 // import { Heart } from 'tabler-icons-react';
 import { IconHeart, IconCircleX, IconLock, IconLockOpen, IconStar, IconDisc, IconCalendarEvent, IconShirt } from "@tabler/icons-react";
 import PropTypes from "prop-types";

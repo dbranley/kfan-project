@@ -8,13 +8,14 @@ import {
 
 import AppSiteShell from './AppSiteShell';
 import PhotoCardDetailPage from './pages/PhotoCardDetailPage';
+import PhotoCardsGridPage from './pages/PhotoCardsGridPage';
 
 const router = createHashRouter([
   {
     path: "/",
     element: <AppSiteShell />,
     children: [
-      {index: true, element: <div>Main</div>}, 
+      {index: true, element: <PhotoCardsGridPage myCards={false}  myFavorites={false} myFollowees={false}/>}, 
       {path: "card/:photoCardId", element: <PhotoCardDetailPage/>},
     ],
   }

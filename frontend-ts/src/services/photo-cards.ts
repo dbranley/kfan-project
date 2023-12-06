@@ -1,7 +1,7 @@
 import axios from "axios";
 
 //PhotoCard data returned by API
-type PhotoCard = {
+export type PhotoCard = {
     group_name: string,
     card_name: string,
     share: boolean,
@@ -15,7 +15,7 @@ type PhotoCard = {
     favorite_id: number 
 }
 
-type PhotoCardUpdate = {
+export type PhotoCardUpdate = {
     id: number,
     groupName?: string,
     cardName?: string,
@@ -23,19 +23,31 @@ type PhotoCardUpdate = {
     sourceName?: string,
 }
 
-// export type PhotoCard = {
-//     groupName: string,
-//     cardName: string,
-//     share: boolean,
-//     sourceType: string,
-//     sourceName: string,    
-//     id: number,
-//     frontFileName: string,
-//     backFileName: string,
-//     ownerName: string,
-//     favoriteCnt: number,
-//     favoriteId: number 
-// }
+export async function getPhotoCards(myCards: boolean, 
+                                    myFavorites: boolean, 
+                                    myFollowees: boolean, 
+                                    ownerUsername?: string){
+
+    console.log("getPhotoCards(myCards, myFavorites, myFollowees, ownerUsername)");
+    console.log(myFavorites)
+
+    let endpoint = '/api/photo-cards?my_cards='+myCards+'&my_favorites='+myFavorites+'&my_followees='+myFollowees
+    if (ownerUsername != null && ownerUsername.length > 0){
+        endpoint = endpoint+'&owner_username='+ownerUsername;
+    }
+
+    try{
+        const response = await axios.get<PhotoCard[]>(endpoint);
+        console.log("getPhotoCards() - response is: ");
+        console.log(response);
+        return response.data;
+    } catch(error){
+        //should I rethrow this???
+        console.log(error);
+        throw error;
+    }   
+
+}
 
 export async function getPhotoCard(id: number){
 
