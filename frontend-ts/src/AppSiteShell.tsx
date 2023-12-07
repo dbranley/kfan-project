@@ -2,10 +2,13 @@ import React, { useState } from "react";
 
 import { AppShell, Burger, Button, Flex, Group, Image, Text, useComputedColorScheme, useMantineTheme } from '@mantine/core';
 import LightAndDarkModeButton from "./components/LightAndDarkModeButton";
-import { IconHomePlus } from "@tabler/icons-react";
+import { IconBookUpload, IconHome, IconHomePlus } from "@tabler/icons-react";
 import { Link, Outlet } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
 
 import AuthButton from "./components/AuthButton";
+import { SESSION_EXPIRATION_TIME, defaultUser, getCurrentUser } from "./services/auth";
+
 
 export default function AppSiteShell() {
 
@@ -14,7 +17,12 @@ export default function AppSiteShell() {
     const [opened, setOpened] = useState(false);
     //const [opened, { toggle }] = useDisclosure();
 
-    
+    const currentUserQuery = useQuery({
+        queryKey: ["currentUser"],
+        queryFn: getCurrentUser,
+        staleTime: SESSION_EXPIRATION_TIME,
+        initialData: defaultUser,
+    });    
 
     return (
         <AppShell
@@ -63,11 +71,61 @@ export default function AppSiteShell() {
                         fullWidth
                         radius="xs"
                         display={"flex"}
-                        leftSection={<IconHomePlus size={21}/>} //fullWidth
+                        leftSection={<IconHome size={21}/>} //fullWidth
                         component={Link}
                         to="/"
                         onClick={() => (setOpened(false))}
                     >All Photo Cards</Button>
+
+                {currentUserQuery.data.id !== 0 &&                      
+                 <Button component={Link} 
+                         to="/my-cards" 
+                         variant="subtle" 
+                         size="compact-md" 
+                         leftSection={<IconHomePlus size="1.3rem"/>} 
+                         fullWidth 
+                         display={"inline-flex"} 
+                         radius={0}
+                         onClick={()=>{setOpened(false)}}
+                 >My Photo Cards</Button>}    
+
+                {currentUserQuery.data.id !== 0 &&                      
+                 <Button component={Link} 
+                         to="/my-favorites" 
+                         variant="subtle" 
+                         size="compact-md"
+                         leftSection={<IconHomePlus size="1.3rem"/>} 
+                         fullWidth 
+                         display={"inline-flex"}  
+                         radius={0}
+                         onClick={()=>{setOpened(false)}}
+                 >Favorites</Button>}  
+
+                {currentUserQuery.data.id !== 0 &&                      
+                 <Button component={Link} 
+                         to="/my-followees" 
+                         variant="subtle" 
+                         size="compact-md"
+                         leftSection={<IconHomePlus size="1.3rem"/>} 
+                         fullWidth 
+                         display={"inline-flex"} 
+                         radius={0}
+                         onClick={()=>{setOpened(false)}}
+                 >Following</Button>} 
+
+                {currentUserQuery.data.id !== 0 &&
+                 currentUserQuery.data.upload &&    
+                 <Button component={Link} 
+                         to="/upload" 
+                         variant="subtle" 
+                         size="compact-md"
+                         leftSection={<IconBookUpload size="1.3rem"/>} 
+                         fullWidth 
+                         display={"inline-flex"} 
+                         radius={0}
+                         onClick={()=>{setOpened(false)}}
+                 >Upload Photo Card</Button>}   
+
             </AppShell.Navbar>
             <AppShell.Main>
                 <div onClick={()=>(setOpened(false))}><Outlet/></div>

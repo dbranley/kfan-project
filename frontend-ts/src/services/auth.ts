@@ -9,6 +9,20 @@ export type User = {
     upload: boolean
 }
 
+export const defaultUser: User = {
+    username: "unknown",
+    id: 0,
+    email: "unknown",
+    upload: false,
+}
+
+export type UserStats = {
+    username: string,
+    public_card_count: number,
+    follower_count: number,
+    followee_count: number
+}
+
 // loginUserData object is:
 //   username
 //   password
@@ -115,6 +129,26 @@ export async function getCurrentUser(){
             '/api/session'
         );
         console.log("auth.getCurrentUser() - response is: ");
+        console.log(response);
+        return response.data;
+    } catch(error){
+        //should I rethrow this???
+        console.log(error);
+        //do not rethrow in this case, just return empty response
+        throw error;
+    }   
+
+}
+
+export async function getUserByUsername(username: string){
+
+    console.log("auth.getUserByUsername()");
+    
+    try{
+        const response = await axios.get<UserStats>(
+            '/api/user?username='+username
+        );
+        console.log("auth.getUserByUsername() - response is: ");
         console.log(response);
         return response.data;
     } catch(error){

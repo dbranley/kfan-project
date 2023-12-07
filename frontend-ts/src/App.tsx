@@ -9,6 +9,7 @@ import {
 import AppSiteShell from './AppSiteShell';
 import PhotoCardDetailPage from './pages/PhotoCardDetailPage';
 import PhotoCardsGridPage from './pages/PhotoCardsGridPage';
+import UploadPhotoCardPage from './pages/UploadPhotoCardPage';
 
 const router = createHashRouter([
   {
@@ -16,7 +17,11 @@ const router = createHashRouter([
     element: <AppSiteShell />,
     children: [
       {index: true, element: <PhotoCardsGridPage myCards={false}  myFavorites={false} myFollowees={false}/>}, 
+      {path: "my-cards", element: <PhotoCardsGridPage myCards={true} myFavorites={false} myFollowees={false}/>},
+      {path: "my-favorites", element: <PhotoCardsGridPage myCards={false} myFavorites={true} myFollowees={false}/>},
+      {path: "my-followees", element: <PhotoCardsGridPage myCards={false} myFavorites={false} myFollowees={true}/>},
       {path: "card/:photoCardId", element: <PhotoCardDetailPage/>},
+      {path: "upload", element: <UploadPhotoCardPage/>},
     ],
   }
 ]);
