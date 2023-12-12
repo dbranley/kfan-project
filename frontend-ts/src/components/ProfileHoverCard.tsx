@@ -24,23 +24,22 @@ const ProfileHoverCard: React.FC<{username: string
         queryKey: ["currentUser"],
         queryFn: getCurrentUser,
         staleTime: SESSION_EXPIRATION_TIME,
-        initialData: defaultUser,
     });
 
-    const currentUsername = currentUserQuery.data.username;
+    const currentUsername = currentUserQuery.data?.username;
 
     const profileUserQuery = useQuery({
         queryKey: ["profileUser", props.username],
         queryFn: () => getUserByUsername(props.username),
-        enabled: currentUserQuery.status === "success"
-        // enabled: !!currentUsername
+        // enabled: currentUserQuery.status === "success"
+        enabled: !!currentUsername
     });
     
     const followeeQuery = useQuery({
         queryKey: ["followeeQuery", props.username, currentUsername],
-        queryFn: () => getFollowee(currentUsername, props.username),
-        enabled: currentUserQuery.status === "success"
-        // enabled: !!currentUsername
+        queryFn: () => getFollowee(props.username, currentUsername),
+        // enabled: currentUserQuery.status === "success"
+        enabled: !!currentUsername
     });    
 
     const addFolloweeMutation = useMutation({

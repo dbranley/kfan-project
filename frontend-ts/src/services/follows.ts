@@ -6,12 +6,12 @@ export type FollowingStats = {
     id: number,
 }
 
-export async function getFollowee(followerUsername: string, followeeUsername: string){
+export async function getFollowee(followeeUsername?: string, followerUsername?: string){
 
     console.log("follows.getFollowee()");
     
-    //if followerUsername is 'unknown' it means no one is logged in, so just return emptry array
-    if (followerUsername === "unknown"){
+    //if followerUsername is 'undefined' or 'unknown' it means no one is logged in, so just return emptry array
+    if (followerUsername === undefined || followerUsername === "unknown"){
         return [];
     }
 
