@@ -37,6 +37,7 @@ const FollowItem: React.FC<{followUsername: string}>  = (props) => {
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["followeeQuery", props.followUsername, currentUsername]});
             queryClient.invalidateQueries({ queryKey: ["photoCards", false, false, true, null]});
+            queryClient.invalidateQueries({ queryKey: ["profileUser", currentUsername]});
         },
         onError: (error) => {
             console.log("FollowItem.addFolloweeMutation() - got an error");
@@ -50,6 +51,7 @@ const FollowItem: React.FC<{followUsername: string}>  = (props) => {
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["followeeQuery", props.followUsername, currentUsername]});
             queryClient.invalidateQueries({ queryKey: ["photoCards", false, false, true, null]});
+            queryClient.invalidateQueries({ queryKey: ["profileUser", currentUsername]});
         },
         onError: (error) => {
             console.log("FollowItem.removeFolloweeMutation() - got an error");

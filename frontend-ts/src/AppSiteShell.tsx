@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 
-import { AppShell, Burger, Button, Flex, Group, Image, Text, useComputedColorScheme, useMantineTheme } from '@mantine/core';
+import { AppShell, Burger, Button, Container, Flex, Group, Image, Text, useComputedColorScheme, useMantineTheme } from '@mantine/core';
 import LightAndDarkModeButton from "./components/LightAndDarkModeButton";
 import { IconBookUpload, IconHome, IconHomePlus } from "@tabler/icons-react";
-import { Link, Outlet } from "react-router-dom";
+import { Link, Outlet, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 
 import AuthButton from "./components/AuthButton";
@@ -15,6 +15,7 @@ export default function AppSiteShell() {
     const theme = useMantineTheme();
     const computedColorScheme = useComputedColorScheme('light');
     const [opened, setOpened] = useState(false);
+    const navigate = useNavigate();
     //const [opened, { toggle }] = useDisclosure();
 
     const currentUserQuery = useQuery({
@@ -48,10 +49,15 @@ export default function AppSiteShell() {
                                 hiddenFrom="sm" 
                                 size="sm"
                                 color={theme.colors.gray[6]}/>
-                        <Image width={122} height={31}
+                        <Image w={122} h={31}
                             src="/public/logo-darkorange.svg"
-                            onClick={()=>(setOpened(false))}
-                            />
+                            style={{ cursor: "pointer" }}
+                            // component={Link}
+                            // to="/"
+                            onClick={()=>{
+                                setOpened(false);
+                                navigate("/");
+                            }}/>
                         <Text visibleFrom="xs"
                             size="xl"
                             onClick={() => (setOpened(false))}>Your K-POP Collection</Text>

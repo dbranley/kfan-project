@@ -106,7 +106,9 @@ export default function AuthButton() {
                 </Menu.Target>
                 <Menu.Dropdown>
                     <Menu.Label>@{currentUserQuery.data.username}</Menu.Label>
-                    <Menu.Item>Profile</Menu.Item>
+                    <Menu.Item  onClick={()=>{
+                      navigate("/profile/"+currentUserQuery.data.username);
+                    }} >Profile</Menu.Item>
                     <Menu.Item onClick={()=>{
                         console.log("AuthButton - clicked Settings menu item");
                         openSettings();

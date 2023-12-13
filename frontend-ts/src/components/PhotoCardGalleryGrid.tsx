@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Grid, Group, Space, Text } from "@mantine/core";
 import { useMediaQuery } from "@mantine/hooks";
@@ -6,14 +6,22 @@ import { useMediaQuery } from "@mantine/hooks";
 import { SESSION_EXPIRATION_TIME, getCurrentUser } from "../services/auth";
 import { getPhotoCards } from "../services/photo-cards";
 import PhotoCard from "./PhotoCard";
+import { useLocation } from "react-router-dom";
 
 
 const PhotoCardGalleryGrid: React.FC<{myCards: boolean, 
                                       myFavorites: boolean,
                                       myFollowees: boolean
                                     }> = (props) => {
-
+                                        
     console.log("PhotoCardGalleryGrid - at top");    
+
+    const location = useLocation();
+
+    //doing this will force focus to top of page when the url changes
+    useEffect(() => {
+        window.scrollTo(0,0);
+    }, [location]);    
 
     //1em = 16px, so 28.125em = 450px
     const desktop = useMediaQuery('(min-width: 28.125em)');
