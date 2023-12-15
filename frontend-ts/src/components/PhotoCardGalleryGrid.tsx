@@ -25,6 +25,8 @@ const PhotoCardGalleryGrid: React.FC<{myCards: boolean,
 
     //1em = 16px, so 28.125em = 450px
     const desktop = useMediaQuery('(min-width: 28.125em)');
+    console.log("PhotoCardGalleryGrid() - desktop boolean is: ");
+    console.log(desktop);
 
     const currentUserQuery = useQuery({
         queryKey: ["currentUser"],
@@ -38,16 +40,20 @@ const PhotoCardGalleryGrid: React.FC<{myCards: boolean,
         queryKey: ["photoCards", props.myCards, props.myFavorites, props.myFollowees],
         queryFn: () => getPhotoCards(props.myCards, props.myFavorites, props.myFollowees),
         // queryFn: () => getPhotoCard(props.photoCardId)
-        enabled: !!currentUsername
+        enabled: !!desktop && !!currentUsername
     });
-
+    
     if (photoCardsQuery.status === "pending"){
         return <div>Loading...</div>
     }
     if (photoCardsQuery.status === "error"){
         return <div>{JSON.stringify(photoCardsQuery.error)}</div>
     }    
+    if (desktop === undefined){
+        return <></>;
+    }
 
+    console.log("PhotoCardGalleryGrid() - just before return - desktop="+desktop+"=");    
     return (
         <>
             {desktop && 

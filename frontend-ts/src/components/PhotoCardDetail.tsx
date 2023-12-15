@@ -34,6 +34,8 @@ const PhotoCardDetail: React.FC<{photoCardId: number}> = (props) => {
     const navigate = useNavigate();
     //1em = 16px, so 28.125em = 450px
     const desktop = useMediaQuery('(min-width: 28.125em)');
+    console.log("PhotoCardDetail() - desktop is: ");
+    console.log(desktop);
 
     //doing this will force focus to top of page on 1st render of this detail page
     useEffect(() => {
@@ -250,6 +252,7 @@ const PhotoCardDetail: React.FC<{photoCardId: number}> = (props) => {
                         maxDisplayLength={20}
                         onChange={updatePhotoCardSourceNameHandler}/>;                        
     }
+    console.log("PhotoCardDetail() - just before return - desktop="+desktop+"=");
     return (
 
         <Container px={0}>

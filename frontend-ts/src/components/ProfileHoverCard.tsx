@@ -5,8 +5,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 
 import { SESSION_EXPIRATION_TIME, 
          getCurrentUser, 
-         getUserByUsername,
-         defaultUser } from "../services/auth";
+         getUserByUsername } from "../services/auth";
 
 import { getFollowee,
          addFollowee,

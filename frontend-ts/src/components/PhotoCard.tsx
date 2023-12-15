@@ -7,8 +7,7 @@ import { Avatar,
          Image, 
          Stack, 
          Text, 
-         Tooltip } from "@mantine/core";
-import { useMediaQuery } from "@mantine/hooks";         
+         Tooltip } from "@mantine/core";     
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import { Link, useLocation } from "react-router-dom";
 import { IconCalendarEvent, 
@@ -35,9 +34,6 @@ const PhotoCard: React.FC<{photoCard: PhotoCardData,
                         }> = (props) => {
 
     const location = useLocation();
-
-    //1em = 16px, so 28.125em = 450px
-    const desktop = useMediaQuery('(min-width: 28.125em)');
 
     const queryClient = useQueryClient();
     const currentUserQuery = useQuery({

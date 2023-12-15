@@ -1,13 +1,13 @@
 import React, { useState } from "react";
 
-import { AppShell, Burger, Button, Container, Flex, Group, Image, Text, useComputedColorScheme, useMantineTheme } from '@mantine/core';
+import { AppShell, Burger, Button, Flex, Group, Image, Text, useComputedColorScheme, useMantineTheme } from '@mantine/core';
 import LightAndDarkModeButton from "./components/LightAndDarkModeButton";
 import { IconBookUpload, IconHome, IconHomePlus } from "@tabler/icons-react";
 import { Link, Outlet, useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 
 import AuthButton from "./components/AuthButton";
-import { SESSION_EXPIRATION_TIME, defaultUser, getCurrentUser } from "./services/auth";
+import { SESSION_EXPIRATION_TIME, getCurrentUser } from "./services/auth";
 
 
 export default function AppSiteShell() {
@@ -22,7 +22,6 @@ export default function AppSiteShell() {
         queryKey: ["currentUser"],
         queryFn: getCurrentUser,
         staleTime: SESSION_EXPIRATION_TIME,
-        initialData: defaultUser,
     });    
 
     return (
@@ -83,7 +82,7 @@ export default function AppSiteShell() {
                         onClick={() => (setOpened(false))}
                     >All Photo Cards</Button>
 
-                {currentUserQuery.data.id !== 0 &&                      
+                {currentUserQuery.data?.id !== 0 &&                      
                  <Button component={Link} 
                          to="/my-cards" 
                          variant="subtle" 
@@ -95,7 +94,7 @@ export default function AppSiteShell() {
                          onClick={()=>{setOpened(false)}}
                  >My Photo Cards</Button>}    
 
-                {currentUserQuery.data.id !== 0 &&                      
+                {currentUserQuery.data?.id !== 0 &&                      
                  <Button component={Link} 
                          to="/my-favorites" 
                          variant="subtle" 
@@ -107,7 +106,7 @@ export default function AppSiteShell() {
                          onClick={()=>{setOpened(false)}}
                  >Favorites</Button>}  
 
-                {currentUserQuery.data.id !== 0 &&                      
+                {currentUserQuery.data?.id !== 0 &&                      
                  <Button component={Link} 
                          to="/my-followees" 
                          variant="subtle" 
@@ -119,8 +118,8 @@ export default function AppSiteShell() {
                          onClick={()=>{setOpened(false)}}
                  >Following</Button>} 
 
-                {currentUserQuery.data.id !== 0 &&
-                 currentUserQuery.data.upload &&    
+                {currentUserQuery.data?.id !== 0 &&
+                 currentUserQuery.data?.upload &&    
                  <Button component={Link} 
                          to="/upload" 
                          variant="subtle" 
