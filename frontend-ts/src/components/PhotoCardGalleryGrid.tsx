@@ -27,6 +27,8 @@ const PhotoCardGalleryGrid: React.FC<{myCards: boolean,
     const desktop = useMediaQuery('(min-width: 28.125em)');
     console.log("PhotoCardGalleryGrid() - desktop boolean is: ");
     console.log(desktop);
+    console.log(!!desktop);
+
 
     const currentUserQuery = useQuery({
         queryKey: ["currentUser"],
@@ -35,12 +37,15 @@ const PhotoCardGalleryGrid: React.FC<{myCards: boolean,
     });
 
     const currentUsername = currentUserQuery.data?.username;
+    console.log("PhotoCardGalleryGrid() - currentUsername is: ");
+    console.log(currentUsername);
+    console.log(!!currentUsername);
 
     const photoCardsQuery = useQuery({
         queryKey: ["photoCards", props.myCards, props.myFavorites, props.myFollowees],
         queryFn: () => getPhotoCards(props.myCards, props.myFavorites, props.myFollowees),
         // queryFn: () => getPhotoCard(props.photoCardId)
-        enabled: !!desktop && !!currentUsername
+        enabled: desktop !== undefined && !!currentUsername
     });
     
     if (photoCardsQuery.status === "pending"){

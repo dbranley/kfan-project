@@ -34,6 +34,7 @@ export default function AuthButton() {
         mutationFn: logout,
         onSuccess: () => {
           queryClient.invalidateQueries({ queryKey: ["currentUser"]});
+          queryClient.invalidateQueries({ queryKey: ["photoCards"]});
         //   queryClient.invalidateQueries(["photoCards"]);
         }, 
         onError: (error) => {
