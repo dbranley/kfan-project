@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Grid, Group, Space, Text } from "@mantine/core";
+import { Center, Grid, Group, Loader, Space, Text, Container } from "@mantine/core";
 import { useMediaQuery } from "@mantine/hooks";
 
 import { SESSION_EXPIRATION_TIME, getCurrentUser } from "../services/auth";
@@ -9,12 +9,13 @@ import PhotoCard from "./PhotoCard";
 import { useLocation } from "react-router-dom";
 
 
+
 const PhotoCardGalleryGrid: React.FC<{myCards: boolean, 
                                       myFavorites: boolean,
                                       myFollowees: boolean
                                     }> = (props) => {
                                         
-    console.log("PhotoCardGalleryGrid - at top");    
+    console.log("PhotoCardGalleryGrid - at top - props.myCards="+props.myCards+"=, props.myFavorites="+props.myFavorites+"=, props.myFollowees="+props.myFollowees+"=");    
 
     const location = useLocation();
 
@@ -49,7 +50,8 @@ const PhotoCardGalleryGrid: React.FC<{myCards: boolean,
     });
     
     if (photoCardsQuery.status === "pending"){
-        return <div>Loading...</div>
+        return <Center><Loader mt="xl"/></Center>
+        //return <Center><Loader /></Center>; //<div>Loading...</div>
     }
     if (photoCardsQuery.status === "error"){
         return <div>{JSON.stringify(photoCardsQuery.error)}</div>
@@ -58,12 +60,20 @@ const PhotoCardGalleryGrid: React.FC<{myCards: boolean,
         return <></>;
     }
 
+    console.log("PhotoCardGalleryGrid() - photoCardsQuery is:");
+    console.log(photoCardsQuery);
+    console.log("PhotoCardGalleryGrid() - photoCardsQuery.data is:");
+    console.log(photoCardsQuery.data);
+    console.log("PhotoCardGalleryGrid() - typeof data is:");
+    console.log(typeof photoCardsQuery.data);
+    console.log("PhotoCardGalleryGrid() - data[0] is:");
+    console.log(photoCardsQuery.data[0]);    
     console.log("PhotoCardGalleryGrid() - just before return - desktop="+desktop+"=");    
     return (
         <>
             {desktop && 
                 <>
-                    <Group align="left">
+                    <Group align="left" data-testid="photo-card-grid-at-top">
                         {props.myCards === false && props.myFavorites === false && props.myFollowees === false && <Text size="lg" c="orange.9">All Photo Cards</Text>}
                         {props.myCards === true && props.myFavorites === false && props.myFollowees === false && <Text size="lg" c="orange.9">My Photo Cards</Text>}
                         {props.myCards === false && props.myFavorites === true && props.myFollowees === false && <Text size="lg" c="orange.9">Favorites</Text>}
@@ -88,7 +98,7 @@ const PhotoCardGalleryGrid: React.FC<{myCards: boolean,
             }
             {!desktop && 
                 <>
-                    <Group align="left">
+                    <Group align="left" data-testid="photo-card-grid-at-top">
                         {props.myCards === false && props.myFavorites === false && props.myFollowees === false &&<Text size="lg" c="orange.9">All Photo Cards</Text>}
                         {props.myCards === true && props.myFavorites === false && props.myFollowees === false &&<Text size="lg" c="orange.9">My Photo Cards</Text>}
                         {props.myCards === false && props.myFavorites === true && props.myFollowees === false &&<Text size="lg" c="orange.9">Favorites</Text>}

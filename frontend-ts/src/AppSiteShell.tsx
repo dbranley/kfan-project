@@ -40,7 +40,7 @@ export default function AppSiteShell() {
                     }}
             padding="md"
         >
-            <AppShell.Header p="sm">
+            <AppShell.Header p="sm" data-testid="default-header-id">
                 <Group justify="space-between">
                     <Group>
                         <Burger opened={opened} 

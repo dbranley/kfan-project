@@ -108,7 +108,7 @@ const Profile: React.FC<{username: string}> = (props) => {
     });
 
     if (profileUserQuery.status === "pending"){
-        return <div>Loading...</div>
+        return <Center><Loader mt="xl"/></Center>
     }
 
     if (profileUserQuery.status === "error"){
