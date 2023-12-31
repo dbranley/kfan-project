@@ -17,23 +17,6 @@ const queryProvider = ({ children }) => (
     <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
 );
 
-const mockPhotoCardQueryResult = {
-    data : [
-        {   
-            back_file_name: "f89d4997742f4f9cb8dfc94feaff6b4b_back.png",
-            card_name: "Rock Again",
-            favorite_cnt: 0,
-            favorite_id: null,
-            front_file_name: "f89d4997742f4f9cb8dfc94feaff6b4b_front.png",
-            group_name: "More Rock",
-            id: 59,
-            owner_name: "gerard",
-            share: true,
-            source_name: "t-shirt",
-            source_type: "merch"
-        }    
-    ]
-};
 
 vi.mock('../services/auth.ts', async () => {
     return {
@@ -113,10 +96,10 @@ describe("App.tsx", () => {
         expect(headerByTestId).toHaveLength(1);
         //screen.debug();
         // const photoCardGridByTestId = await screen.findAllByTestId("photo-card-grid-left-public-id");
-        const photoCardGridByTestId = await screen.findAllByTestId("photo-card-grid-at-top");
-        expect(photoCardGridByTestId).toHaveLength(1);
-        // const photoCardGridLabel = await screen.findByText("All Photo Cards");
-        // expect(photoCardGridLabel).toHaveLength(1);
-        //screen.debug();
+        const photoCardGridTopByTestId = await screen.findAllByTestId("photo-card-grid-at-top");
+        expect(photoCardGridTopByTestId).toHaveLength(1);
+        const photoCardGridPublicByTestId = await screen.findAllByTestId("photo-card-grid-center-public-id");
+        expect(photoCardGridPublicByTestId).toHaveLength(1);
+        // screen.debug(undefined, 300000);
     });
 })
