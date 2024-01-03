@@ -127,16 +127,20 @@ const UploadForm = () => {
                             withAsterisk
                             disabled={visible}
                             label="Front File"
-                            placeholder="Pick front of photo card"
+                            // placeholder="Pick front of photo card"
+                            // bug: https://github.com/mantinedev/mantine/issues/5401
                             leftSection={<IconUpload size="60%" />}
+                            {...{placeholder:"Pick front of photo card"}}
                             {...form.getInputProps('frontfile')}
                         />
                         <FileInput
                             withAsterisk
                             disabled={visible}
                             label="Back File"
-                            placeholder="Pick back of photo card"
+                            // placeholder="Pick back of photo card"
+                            // bug: https://github.com/mantinedev/mantine/issues/5401
                             leftSection={<IconUpload size="60%"/>}
+                            {...{placeholder:"Pick back of photo card"}}
                             {...form.getInputProps('backfile')}
                         />
                         <TextInput 

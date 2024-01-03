@@ -48,8 +48,6 @@ export async function getPhotoCards(myCards: boolean,
 
     try{
         const response = await axios.get<PhotoCard[]>(endpoint);
-        console.log("getPhotoCards() - response is: ");
-        console.log(response);
         return response.data;
     } catch(error){
         //should I rethrow this???
@@ -67,8 +65,6 @@ export async function getPhotoCard(id: number){
         const response = await axios.get<PhotoCard>(
             '/api/photo-cards/'+id
         );
-        console.log("getPhotoCard(id) - response is: ");
-        console.log(response);
         
         return response.data;
 
@@ -96,9 +92,6 @@ export async function getPhotoCard(id: number){
 
 export async function addPhotoCard(photoCardData: PhotoCardCreate){
 
-    console.log("addPhotoCard() - photoCardData is: ");
-    console.log(photoCardData);
-
     //TODO add validation of photoCardData object
 
     try{
@@ -124,8 +117,6 @@ export async function addPhotoCard(photoCardData: PhotoCardCreate){
         }
 
         const data = response.data;
-        console.log("addPhotoCard() - at end - response.data is: ");
-        console.log(data);
         return data;
     } catch(error){
         console.log("addPhotoCard() - got exception");
@@ -136,8 +127,7 @@ export async function addPhotoCard(photoCardData: PhotoCardCreate){
 
 export async function updatePhotoCard(photoCardData: PhotoCardUpdate){
 
-    console.log("updatePhotoCard() - photoCardData is:");
-    console.log(photoCardData);
+    console.log("updatePhotoCard()");
 
     let endpoint = '/api/photo-cards/'+photoCardData.id;
 

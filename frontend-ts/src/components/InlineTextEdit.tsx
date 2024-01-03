@@ -25,16 +25,16 @@ const  InlineTextEdit: React.FC<{
     const [editing, setEditing] = useState(false);
 
     let cancelIconColorProp = "#d9480f";
-    if ('cancelIconColor' in props){
+    if ('cancelIconColor' in props && props.cancelIconColor !== undefined){
         cancelIconColorProp = props.cancelIconColor;    
     }
     let okIconColorProp = "#5c940d";
-    if ('okIconColor' in props){
+    if ('okIconColor' in props && props.okIconColor !== undefined){
         okIconColorProp = props.okIconColor;    
     }
 
     let displayText = props.text;
-    if ('maxDisplayLength' in props){
+    if ('maxDisplayLength' in props && props.maxDisplayLength !== undefined){
         if (props.text.length > props.maxDisplayLength){
             displayText = props.text.substring(0,props.maxDisplayLength) + "...";
         }

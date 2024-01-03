@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Center, Grid, Group, Loader, Space, Text, Container } from "@mantine/core";
+import { Center, Grid, Group, Loader, Space, Text } from "@mantine/core";
 import { useMediaQuery } from "@mantine/hooks";
 
 import { SESSION_EXPIRATION_TIME, getCurrentUser } from "../services/auth";
@@ -60,14 +60,6 @@ const PhotoCardGalleryGrid: React.FC<{myCards: boolean,
         return <></>;
     }
 
-    console.log("PhotoCardGalleryGrid() - photoCardsQuery is:");
-    console.log(photoCardsQuery);
-    console.log("PhotoCardGalleryGrid() - photoCardsQuery.data is:");
-    console.log(photoCardsQuery.data);
-    console.log("PhotoCardGalleryGrid() - typeof data is:");
-    console.log(typeof photoCardsQuery.data);
-    console.log("PhotoCardGalleryGrid() - data[0] is:");
-    console.log(photoCardsQuery.data[0]);    
     console.log("PhotoCardGalleryGrid() - just before return - desktop="+desktop+"=");    
     return (
         <>

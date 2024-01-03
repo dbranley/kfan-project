@@ -178,9 +178,6 @@ const PhotoCardDetail: React.FC<{photoCardId: number}> = (props) => {
         return <div>{JSON.stringify(photoCardQuery.error)}</div>;
     }    
 
-    console.log("PhotoCardDetail - photoCardQuery.data is: ");
-    console.log(photoCardQuery.data);    
-
     let deleteErrorContent = <></>;
     if (deleteError !== null){
       deleteErrorContent = <div><Text size="md" c="red" ta="left">{deleteError}</Text></div>;

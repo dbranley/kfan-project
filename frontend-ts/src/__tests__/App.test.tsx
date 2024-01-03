@@ -1,9 +1,13 @@
-import React from "react";
+import { ReactNode } from "react";
 import { it, describe, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 
 import App from "../App.jsx";
+
+interface Props {
+    children?: ReactNode
+}
 
 const queryClient = new QueryClient({
     defaultOptions: {
@@ -13,7 +17,7 @@ const queryClient = new QueryClient({
     }
 });
 
-const queryProvider = ({ children }) => (
+const queryProvider = ({ children }: Props) => (
     <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
 );
 

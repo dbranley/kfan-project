@@ -6,7 +6,7 @@ import { Avatar,
          Loader, 
          Text, } from "@mantine/core";
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
-import { Link, useLocation } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 import { SESSION_EXPIRATION_TIME, getCurrentUser } from "../services/auth";
 

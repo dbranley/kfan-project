@@ -5,7 +5,7 @@ import { useDisclosure, useMediaQuery } from "@mantine/hooks";
 
 import {  IconArrowBigLeft } from "@tabler/icons-react";
 
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 import { SESSION_EXPIRATION_TIME, 
          getCurrentUser, 
@@ -34,7 +34,6 @@ const Profile: React.FC<{username: string}> = (props) => {
     console.log("Profile - at top - props is:");
     console.log(props);
 
-    const location = useLocation();
     const navigate = useNavigate();
     const queryClient = useQueryClient();    
 
@@ -74,7 +73,7 @@ const Profile: React.FC<{username: string}> = (props) => {
     const followeeQuery = useQuery({
         queryKey: ["followeeQuery", props.username, currentUsername],
         queryFn: () => getFollowee(currentUsername, props.username),
-        enabled: !!currentUsername
+        enabled: currentUsername !== undefined && currentUsername !== "unknown" //!!currentUsername
     });
 
     const addFolloweeMutation = useMutation({
@@ -155,8 +154,8 @@ const Profile: React.FC<{username: string}> = (props) => {
             photoCardsContent = 
             <Grid justify="center" >
                 {photoCardsQuery.data.map((photoCard, index) => (
-                    <Grid.Col key={index} span="content" style={{width: 300}} align="left">
-                        <PhotoCard photoCard={photoCard} index={index} myCard={currentUsername === props.username} cardHeight="400"/>
+                    <Grid.Col key={index} span="content" style={{width: 300}} >
+                        <PhotoCard photoCard={photoCard} index={index} myCard={currentUsername === props.username} cardHeight={400}/>
                     </Grid.Col>
                 ))}
             </Grid>
@@ -164,8 +163,8 @@ const Profile: React.FC<{username: string}> = (props) => {
             photoCardsContent = 
             <Grid justify="left" >
                 {photoCardsQuery.data.map((photoCard, index) => (
-                    <Grid.Col key={index} span="content" style={{width: 200}} align="left">
-                        <PhotoCard photoCard={photoCard} index={index} myCard={currentUsername === props.username} cardHeight="260"/>
+                    <Grid.Col key={index} span="content" style={{width: 200}} >
+                        <PhotoCard photoCard={photoCard} index={index} myCard={currentUsername === props.username} cardHeight={260}/>
                     </Grid.Col>
                 ))}
             </Grid>

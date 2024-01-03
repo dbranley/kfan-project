@@ -97,7 +97,7 @@ const ProfileHoverCard: React.FC<{username: string
     if (profileUserQuery.status === "success" && 
         currentUserQuery.data?.id !== 0){
         
-        if (currentUserQuery.data.username != profileUserQuery.data.username){
+        if (currentUserQuery.data?.username != profileUserQuery.data.username){
             if (followeeQuery?.data?.length === 0){
                 followButtonContent = <Button fullWidth onClick={addFolloweedHandler} mt="xs" size="compact-md">Follow</Button>
             } else {

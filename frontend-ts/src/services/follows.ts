@@ -8,10 +8,15 @@ export type FollowingStats = {
 
 export async function getFollowee(followeeUsername?: string, followerUsername?: string){
 
-    console.log("follows.getFollowee()");
+    console.log("follows.getFollowee() - followeeUsername="+followeeUsername+"=, followerUsername="+followerUsername+"=");
     
     //if followerUsername is 'undefined' or 'unknown' it means no one is logged in, so just return emptry array
     if (followerUsername === undefined || followerUsername === "unknown"){
+        return [];
+    }
+
+    //if followeeUsername is 'undefined' or 'unknown' it means no one is logged in, so just return emptry array
+    if (followeeUsername === undefined || followeeUsername === "unknown"){
         return [];
     }
 
@@ -19,8 +24,6 @@ export async function getFollowee(followeeUsername?: string, followerUsername?: 
         const response = await axios.get<string[]>(
             '/api/followees?follower_username='+followerUsername+'&followee_username='+followeeUsername
         );
-        console.log("follows.getFollowee() - response is: ");
-        console.log(response);
         return response.data;
     } catch(error){
         //should I rethrow this???
@@ -44,8 +47,6 @@ export async function getFollowees(followerUsername: string){
         const response = await axios.get<string[]>(
             '/api/followees?follower_username='+followerUsername
         );
-        console.log("follows.getFollowees() - response is: ");
-        console.log(response);
         return response.data;
     } catch(error){
         //should I rethrow this???

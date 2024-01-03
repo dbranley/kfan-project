@@ -1,13 +1,16 @@
-import React from "react";
+import { ReactNode } from "react";
 import { it, describe, expect, vi, afterEach } from "vitest";
-import { fireEvent, render, screen } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
-import { Route, Router, Routes, MemoryRouter } from "react-router-dom";
-import { createMemoryHistory } from 'history';
+import { MemoryRouter } from "react-router-dom";
 
 import AuthButton from "../AuthButton";
 import { MantineProvider } from "@mantine/core";
+
+interface Props {
+    children?: ReactNode
+}
 
 const queryClient = new QueryClient({
     defaultOptions: {
@@ -17,11 +20,7 @@ const queryClient = new QueryClient({
     }
 });
 
-const history = createMemoryHistory();
-
-const TestHello = () => <h1>Hello Tesing World</h1>;
-
-const queryProvider = ({ children }) => (
+const queryProvider = ({ children }: Props) => (
     <QueryClientProvider client={queryClient}>
         <MantineProvider>
             <MemoryRouter initialEntries={["/"]}>{children}</MemoryRouter>
@@ -69,7 +68,6 @@ describe("AuthButton tests when not logged in", () => {
         //     </QueryClientProvider>
         // );
         const loginButtonByTestId = await screen.findAllByTestId("login-button-id")
-        const logoutButtonByTestId = screen.queryAllByTestId("logout-button-id")
 
         console.log("AuthButton test1 - about to print loginButtonByTestId");
         console.log(loginButtonByTestId);

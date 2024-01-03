@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Avatar, Button, Container, Group, Menu, Modal, Space, Text } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
-import { useMutation, useQuery, useQueryClient, UseQueryResult } from "@tanstack/react-query";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useNavigate } from "react-router-dom";
 
 import { getCurrentUser, SESSION_EXPIRATION_TIME, logout } from "../services/auth";
 import AuthForm from './AuthForm';
@@ -19,7 +19,6 @@ export default function AuthButton() {
     useDisclosure(false);
 
     const navigate = useNavigate();
-    const location = useLocation();
 
     const queryClient = useQueryClient();
 
@@ -114,7 +113,7 @@ export default function AuthButton() {
                         console.log("AuthButton - clicked Settings menu item");
                         openSettings();
                     }}>Settings</Menu.Item>
-                    <Menu.Item data-testid="logout-button-id" size="xs" onClick={()=>{
+                    <Menu.Item data-testid="logout-button-id" onClick={()=>{
                         logoutMutation.mutate();
                         navigate("/");
                     }}>Logout</Menu.Item>
