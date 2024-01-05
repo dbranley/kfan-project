@@ -39,7 +39,7 @@ To create and start a container from the new docker image, use the following com
 
 To create and start a container with an environment variable file, use the following command from the root project directory:
 
-    docker run --env-file docker-variables.env -d --name kfan1 -p 80:80 kfan-proj1
+    docker run --env-file docker-local-variables.env -d --name kfan1 -p 80:80 kfan-proj1
 
 To create and start a container pulled from Docker Hub with an environment varialb file, use the following command from the root project directory:
 
