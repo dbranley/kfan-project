@@ -47,7 +47,7 @@ const ProfileHoverCard: React.FC<{username: string
             queryClient.invalidateQueries({ queryKey: ["followeeQuery"]});
             queryClient.invalidateQueries({ queryKey: ["profileUser"]});
             queryClient.invalidateQueries({ queryKey: ["followersQuery", props.username]});
-            queryClient.invalidateQueries({ queryKey: ["photoCards", false, false, true, null]});
+            queryClient.invalidateQueries({ queryKey: ["photoCards"]});
         },
         onError: (error) => {
             console.log("Profile.addFolloweeMutation() - got an error");
@@ -62,7 +62,7 @@ const ProfileHoverCard: React.FC<{username: string
             queryClient.invalidateQueries({ queryKey: ["followeeQuery"]});
             queryClient.invalidateQueries({ queryKey: ["profileUser"]});
             queryClient.invalidateQueries({ queryKey: ["followersQuery", props.username]});
-            queryClient.invalidateQueries({ queryKey: ["photoCards", false, false, true, null]});
+            queryClient.invalidateQueries({ queryKey: ["photoCards"]});
         },
         onError: (error) => {
             console.log("Profile.removeFolloweeMutation() - got an error");

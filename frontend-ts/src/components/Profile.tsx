@@ -72,7 +72,7 @@ const Profile: React.FC<{username: string}> = (props) => {
 
     const followeeQuery = useQuery({
         queryKey: ["followeeQuery", props.username, currentUsername],
-        queryFn: () => getFollowee(currentUsername, props.username),
+        queryFn: () => getFollowee(props.username, currentUsername),
         enabled: currentUsername !== undefined && currentUsername !== "unknown" //!!currentUsername
     });
 
@@ -82,7 +82,7 @@ const Profile: React.FC<{username: string}> = (props) => {
             queryClient.invalidateQueries({ queryKey: ["followeeQuery"]});
             queryClient.invalidateQueries({ queryKey: ["profileUser"]});
             queryClient.invalidateQueries({ queryKey: ["followersQuery", props.username]});
-            queryClient.invalidateQueries({ queryKey: ["photoCards", false, false, true, null]});
+            queryClient.invalidateQueries({ queryKey: ["photoCards"]});
         },
         onError: (error) => {
             console.log("Profile.addFolloweeMutation() - got an error");
@@ -97,7 +97,7 @@ const Profile: React.FC<{username: string}> = (props) => {
             queryClient.invalidateQueries({ queryKey: ["followeeQuery"]});
             queryClient.invalidateQueries({ queryKey: ["profileUser"]});
             queryClient.invalidateQueries({ queryKey: ["followersQuery", props.username]});
-            queryClient.invalidateQueries({ queryKey: ["photoCards", false, false, true, null]});
+            queryClient.invalidateQueries({ queryKey: ["photoCards"]});
         },
         onError: (error) => {
             console.log("Profile.removeFolloweeMutation() - got an error");
@@ -120,7 +120,7 @@ const Profile: React.FC<{username: string}> = (props) => {
     }    
 
     const removeFolloweedHandler = async() => {
-        console.log("Profile.removeFolloweedHandler() - at top")
+        console.log("Profile.removeFolloweedHandler() - at top - prop.username="+props.username+"=, currentUsername="+currentUsername+"=");
         removeFolloweeMutation.mutate(props.username);
     } 
 

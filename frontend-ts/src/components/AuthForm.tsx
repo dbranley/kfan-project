@@ -31,7 +31,7 @@ const AuthForm: React.FC<{onLogin: () => void, onRegister: () => void}> = (props
         mutationFn: login,
         onSuccess: () => {
           queryClient.invalidateQueries({ queryKey: ["currentUser"]});
-        //   queryClient.invalidateQueries(["photoCards"]);
+          // queryClient.invalidateQueries({ queryKey: ["photoCards"]});
           props.onLogin();
           console.log("AuthForm.loginMutation() - onSuccess");
         }, 

@@ -37,7 +37,7 @@ const FollowItem: React.FC<{followUsername: string}>  = (props) => {
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["followeeQuery", props.followUsername, currentUsername]});
             queryClient.invalidateQueries({ queryKey: ["followeesQuery", currentUsername]});
-            queryClient.invalidateQueries({ queryKey: ["photoCards", false, false, true, null]});
+            queryClient.invalidateQueries({ queryKey: ["photoCards"]});
             queryClient.invalidateQueries({ queryKey: ["profileUser", currentUsername]});
         },
         onError: (error) => {
@@ -52,7 +52,7 @@ const FollowItem: React.FC<{followUsername: string}>  = (props) => {
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["followeeQuery", props.followUsername, currentUsername]});
             queryClient.invalidateQueries({ queryKey: ["followeesQuery", currentUsername]});
-            queryClient.invalidateQueries({ queryKey: ["photoCards", false, false, true, null]});
+            queryClient.invalidateQueries({ queryKey: ["photoCards"]});
             queryClient.invalidateQueries({ queryKey: ["profileUser", currentUsername]});
         },
         onError: (error) => {

@@ -2,12 +2,15 @@
 FROM node:18-alpine as build-step
 WORKDIR /app
 ENV PATH /app/node_modules/.bin:$PATH
-COPY ./frontend/package.json ./
+COPY ./frontend-ts/package.json ./
+COPY ./frontend-ts/tsconfig.json ./
+COPY ./frontend-ts/tsconfig.node.json ./
 RUN npm install
-COPY ./frontend/vite.config.js ./
-COPY ./frontend/index.html ./
-COPY ./frontend/src ./src
-COPY ./frontend/public ./public
+COPY ./frontend-ts/vite.config.ts ./
+COPY ./frontend-ts/index.html ./
+COPY ./frontend-ts/postcss.config.cjs ./
+COPY ./frontend-ts/src ./src
+COPY ./frontend-ts/public ./public
 #HEALTHCHECK NONE
 RUN npm run build
 
@@ -18,7 +21,7 @@ RUN mkdir ./app
 RUN mkdir ./app/images
 COPY --from=build-step /app/dist ./app/dist
 RUN mkdir ./app/dist/public
-COPY ./frontend/public/logo-darkorange.svg ./app/dist/public
+COPY ./frontend-ts/public/logo-darkorange.svg ./app/dist/public
 
 COPY ./requirements.txt ./
 RUN pip install -r ./requirements.txt
