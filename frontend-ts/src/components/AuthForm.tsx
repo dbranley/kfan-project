@@ -148,7 +148,7 @@ const AuthForm: React.FC<{onLogin: () => void, onRegister: () => void}> = (props
                 <Group justify="space-between" mt="md" gap="sm">
                     <Text
                         style={{ cursor: "pointer" }}
-                        color="gray"
+                        c="gray"
                         size="sm"
                         td={underlined}
                         onMouseEnter={() => {
@@ -206,7 +206,7 @@ const AuthForm: React.FC<{onLogin: () => void, onRegister: () => void}> = (props
             <Group justify="space-between" mt="md" gap="sm">
               <Text
                 style={{ cursor: "pointer" }}
-                color="gray"
+                c="gray"
                 size="sm"
                 td={underlined}
                 onMouseEnter={() => {
