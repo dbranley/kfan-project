@@ -1,70 +1,38 @@
-BACKEND - FastAPI:
-To run the backend FastAPI project, use the following command from the /backend/app directory:
+# MADORLEY - Your K-POP Collection
 
-    uvicorn app.main:app --reload
+<img src="doc/imagefiles/logo-darkorange.svg" alt="Madorley logo" width="100%" position="center">
 
-To run the backend PyTest tests, use the following command from the /backend/app directory:
+__________________________
 
-    pytest
 
-Or to run a specific test only:
+[![KFan Development Workflow](https://github.com/dbranley/kfan-project/actions/workflows/development.yml/badge.svg)](https://github.com/dbranley/kfan-project/actions/workflows/development.yml) [![Publish KFan Docker image](https://github.com/dbranley/kfan-project/actions/workflows/docker-image.yml/badge.svg)](https://github.com/dbranley/kfan-project/actions/workflows/docker-image.yml)
 
-    pytest app/tests/routers/test_users.py
+_______________
 
-FRONTEND - Vite:
-To run the frontend Vite project, use the following command from the /frontend directory:
 
-    npm run dev
+MADORLEY is an application for storing and sharing K-Pop photocards. It is deployed at [madorley.com](https://madorley.com). With a responsive design, MADORLEY great on mobile devices as well as desktops. The site is open for anyone to create an account, follow others and 'like' photocards. Permissions to upload new photos are granted only on request.  
 
-To run the backend Vitest tests, use the following command from the /frontend directory:
+This is a fullstack application I built to help me get more hands-on experience with Python and React. After years of being an Engineering Manager, I let my technical skills go soft. Building MADORLEY has allowed me to gain fresh experience with both backend and frontend development, along with deployment on AWS.  
 
-    npm run test
+## Backend
 
-To run with silent-mode off (to get the console output), use the following:
+* Python
+* FastAPI
+* SQLAlchemy
+* Alembic
+* PostgreSQL
 
-    npm run test -- --silent=false
+## Frontend
 
-DOCKER:
-To build docker image, use following command from the root project directory - before /frontend and /backend:
+* React/Typescript
+* Vite
+* Mantine
+* TanStack Query
+* Axios
+* React Router
 
-    docker build -t kfan-proj1 . 
+## Screen Shots
 
-To build docker image without using any cached content, used this from the root project directory:
+![Landing page](doc/imagefiles/madorley_screenshot.png)
 
-    docker build --no-cache -t kfan-proj1 .
-
-To create and start a container from the new docker image, use the following command from the root project directory:
-
-    docker run -d --name kfan1 -p 80:80 kfan-proj1
-
-To create and start a container with an environment variable file, use the following command from the root project directory:
-
-    docker run --env-file docker-local-variables.env -d --name kfan1 -p 80:80 kfan-proj1
-
-To create and start a container pulled from Docker Hub with an environment varialb file, use the following command from the root project directory:
-
-    docker run --env-file docker-variables.env -d --name kfanrepo1 -p 80:80 dgbranley/kfanrepo:main
-
-Alembic:
-Had problems getting alembic properly installed with pip. When I ran 'pip install -r requirements.txt' from command
-line after activating venv, it did not work right. Install seemed to go fine, but when I ran 'alembic --version' from
-command line it was not the one I installed. It was an old version from somewhere on the Mac.
-
-To get around this, I 'sort of' followed instructions on the Alembic website docs:
-https://alembic.sqlalchemy.org/en/latest/front.html#installation
-
-First, I 'deactivated' the virtual environment, then I did the pip install like this:
-
-    .venv/bin/pip install alembic
-
-Then I activated the virtual environment and then when I checked the version it was the right one.
-
-To autogenerate alembic DB migration stuff, us the following command from the backend/app directory:
-
-    alembic revision --autogenerate -m "comment here"
-
-To run the alembic ugprade, use the following command from the backend/app directory:
-
-    alembic upgrade head
-
-[![KFan Development Workflow](https://github.com/dbranley/kfan-project/actions/workflows/development.yml/badge.svg)](https://github.com/dbranley/kfan-project/actions/workflows/development.yml) [![GitHub Super-Linter](https://github.com/dbranley/kfan-project/actions/workflows/super-linter.yml/badge.svg)](https://github.com/dbranley/kfan-project/actions/workflows/super-linter.yml) [![Publish KFan Docker image](https://github.com/dbranley/kfan-project/actions/workflows/docker-image.yml/badge.svg)](https://github.com/dbranley/kfan-project/actions/workflows/docker-image.yml)
+![Mobile view](doc/imagefiles/madorley_screenshot_mobile.png)
