@@ -9,7 +9,7 @@ from sqlalchemy.sql import text
 from sqlalchemy import create_engine
 
 def reset_user_pwd(user_id: int, user_name: str, new_password: str):
-    print("reset_user.reset_user_pwd() - at top ")
+    print("reset_user.reset_user_pwd() - at top of function")
 
     load_dotenv()
     SQLACHEMY_DATABASE_URL = os.getenv("DATABASE_URL")
