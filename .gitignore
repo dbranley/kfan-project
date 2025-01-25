@@ -26,6 +26,7 @@ yarn-error.log*
 
 .env
 docker-variables.env
+docker-variables-bkup1.env
 docker-local-variables.env
 
 instance
