@@ -44,7 +44,9 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
 def get_password_hash(password):
-    return pwd_context.hash(password)
+    # bcrypt has a 72-byte limit; newer versions throw ValueError if exceeded.
+    # We truncate here to ensure compatibility and silence the error.
+    return pwd_context.hash(password[:72])
 
 def create_access_token(data: dict, expires_delta: timedelta | None = None):
     to_encode = data.copy()
@@ -57,7 +59,9 @@ def create_access_token(data: dict, expires_delta: timedelta | None = None):
     return encoded_jwt
 
 def verify_password(plain_password, hashed_password):
-    return pwd_context.verify(plain_password, hashed_password)
+    # bcrypt has a 72-byte limit; truncate to ensure compatibility with existing hashes
+    # and to prevent ValueError in newer bcrypt versions.
+    return pwd_context.verify(plain_password[:72], hashed_password)
 
 
 async def authenticate_user(username: str,

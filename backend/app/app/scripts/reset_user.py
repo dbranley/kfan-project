@@ -33,9 +33,10 @@ def reset_user_pwd(user_id: int, user_name: str, new_password: str):
         engine = create_engine(SQLACHEMY_DATABASE_URL, echo=False)
         conn = engine.connect()
 
-        #hash the password
+        # hash the password
         pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-        new_password_hash = pwd_context.hash(new_password)
+        # bcrypt has a 72-byte limit; truncate to ensure compatibility.
+        new_password_hash = pwd_context.hash(new_password[:72])
         
         #now update the password for the user
         statement = text("""UPDATE users SET password = :new_pwd WHERE id = :id """)

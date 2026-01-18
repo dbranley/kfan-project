@@ -12,7 +12,7 @@ databases[asyncpg]
 boto3[crt]
 
 python-jose[cryptography]
-bcrypt<5.0.01
+bcrypt<5.0.0
 passlib[bcrypt]==1.7.4
 pytest
 pytest-asyncio
